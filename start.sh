@@ -11,5 +11,12 @@ else
 		echo -e "\033[32mPostgres Docker restarted successfully in $SECONDS seconds.\033[m"
 	else
 		echo -e "\033[31mPostgres Docker failed to start.\033[m"
+		exit 1
 	fi
+fi
+
+if cat ./create-puzzles-table.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres ; then
+	echo -e "\033[32mCreated Puzzles table successfully.\033[m"
+else
+	echo -e "\033[31mFailed to create Puzzles table.\033[m"
 fi
