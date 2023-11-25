@@ -46,4 +46,4 @@ bash delete.sh
 	* TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message
 	* TODO: Delete generate.txt
 
-3. TODO: Insert newly generated puzzle data into the Postgres DB
+3. TODO: Export Puzzles table data to csv file
