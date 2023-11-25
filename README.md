@@ -1,5 +1,11 @@
 # Clearinghouse
 
+# Prerequisites
+
+* Docker
+* Bash
+* npm
+
 # Usage
 
 ```bash
