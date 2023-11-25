@@ -9,7 +9,7 @@
 
 # Setup
 
-1. Run `npm i`
+1. Run `bun install`
 
 # Usage
 
