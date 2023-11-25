@@ -14,7 +14,9 @@
 
 ```bash
 # Start Postgres DB, create Puzzles table to store puzzle data, and run ingest pipeline to load puzzle data
-bash start.sh
+# GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
+# GENERATE_THREADS is the number of threads used during puzzle generation (in addition to main thread), defaults to 1
+GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 bash start.sh
 
 # Exec into the DB to run SQL commands (run exit when done)
 docker exec -it sudoku-postgres psql -U postgres
