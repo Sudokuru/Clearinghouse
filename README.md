@@ -6,6 +6,10 @@
 * Bash
 * npm
 
+# Setup
+
+1. Run `npm i`
+
 # Usage
 
 ```bash
