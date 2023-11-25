@@ -5,6 +5,7 @@
 * Docker
 * Bash
 * npm
+* bun
 
 # Setup
 
