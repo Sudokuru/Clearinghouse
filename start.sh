@@ -19,4 +19,9 @@ if cat ./create-puzzles-table.sql | docker exec -i sudoku-postgres psql -U postg
 	echo -e "\033[32mCreated Puzzles table successfully.\033[m"
 else
 	echo -e "\033[31mFailed to create Puzzles table.\033[m"
+	exit 1
 fi
+
+for line in $(cat "puzzles.txt"); do
+	echo "$line"
+done
