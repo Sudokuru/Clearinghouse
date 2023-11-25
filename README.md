@@ -33,7 +33,7 @@ bash delete.sh
 
 1. TODO: Insert puzzle data from puzzles.csv into the Postgres DB
 
-2. IN PROGRESS: Generate puzzle data using Sudokuru library for any puzzles in puzzles.txt that are not already in the Postgres DB
+2. IN PROGRESS: Generate puzzle data using Sudokuru library for any puzzles in puzzles.txt that are not already in the Postgres DB and insert them
 	* DONE: Write script to generate SQL insert statement for a given puzzle
 	* TODO: Update start.sh to read each individual puzzle from puzzles.txt
 	* TODO: Update start.sh to identify which puzzles are not in the database already
@@ -46,4 +46,4 @@ bash delete.sh
 	* TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message
 	* TODO: Delete generate.txt
 
-3. TODO: Export Puzzles table data to csv file
+3. TODO: Export Puzzles table data to puzzles.csv if new puzzles were inserted
