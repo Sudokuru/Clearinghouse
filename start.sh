@@ -22,6 +22,10 @@ else
 	exit 1
 fi
 
+sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 for line in $(cat "puzzles.txt"); do
-	echo "$line"
+	rows=$(printf "$sql_query" "$line" | docker exec -i sudoku-postgres psql -U postgres -d postgres -t ;)
+	if [[ -z "$rows" ]]; then
+		echo "Puzzle is not in the database."
+	fi
 done

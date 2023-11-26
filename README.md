@@ -36,7 +36,7 @@ bash delete.sh
 2. IN PROGRESS: Generate puzzle data using Sudokuru library for any puzzles in puzzles.txt that are not already in the Postgres DB and insert them
 	* DONE: Write script to generate SQL insert statement for a given puzzle
 	* DONE: Update start.sh to read each individual puzzle from puzzles.txt
-	* TODO: Update start.sh to identify which puzzles are not in the database already
+	* DONE: Update start.sh to identify which puzzles are not in the database already
 	* TODO: Update start.sh to put new puzzles in generate.txt temp file
 	* TODO: Update start.sh to call GenerateInsert for each new puzzle
 	* TODO: Update start.sh to pipe GenerateInsert output to database
