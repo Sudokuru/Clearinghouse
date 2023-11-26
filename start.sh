@@ -27,7 +27,7 @@ sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 for line in $(cat "puzzles.txt"); do
 	rows=$(printf "$sql_query" "$line" | docker exec -i sudoku-postgres psql -U postgres -d postgres -t ;)
 	if [[ -z "$rows" ]]; then
-		echo "$line" >> "generate.txt"
+		echo "bun GenerateInsert.ts $line" >> "generate.txt"
 	fi
 done
 rm generate.txt
