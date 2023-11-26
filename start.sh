@@ -1,6 +1,9 @@
 echo "The Postgres Docker is starting..."
 
 SECONDS=0
+if [[ -z "$GENERATE_THREADS" ]]; then
+	GENERATE_THREADS=1
+fi
 
 if docker run --name sudoku-postgres -e POSTGRES_PASSWORD=sudokuru -d postgres ; then
 	echo -e "\033[32mPostgres Docker started successfully in $SECONDS seconds.\033[m"
@@ -22,12 +25,19 @@ else
 	exit 1
 fi
 
-touch generate.txt
 sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
+let thread=0
 for line in $(cat "puzzles.txt"); do
 	rows=$(printf "$sql_query" "$line" | docker exec -i sudoku-postgres psql -U postgres -d postgres -t ;)
 	if [[ -z "$rows" ]]; then
-		echo "bun GenerateInsert.ts $line" >> "generate.txt"
+		if [[ "$thread" == "$GENERATE_THREADS" ]]; then
+			wait $child_pid
+			let thread=0
+		else
+			let thread++
+		fi
+		bun GenerateInsert.ts $line &
+		child_pid=$!
 	fi
 done
-rm generate.txt
+wait
