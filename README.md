@@ -37,13 +37,13 @@ bash delete.sh
 	* DONE: Write script to generate SQL insert statement for a given puzzle
 	* DONE: Update start.sh to read each individual puzzle from puzzles.txt
 	* DONE: Update start.sh to identify which puzzles are not in the database already
-	* TODO: Update start.sh to put new puzzles in generate.txt temp file
+	* DONE: Update start.sh to put new puzzles in generate.txt temp file
 	* TODO: Update start.sh to call GenerateInsert for each new puzzle
 	* TODO: Update start.sh to pipe GenerateInsert output to database
 	* TODO: Update start.sh to run GenerateInsert on GENERATE_THREADS number of threads
 	* TODO: Update threads to monitor time elapsed and stop if it exceends GENERATE_TIME_LIMIT
 	* TODO: Update main thread to query database every few seconds and output progress as percentage and max time remaining 
 	* TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message
-	* TODO: Delete generate.txt
+	* DONE: Delete generate.txt
 
 3. TODO: Export Puzzles table data to puzzles.csv if new puzzles were inserted
