@@ -43,5 +43,3 @@ bash delete.sh
 3. Once all the insert statements for the new puzzles have been created they are appended to puzzles.sql
 
 4. All the new insert statements in inserts.sql are executed and inserts.sql is deleted
-
-* TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message

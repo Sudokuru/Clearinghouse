@@ -69,3 +69,9 @@ wait
 cat inserts.sql >> puzzles.sql
 cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres > /dev/null
 rm inserts.sql
+
+if [[ $current_step -gt 0 ]]; then
+	echo "Added $current_step new puzzles to puzzles.sql"
+else
+	echo "Finished without adding any new puzzles to puzzles.sql"
+fi
