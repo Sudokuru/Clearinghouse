@@ -43,5 +43,6 @@ for line in $(cat "puzzles.txt"); do
 done
 wait
 
-cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres
+cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres > /dev/null
+cat inserts.sql >> puzzles.sql
 rm inserts.sql
