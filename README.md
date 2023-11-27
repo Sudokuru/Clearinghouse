@@ -40,9 +40,9 @@ bash delete.sh
 		* If threads are all assigned then waits until the youngest thread finishes
 		* Once a thread is available it assigns it to generate puzzle data and put the insert statement in inserts.sql
 
-3. Once all the insert statements for the new puzzles have been created they are appended to puzzles.sql and inserts.sql is deleted
+3. Once all the insert statements for the new puzzles have been created they are appended to puzzles.sql
 
-4. All the insert statements in puzzles.sql are executed
+4. All the new insert statements in inserts.sql are executed and inserts.sql is deleted
 
 * TODO: Update main thread to query database every few seconds and output progress as percentage and max time remaining 
 * TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message

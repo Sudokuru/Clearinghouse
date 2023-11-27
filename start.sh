@@ -28,6 +28,8 @@ else
 	exit 1
 fi
 
+cat ./puzzles.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres > /dev/null
+
 touch inserts.sql
 sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 let thread=0
@@ -50,5 +52,5 @@ done
 wait
 
 cat inserts.sql >> puzzles.sql
+cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres > /dev/null
 rm inserts.sql
-cat ./puzzles.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres > /dev/null
