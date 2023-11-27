@@ -6,4 +6,4 @@ import { getPuzzleData } from 'sudokuru';
 const board = process.argv[2];
 const data = getPuzzleData(board);
 
-console.log("INSERT INTO Puzzles(puzzle, solution, difficulty) VALUES(" + board + ", " + data.solution + ", " + data.difficulty + ");");
+console.log("INSERT INTO Puzzles(puzzle, solution, difficulty) VALUES(\'" + board + "\', \'" + data.solution + "\', " + data.difficulty + ");");

@@ -31,19 +31,15 @@ bash delete.sh
 
 # Ingest Pipeline (run by start.sh)
 
-1. TODO: Insert puzzle data from puzzles.csv into the Postgres DB
+1. Insert puzzle data from puzzles.sql into the Postgres DB
 
-2. IN PROGRESS: Generate puzzle data using Sudokuru library for any puzzles in puzzles.txt that are not already in the Postgres DB and insert them
-	* DONE: Write script to generate SQL insert statement for a given puzzle
-	* TODO: Update start.sh to read each individual puzzle from puzzles.txt
-	* TODO: Update start.sh to identify which puzzles are not in the database already
-	* TODO: Update start.sh to put new puzzles in generate.txt temp file
-	* TODO: Update start.sh to call GenerateInsert for each new puzzle
-	* TODO: Update start.sh to pipe GenerateInsert output to database
-	* TODO: Update start.sh to run GenerateInsert on GENERATE_THREADS number of threads
-	* TODO: Update threads to monitor time elapsed and stop if it exceends GENERATE_TIME_LIMIT
-	* TODO: Update main thread to query database every few seconds and output progress as percentage and max time remaining 
-	* TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message
-	* TODO: Delete generate.txt
+2. For each puzzles in puzzles.txt (or until reach GENERATE_TIME_LIMIT):
+	* Checks if the puzzle is already in the database
+	* If the puzzle is not already in the database then does the following:
+		* Checks if each of the GENERATE_THREADS has been assigned already to generate data for a puzzle
+		* If threads are all assigned then waits until the youngest thread finishes
+		* Once a thread is available it assigns it to generate puzzle data and put the insert statement in inserts.sql
 
-3. TODO: Export Puzzles table data to puzzles.csv if new puzzles were inserted
+3. Once all the insert statements for the new puzzles have been created they are appended to puzzles.sql
+
+4. All the new insert statements in inserts.sql are executed and inserts.sql is deleted
