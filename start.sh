@@ -1,6 +1,9 @@
 echo "The Postgres Docker is starting..."
 
 SECONDS=0
+if [[ -z "$GENERATE_TIME_LIMIT" ]]; then
+	GENERATE_TIME_LIMIT=60
+fi
 if [[ -z "$GENERATE_THREADS" ]]; then
 	GENERATE_THREADS=1
 fi
@@ -31,6 +34,9 @@ touch inserts.sql
 sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 let thread=0
 for line in $(cat "puzzles.txt"); do
+	if [[ $SECONDS -gt $GENERATE_TIME_LIMIT ]]; then
+    		break
+  	fi
 	rows=$(printf "$sql_query" "$line" | docker exec -i sudoku-postgres psql -U postgres -d postgres -t ;)
 	if [[ -z "$rows" ]]; then
 		if [[ "$thread" == "$GENERATE_THREADS" ]]; then
