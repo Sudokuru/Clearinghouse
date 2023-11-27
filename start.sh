@@ -25,6 +25,7 @@ else
 	exit 1
 fi
 
+touch inserts.sql
 sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 let thread=0
 for line in $(cat "puzzles.txt"); do
@@ -36,8 +37,11 @@ for line in $(cat "puzzles.txt"); do
 		else
 			let thread++
 		fi
-		bun GenerateInsert.ts $line &
+		$(bun GenerateInsert.ts $line >> "inserts.sql") &
 		child_pid=$!
 	fi
 done
 wait
+
+cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres
+rm inserts.sql
