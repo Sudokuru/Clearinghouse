@@ -44,5 +44,4 @@ bash delete.sh
 
 4. All the new insert statements in inserts.sql are executed and inserts.sql is deleted
 
-* TODO: Update main thread to query database every few seconds and output progress as percentage and max time remaining 
 * TODO: Add finished and added x new puzzles in x seconds to database (or no new puzzles) end message

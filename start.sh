@@ -33,6 +33,10 @@ cat ./puzzles.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres 
 touch inserts.sql
 sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 let thread=0
+total_puzzles=$(wc -l < "puzzles.txt")
+solved_puzzles=$(wc -l < "puzzles.sql")
+total_steps=$(echo $total_puzzles-$solved_puzzles | bc)
+current_step=0
 for line in $(cat "puzzles.txt"); do
 	if [[ $SECONDS -gt $GENERATE_TIME_LIMIT ]]; then
     		break
@@ -47,6 +51,17 @@ for line in $(cat "puzzles.txt"); do
 		fi
 		$(bun GenerateInsert.ts $line >> "inserts.sql") &
 		child_pid=$!
+
+		current_step=$((current_step + 1))
+
+		# Calculate the percentage of completion
+  		percentage=$((current_step * 100 / total_steps))
+
+  		# Fill the progress bar based on the percentage
+  		filled_bar="${progress_bar:0:percentage}"
+
+  		# Print the progress bar
+  		echo -ne "\r[${filled_bar} ] ${percentage}%"
 	fi
 done
 wait
