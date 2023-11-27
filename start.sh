@@ -21,7 +21,7 @@ else
 	fi
 fi
 
-sleep 1 # Give time for database to spin up before executing commands in it
+sleep 3 # Give time for database to spin up before executing commands in it
 
 if cat ./create-puzzles-table.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres ; then
 	echo -e "\033[32mCreated Puzzles table successfully.\033[m"
