@@ -35,8 +35,8 @@ cat ./puzzles.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres 
 touch inserts.sql
 sql_query="SELECT * FROM Puzzles WHERE puzzle = '%s';"
 let thread=0
-total_puzzles=$(wc -l < "puzzles.txt")
-solved_puzzles=$(wc -l < "puzzles.sql")
+total_puzzles=$(grep -c . "puzzles.txt")
+solved_puzzles=$(grep -c . "puzzles.sql")
 total_steps=$(echo $total_puzzles-$solved_puzzles | bc)
 current_step=0
 for line in $(cat "puzzles.txt"); do
@@ -73,7 +73,7 @@ cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres 
 rm inserts.sql
 
 if [[ $current_step -gt 0 ]]; then
-	echo "Added $current_step new puzzles to puzzles.sql"
+	echo " Added $current_step new puzzles to puzzles.sql"
 else
 	echo "Finished without adding any new puzzles to puzzles.sql"
 fi
