@@ -8,7 +8,7 @@ if [[ -z "$GENERATE_THREADS" ]]; then
 	GENERATE_THREADS=1
 fi
 
-if docker run --name sudoku-postgres -e POSTGRES_PASSWORD=sudokuru -d postgres ; then
+if docker run --name sudoku-postgres -e POSTGRES_PASSWORD=sudokuru -d -p 5432:5432 postgres ; then
 	echo -e "\033[32mPostgres Docker started successfully in $SECONDS seconds.\033[m"
 	echo "Postgres Docker started successfully in $SECONDS seconds."
 else
