@@ -23,8 +23,8 @@ GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 bash start.sh
 # line through the export.ts script to process them into the desired format used by Sudokuru Frontend
 # Results will be written to exports.ts
 # PUZZLE_COUNT is the number of puzzles that will be exported, script will fail if not enough puzzles in DB
-# MIN_DIFFICULTY is the minimum difficulty of puzzles that will be considered for export
-# MAX_DIFFICULTY is the maximum difficulty of puzzles that will be considered for export
+# MIN_DIFFICULTY is the minimum difficulty (inclusive) of puzzles that will be considered for export
+# MAX_DIFFICULTY is the maximum difficulty (inclusive) of puzzles that will be considered for export
 PUZZLE_COUNT=2 MIN_DIFFICULTY=20 MAX_DIFFICULTY=100 bash export.sh
 
 # Exec into the DB to run SQL commands (run exit when done)
