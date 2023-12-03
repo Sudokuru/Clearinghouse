@@ -1,0 +1,4 @@
+echo "Querying the database to find the requested puzzles..."
+
+sql_query="SELECT puzzle, solution, difficulty FROM Puzzles WHERE difficulty >= %s AND difficulty <= %s LIMIT %s;"
+sql_query=$(printf "$sql_query" "$MIN_DIFFICULTY" "$MAX_DIFFICULTY" "$PUZZLE_COUNT")
