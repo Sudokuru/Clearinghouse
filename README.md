@@ -19,6 +19,13 @@
 # GENERATE_THREADS is the number of threads used during puzzle generation (in addition to main thread), defaults to 1
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 bash start.sh
 
+# Queries the DB for the number of puzzles requested with the desired difficulty values and then runs each
+# line through the export.ts script to process them into the desired format used by Sudokuru Frontend
+# PUZZLE_COUNT is the number of puzzles that will be exported, script will fail if not enough puzzles in DB
+# MIN_DIFFICULTY is the minimum difficulty of puzzles that will be considered for export
+# MAX_DIFFICULTY is the maximum difficulty of puzzles that will be considered for export
+PUZZLE_COUNT=2 MIN_DIFFICULTY=20 MAX_DIFFICULTY=100 bash export.sh
+
 # Exec into the DB to run SQL commands (run exit when done)
 docker exec -it sudoku-postgres psql -U postgres
 
