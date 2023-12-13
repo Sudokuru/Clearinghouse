@@ -8,6 +8,7 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "papaparse": "^5.4.1",
     "sudokuru": "^2.1.0"
   }
 }
