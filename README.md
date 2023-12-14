@@ -51,3 +51,15 @@ bash delete.sh
 3. Once all the insert statements for the new puzzles have been created they are appended to puzzles.sql
 
 4. All the new insert statements in inserts.sql are executed and inserts.sql is deleted
+
+# Export Pipeline (run by export.sh)
+
+1. export.sh builds sql query using environment variables or defaults
+
+2. export.sh runs constructed sql query and redirects output to temp1.csv
+
+3. export.sh cleans up the output and puts the new output in temp2.csv
+
+4. export.sh runs export.ts using bun and redirects the output to exports.ts
+
+5. export.ts parses temp2.csv and outputs the data in the desired format
