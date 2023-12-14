@@ -8,7 +8,7 @@ Papa.parse(file, {
 	const colCount:number = 3;
 	let data = result.data[0];
 	let objs = 'export const GAMES: SudokuObjectProps[] = [';
-	for (let i:number = 0; i < data.length; i += 3) {
+	for (let i:number = 0; i < data.length; i += colCount) {
 		let puzzle:string = data[i].trim();
 		let sideLength:number = Math.sqrt(puzzle.length);
 		let solution:string = data[i+1].trim();
