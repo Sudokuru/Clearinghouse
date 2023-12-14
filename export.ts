@@ -7,13 +7,14 @@ Papa.parse(file, {
     complete: function(result) {
 	const colCount:number = 3;
 	let data = result.data[0];
+	let objs = 'export const GAMES: SudokuObjectProps[] = [';
 	for (let i:number = 0; i < data.length; i += 3) {
 		let puzzle:string = data[i].trim();
 		let sideLength:number = Math.sqrt(puzzle.length);
 		let solution:string = data[i+1].trim();
 		let difficulty:string = data[i+2].trim();
-		console.log("Puzzle: " + puzzle + ", solution: " + solution + ", difficulty: " + difficulty);
-		let obj:string = '[{"type":"classic","version":"1.0.0","selectedCell":{"r":0,"c":0},"puzzle":[';
+		//console.log("Puzzle: " + puzzle + ", solution: " + solution + ", difficulty: " + difficulty);
+		let obj:string = '{"type":"classic","version":"1.0.0","selectedCell":{"r":0,"c":0},"puzzle":[';
 		for (let row:number = 0; row < sideLength; row++) {
 			obj += '[';
 			for (let col:number = 0; col < sideLength; col++) {
@@ -45,8 +46,14 @@ Papa.parse(file, {
 		obj += '],';
 		obj += '"statistics":{"difficulty":"standard","internalDifficulty":';
 		obj += difficulty;
-		obj += ',"numHintsUsed":0,"numWrongCellsPlayed":0,"score":0,"time":0},"inNoteMode":true,"actionHistory":[]}]';
-		console.log(obj + "\n");
+		obj += ',"numHintsUsed":0,"numWrongCellsPlayed":0,"score":0,"time":0},"inNoteMode":true,"actionHistory":[]}';
+		//console.log(obj + "\n");
+		objs += obj;
+		if (i < (data.length - 3)) {
+			objs += ',';
+		}
 	}
+	objs += '];';
+	console.log(objs);
   }
 })
