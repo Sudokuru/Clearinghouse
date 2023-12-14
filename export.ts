@@ -26,6 +26,9 @@ Papa.parse(file, {
 				}
 			}
 			obj += ']';
+			if (row < (sideLength - 1)) {
+				obj += ',';
+			}
 		}
 		obj += '],';
 		obj += '"puzzleSolution":';
