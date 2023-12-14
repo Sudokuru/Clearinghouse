@@ -8,15 +8,23 @@ Papa.parse(file, {
 	const colCount:number = 3;
 	let data = result.data[0];
 	for (let i:number = 0; i < data.length; i += 3) {
-		let puzzle = data[i];
-		let sideLength = Math.sqrt(puzzle.length);
-		let solution = data[i+1];
-		let difficulty = data[i+2];
+		let puzzle:string = data[i].trim();
+		let sideLength:number = Math.sqrt(puzzle.length);
+		let solution:string = data[i+1].trim();
+		let difficulty:number = data[i+2];
 		console.log("Puzzle: " + puzzle + ", solution: " + solution + ", difficulty: " + difficulty);
 		let obj:string = '[{"type":"classic","version":"1.0.0","selectedCell":{"r":3,"c":0},"puzzle":[';
 		for (let row:number = 0; row < sideLength; row++) {
+			obj += '[';
 			for (let col:number = 0; col < sideLength; col++) {
+				obj += '{"type":"given","entry":';
+				obj += puzzle.charAt((row*sideLength)+col);
+				obj += '}';
+				if (col < (sideLength - 1)) {
+					obj += ',';
+				}
 			}
+			obj += ']';
 		}
 		console.log(obj + "\n");
 	}
