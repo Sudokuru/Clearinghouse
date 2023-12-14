@@ -30,6 +30,7 @@ Papa.parse(file, {
 		obj += '"puzzleSolution":';
 		obj += '[';
 		for (let row:number = 0; row < sideLength; row++) {
+			obj += '[';
 			for (let col:number = 0; col < sideLength; col++) {
 				obj += solution.charAt((row*sideLength)+col);
 				if (col < (sideLength - 1)) {
@@ -42,6 +43,9 @@ Papa.parse(file, {
 			}
 		}
 		obj += '],';
+		obj += '"statistics":{"difficulty":"easy","internalDifficulty":';
+		obj += difficulty.toString();
+		obj += ',"numHintsUsed":0,"numWrongCellsPlayed":0,"score":0,"time":9},"inNoteMode":true,"actionHistory":[]}]';
 		console.log(obj + "\n");
 	}
   }
