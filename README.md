@@ -54,7 +54,7 @@ bash delete.sh
 
 # Export Pipeline (run by export.sh)
 
-1. export.sh builds sql query using environment variables or defaults
+1. export.sh builds sql query using environment variables 
 
 2. export.sh runs constructed sql query and redirects output to temp1.csv
 
