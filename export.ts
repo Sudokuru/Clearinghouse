@@ -8,7 +8,10 @@ Papa.parse(file, {
 	const colCount:int = 3;
 	let data = result.data[0];
 	for (let i:int = 0; i < data.length; i += 3) {
-		console.log("Puzzle: " + data[i] + ", solution: " + data[i+1] + ", difficulty: " + data[i+2]);
+		let puzzle = data[i]
+		let solution = data[i+1]
+		let difficulty = data[i+2]
+		console.log("Puzzle: " + puzzle + ", solution: " + solution + ", difficulty: " + difficulty);
 	}
   }
 })
