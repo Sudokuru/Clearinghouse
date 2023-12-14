@@ -26,6 +26,22 @@ Papa.parse(file, {
 			}
 			obj += ']';
 		}
+		obj += '],';
+		obj += '"puzzleSolution":';
+		obj += '[';
+		for (let row:number = 0; row < sideLength; row++) {
+			for (let col:number = 0; col < sideLength; col++) {
+				obj += solution.charAt((row*sideLength)+col);
+				if (col < (sideLength - 1)) {
+					obj += ',';
+				}
+			}
+			obj += ']'
+			if (row < (sideLength - 1)) {
+				obj += ',';
+			}
+		}
+		obj += '],';
 		console.log(obj + "\n");
 	}
   }
