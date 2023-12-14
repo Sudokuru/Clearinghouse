@@ -13,7 +13,7 @@ Papa.parse(file, {
 		let solution:string = data[i+1].trim();
 		let difficulty:number = data[i+2];
 		console.log("Puzzle: " + puzzle + ", solution: " + solution + ", difficulty: " + difficulty);
-		let obj:string = '[{"type":"classic","version":"1.0.0","selectedCell":{"r":3,"c":0},"puzzle":[';
+		let obj:string = '[{"type":"classic","version":"1.0.0","selectedCell":{"r":0,"c":0},"puzzle":[';
 		for (let row:number = 0; row < sideLength; row++) {
 			obj += '[';
 			for (let col:number = 0; col < sideLength; col++) {
@@ -43,9 +43,9 @@ Papa.parse(file, {
 			}
 		}
 		obj += '],';
-		obj += '"statistics":{"difficulty":"easy","internalDifficulty":';
+		obj += '"statistics":{"difficulty":"standard","internalDifficulty":';
 		obj += difficulty.toString();
-		obj += ',"numHintsUsed":0,"numWrongCellsPlayed":0,"score":0,"time":9},"inNoteMode":true,"actionHistory":[]}]';
+		obj += ',"numHintsUsed":0,"numWrongCellsPlayed":0,"score":0,"time":0},"inNoteMode":true,"actionHistory":[]}]';
 		console.log(obj + "\n");
 	}
   }
