@@ -47,7 +47,7 @@ Papa.parse(file, {
 			}
 		}
 		obj += '],';
-		obj += '"statistics":{"difficulty":"standard","internalDifficulty":';
+		obj += '"statistics":{"difficulty":"easy","internalDifficulty":';
 		obj += difficulty;
 		obj += ',"numHintsUsed":0,"numWrongCellsPlayed":0,"score":0,"time":0},"inNoteMode":true,"actionHistory":[]}';
 		//console.log(obj + "\n");
