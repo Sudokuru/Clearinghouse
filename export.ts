@@ -18,8 +18,15 @@ Papa.parse(file, {
 		for (let row:number = 0; row < sideLength; row++) {
 			obj += '[';
 			for (let col:number = 0; col < sideLength; col++) {
-				obj += '{"type":"given","entry":';
-				obj += puzzle.charAt((row*sideLength)+col);
+				let type:string = "given";
+				const cellValue:string = puzzle.charAt((row*sideLength)+col);
+				if (cellValue == "0"){
+					type = "value";
+				}
+				obj += '{"type":"'
+				obj += type;
+				obj += '","entry":';
+				obj += cellValue;
 				obj += '}';
 				if (col < (sideLength - 1)) {
 					obj += ',';
