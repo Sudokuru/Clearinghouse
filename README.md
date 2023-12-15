@@ -19,6 +19,14 @@
 # GENERATE_THREADS is the number of threads used during puzzle generation (in addition to main thread), defaults to 1
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 bash start.sh
 
+# Queries the DB for the number of puzzles requested with the desired difficulty values and then runs each
+# line through the export.ts script to process them into the desired format used by Sudokuru Frontend
+# Results will be written to exports.ts
+# PUZZLE_COUNT is the number of puzzles that will be exported, script will fail if not enough puzzles in DB
+# MIN_DIFFICULTY is the minimum difficulty (inclusive) of puzzles that will be considered for export
+# MAX_DIFFICULTY is the maximum difficulty (inclusive) of puzzles that will be considered for export
+PUZZLE_COUNT=2 MIN_DIFFICULTY=20 MAX_DIFFICULTY=100 bash export.sh
+
 # Exec into the DB to run SQL commands (run exit when done)
 docker exec -it sudoku-postgres psql -U postgres
 
@@ -43,3 +51,15 @@ bash delete.sh
 3. Once all the insert statements for the new puzzles have been created they are appended to puzzles.sql
 
 4. All the new insert statements in inserts.sql are executed and inserts.sql is deleted
+
+# Export Pipeline (run by export.sh)
+
+1. export.sh builds sql query using environment variables 
+
+2. export.sh runs constructed sql query and redirects output to temp1.csv
+
+3. export.sh cleans up the output and puts the new output in temp2.csv
+
+4. export.sh runs export.ts using bun and redirects the output to exports.ts
+
+5. export.ts parses temp2.csv and outputs the data in the desired format
