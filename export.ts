@@ -14,7 +14,7 @@ Papa.parse(file, {
 		let solution:string = data[i+1].trim();
 		let difficulty:string = data[i+2].trim();
 		//console.log("Puzzle: " + puzzle + ", solution: " + solution + ", difficulty: " + difficulty);
-		let obj:string = '{"type":"classic","version":"1.0.0","selectedCell":{"r":0,"c":0},"puzzle":[';
+		let obj:string = '{"type":"classic","version":"1.0.0","selectedCell":null,"puzzle":[';
 		for (let row:number = 0; row < sideLength; row++) {
 			obj += '[';
 			for (let col:number = 0; col < sideLength; col++) {
