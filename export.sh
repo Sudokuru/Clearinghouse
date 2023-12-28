@@ -1,3 +1,5 @@
+source utils.sh
+
 echo "Querying the database to find the requested puzzles..."
 
 sql_query="SELECT string_agg(CONCAT(puzzle, ', ', solution, ', ', difficulty), ', ') FROM Puzzles WHERE difficulty >= %s AND difficulty <= %s GROUP BY puzzle LIMIT %s;"
@@ -7,3 +9,4 @@ sed '1,2d' temp1.csv | sed '$d' | sed '$d' > temp2.csv # removes the first and l
 rm temp1.csv
 bun export.ts > exports.ts
 rm temp2.csv
+print_green "Finished writing puzzles to exports.ts"
