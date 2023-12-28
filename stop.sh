@@ -1,6 +1,6 @@
 source utils.sh
 
-echo "The Postgres Docker is stopping..."
+print_yellow "Postgres Docker is stopping..."
 
 SECONDS=0
 

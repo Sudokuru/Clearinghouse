@@ -1,6 +1,6 @@
 source utils.sh
 
-echo "The Postgres Docker is starting..."
+print_yellow "Starting Postgres Docker..."
 
 SECONDS=0
 if [[ -z "$GENERATE_TIME_LIMIT" ]]; then
@@ -13,7 +13,7 @@ fi
 if docker run --name sudoku-postgres -e POSTGRES_PASSWORD=sudokuru -d -p 5432:5432 postgres ; then
 	print_green "Postgres Docker started successfully in $SECONDS seconds."
 else
-	echo "sudoku-postgres already exists, attempting restart..."
+	print_yellow "sudoku-postgres already exists, attempting restart..."
 	if docker start sudoku-postgres ; then
 		print_green "Postgres Docker restarted successfully in $SECONDS seconds."
 	else

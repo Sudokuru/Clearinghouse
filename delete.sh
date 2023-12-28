@@ -2,7 +2,7 @@ source utils.sh
 
 bash stop.sh
 
-echo "The Postgres Docker is being deleted..."
+print_yellow "Postgres Docker is being deleted..."
 
 SECONDS=0
 
