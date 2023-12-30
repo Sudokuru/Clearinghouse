@@ -1,4 +1,6 @@
-echo "The Postgres Docker is starting..."
+source utils.sh
+
+print_yellow "Starting Postgres Docker..."
 
 SECONDS=0
 if [[ -z "$GENERATE_TIME_LIMIT" ]]; then
@@ -9,14 +11,13 @@ if [[ -z "$GENERATE_THREADS" ]]; then
 fi
 
 if docker run --name sudoku-postgres -e POSTGRES_PASSWORD=sudokuru -d -p 5432:5432 postgres ; then
-	echo -e "\033[32mPostgres Docker started successfully in $SECONDS seconds.\033[m"
-	echo "Postgres Docker started successfully in $SECONDS seconds."
+	print_green "Postgres Docker started successfully in $SECONDS seconds."
 else
-	echo "sudoku-postgres already exists, attempting restart..."
+	print_yellow "sudoku-postgres already exists, attempting restart..."
 	if docker start sudoku-postgres ; then
-		echo -e "\033[32mPostgres Docker restarted successfully in $SECONDS seconds.\033[m"
+		print_green "Postgres Docker restarted successfully in $SECONDS seconds."
 	else
-		echo -e "\033[31mPostgres Docker failed to start.\033[m"
+		print_red "Postgres Docker failed to start."
 		exit 1
 	fi
 fi
@@ -24,9 +25,9 @@ fi
 sleep 3 # Give time for database to spin up before executing commands in it
 
 if cat ./create-puzzles-table.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres ; then
-	echo -e "\033[32mCreated Puzzles table successfully.\033[m"
+	print_green "Created Puzzles table successfully."
 else
-	echo -e "\033[31mFailed to create Puzzles table.\033[m"
+	print_red "Failed to create Puzzles table."
 	exit 1
 fi
 
@@ -73,7 +74,7 @@ cat ./inserts.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres 
 rm inserts.sql
 
 if [[ $current_step -gt 0 ]]; then
-	echo " Added $current_step new puzzles to puzzles.sql"
+	print_green " Added $current_step new puzzles to puzzles.sql"
 else
-	echo "Finished without adding any new puzzles to puzzles.sql"
+	print_green "Finished without adding any new puzzles to puzzles.sql"
 fi
