@@ -5,5 +5,15 @@ import { getPuzzleData } from 'sudokuru';
 
 const board = process.argv[2];
 const data = getPuzzleData(board);
+const drills = data.drills;
 
-console.log("INSERT INTO Puzzles(puzzle, solution, difficulty) VALUES(\'" + board + "\', \'" + data.solution + "\', " + data.difficulty + ");");
+let sqlInsert:string = "INSERT INTO Puzzles(puzzle, solution, difficulty, ";
+sqlInsert += "naked_single_drill, hidden_single_drill, naked_pair_drill, hidden_pair_drill, ";
+sqlInsert += "pointing_pair_drill, naked_triplet_drill, hidden_triplet_drill, pointing_triplet_drill, ";
+sqlInsert += "naked_quadruplet_drill, hidden_quadruplet_drill)";
+sqlInsert += " VALUES(\'" + board + "\', \'" + data.solution + "\', " + data.difficulty;
+sqlInsert += ", " + drills[0] + ", " + drills[1] + ", " + drills[2] + ", " + drills[3];
+sqlInsert += ", " + drills[4] + ", " + drills[5] + ", " + drills[6] + ", " + drills[7];
+sqlInsert += ", " + drills[8] + ", " + drills[9] + ");";
+
+console.log(sqlInsert);
