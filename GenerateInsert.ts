@@ -15,6 +15,5 @@ sqlInsert += " VALUES(\'" + board + "\', \'" + data.solution + "\', " + data.dif
 sqlInsert += ", " + drills[0] + ", " + drills[1] + ", " + drills[2] + ", " + drills[3];
 sqlInsert += ", " + drills[4] + ", " + drills[5] + ", " + drills[6] + ", " + drills[7];
 sqlInsert += ", " + drills[8] + ", " + drills[9] + ");";
-sqlInsert += ");";
 
 console.log(sqlInsert);
