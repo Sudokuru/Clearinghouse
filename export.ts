@@ -67,10 +67,9 @@ Papa.parse(file, {
 				objs += ',';
 			}
 		}
-		if (puzzleIndex < (result.data.length - 1)) {
-			objs += ',';
-		}
+		objs += ',';
 	}
+	objs = objs.slice(0, -1); // remove trailing comma
 	objs += '];';
 	console.log(objs);
   }
