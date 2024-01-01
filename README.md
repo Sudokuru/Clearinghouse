@@ -63,3 +63,7 @@ bash delete.sh
 4. export.sh runs export.ts using bun and redirects the output to exports.ts
 
 5. export.ts parses temp2.csv and outputs the data in the desired format
+
+# Puzzles
+
+Puzzles are generated using the Sudokuru [sudoku.js fork](https://github.com/Sudokuru/sudoku.js).
