@@ -35,6 +35,9 @@ bash stop.sh
 
 # Delete Postgres DB to store puzzle data
 bash delete.sh
+
+# Generate difficutly report for puzzles in DB
+cat ./difficulty.sql | docker exec -i sudoku-postgres psql -U postgres -d postgres > difficultyReport.txt
 ```
 
 # Ingest Pipeline (run by start.sh)
