@@ -5,7 +5,8 @@ const file = fs.readFileSync('temp2.csv', "utf-8");
 
 Papa.parse(file, {
     complete: function(result) {
-	let objs = 'export const GAMES: SudokuObjectProps[] = [';
+	let objs:string = 'import { Puzzle } from \'./Puzzle.type\';\n';
+	objs += 'export const PUZZLES: Puzzle[] = [';
 	for (let puzzleIndex: number = 0; puzzleIndex < result.data.length; puzzleIndex++) {
 		const colCount:number = 3;
 		let data = result.data[puzzleIndex];
