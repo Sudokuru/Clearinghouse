@@ -75,5 +75,8 @@ Puzzles are generated using the Sudokuru [sudoku.js fork](https://github.com/Sud
 # Provided Puzzle Files
 
 - puzzles1.txt: Contains 40k mostly easy puzzles
+  Source: generated 2k each of puzzles with 42-61 inclusive givens by running generate.ts in this sudoku generator fork: https://github.com/Sudokuru/sudoku.js
 - puzzles2.txt: Contains 80k puzzles including a lot of moderate and hard ones
+  Source: subset of this: https://www.kaggle.com/datasets/radcliffe/3-million-sudoku-puzzles-with-ratings?resource=download
 - puzzles3.txt: Contains 20k puzzles mostly somewhere between easy and moderate difficulty
+  Source: subset of this: https://www.kaggle.com/datasets/rohanrao/sudoku
