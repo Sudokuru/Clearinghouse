@@ -1,4 +1,4 @@
-Based on an in depth analysis of the contents of puzzles.sql including manual solving of puzzles and recording of times along with other statistics and analysis by other solvers the following mappings of difficulty ranges to labels have been created (with over 500 puzzles included in each):
+Based on an in-depth analysis of the contents of puzzles.sql, including manual solving of puzzles and recording of times along with other statistics and analysis by other solvers, the following mappings of difficulty ranges to labels have been created (with over 500 puzzles included in each):
 
 - Novice: -33,820
 - Amateur: -20,979 through -20,967
