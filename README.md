@@ -17,7 +17,8 @@
 # Start Postgres DB, create Puzzles table to store puzzle data, and run ingest pipeline to load puzzle data
 # GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
 # GENERATE_THREADS is the number of threads used during puzzle generation (in addition to main thread), defaults to 1
-GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 bash start.sh
+# PUZZLE_FILE is the file with one sudoku puzzle string per line to ingest, defaults to puzzles1.txt
+GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 PUZZLE_FILE=puzzles1.txt bash start.sh
 
 # Queries the DB for the number of puzzles requested with the desired difficulty values and then runs each
 # line through the export.ts script to process them into the desired compact Puzzle format used by Sudokuru Frontend local database
@@ -70,3 +71,12 @@ cat ./difficulty.sql | docker exec -i sudoku-postgres psql -U postgres -d postgr
 # Puzzles
 
 Puzzles are generated using the Sudokuru [sudoku.js fork](https://github.com/Sudokuru/sudoku.js).
+
+# Provided Puzzle Files
+
+- puzzles1.txt: Contains 40k mostly easy puzzles
+  Source: generated 2k each of puzzles with 42-61 inclusive givens by running generate.ts in this sudoku generator fork: https://github.com/Sudokuru/sudoku.js
+- puzzles2.txt: Contains 80k puzzles including a lot of moderate and hard ones
+  Source: subset of this: https://www.kaggle.com/datasets/radcliffe/3-million-sudoku-puzzles-with-ratings?resource=download
+- puzzles3.txt: Contains 20k puzzles mostly somewhere between easy and moderate difficulty
+  Source: subset of this: https://www.kaggle.com/datasets/rohanrao/sudoku
