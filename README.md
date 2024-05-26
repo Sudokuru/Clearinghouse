@@ -71,3 +71,9 @@ cat ./difficulty.sql | docker exec -i sudoku-postgres psql -U postgres -d postgr
 # Puzzles
 
 Puzzles are generated using the Sudokuru [sudoku.js fork](https://github.com/Sudokuru/sudoku.js).
+
+# Provided Puzzle Files
+
+- puzzles1.txt: Contains 40k mostly easy puzzles
+- puzzles2.txt: Contains 80k puzzles including a lot of moderate and hard ones
+- puzzles3.txt: Contains 20k puzzles mostly somewhere between easy and moderate difficulty
