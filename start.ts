@@ -1,4 +1,4 @@
-import { COLORS, log } from "./utils";
+import { COLORS, log } from "./utils/logs";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
