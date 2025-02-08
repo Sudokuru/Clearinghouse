@@ -8,8 +8,9 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "@types/bun": "^1.2.2",
+    "@types/node": "^20.10.4",
     "papaparse": "^5.4.1",
-    "sudokuru": "^3.1.1",
-    "@types/node": "^20.10.4"
+    "sudokuru": "^3.1.1"
   }
 }
