@@ -28,8 +28,14 @@ GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 PUZZLE_FILE=puzzles1.txt bash start.sh
 # MAX_DIFFICULTY is the maximum difficulty (inclusive) of puzzles that will be considered for export
 PUZZLE_COUNT=2 MIN_DIFFICULTY=20 MAX_DIFFICULTY=100 bash export.sh
 
-# Exec into the DB to run SQL commands (run exit when done)
-docker exec -it sudoku-postgres psql -U postgres
+# Exec into the Redis container to run Redis commands (run exit when done)
+docker exec -it sudoku-redis redis-cli
+
+## Scan over solved puzzles
+SCAN 0 MATCH "solved:*" COUNT 1000
+
+## Get solved puzzle field values using key
+HGETALL solved:007500023850004060030102590700200010000710835080040076300620751915837042276000000
 
 # Stop Postgres DB to store puzzle data
 bash stop.sh

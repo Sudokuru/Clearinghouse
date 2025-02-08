@@ -41,6 +41,22 @@ client.on('error', err => {
 await client.connect();
 log("Successfully connected to Redis.", COLORS.GREEN);
 
+// Test hardcoding a single insertion
+await client.hSet('solved:007500023850004060030102590700200010000710835080040076300620751915837042276000000', {
+  solution: '197568423852394167634172598763285914429716835581943276348629751915837642276451389',
+  difficulty: '-15174',
+  naked_single_drill: 80,
+  hidden_single_drill: 74,
+  naked_pair_drill: -1,
+  hidden_pair_drill: -1,
+  pointing_pair_drill: 61,
+  naked_triplet_drill: -1,
+  hidden_triplet_drill: -1,
+  pointing_triplet_drill: -1,
+  naked_quadruplet_drill: -1,
+  hidden_quadruplet_drill: -1
+});
+
 await client.quit();
 log("Redis connection closed. Exiting.", COLORS.GREEN);
 
