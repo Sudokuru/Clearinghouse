@@ -1,4 +1,5 @@
 import { COLORS, log } from "./utils/logs";
+import { startRedis } from "./utils/redis";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -21,6 +22,4 @@ if (answer?.toLowerCase() !== "y") {
   process.exit(1);
 }
 
-
-log("Starting Postgres Docker...", COLORS.YELLOW);
-
+startRedis();
