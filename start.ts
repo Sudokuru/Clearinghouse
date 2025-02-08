@@ -22,7 +22,9 @@ if (answer?.toLowerCase() !== "y") {
   process.exit(1);
 }
 
-startRedis();
+if (!startRedis()) {
+  process.exit(1);
+}
 
 // TODO: Create Redis Client
 
