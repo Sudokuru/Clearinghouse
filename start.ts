@@ -1,3 +1,4 @@
+import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { startRedis } from "./utils/redis";
 
@@ -22,11 +23,24 @@ if (answer?.toLowerCase() !== "y") {
   process.exit(1);
 }
 
-if (!startRedis()) {
+// Start the Redis Docker Container
+const started = await startRedis();
+if (!started) {
   process.exit(1);
 }
 
-// TODO: Create Redis Client
+// Create Redis Client
+const client = createClient();
+
+client.on('error', err => {
+  console.error('Redis Client Error:', err);
+  process.exit(1);
+});
+
+await client.connect();
+
+await client.quit();
+log("Redis connection closed. Exiting.", COLORS.GREEN);
 
 // TODO: Ingest presolved solved puzzles into Redis
 
