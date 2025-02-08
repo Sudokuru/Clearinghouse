@@ -32,12 +32,14 @@ if (!started) {
 // Create Redis Client
 const client = createClient();
 
+// If Redis Client encounters an error log it and exit
 client.on('error', err => {
   console.error('Redis Client Error:', err);
   process.exit(1);
 });
 
 await client.connect();
+log("Successfully connected to Redis.", COLORS.GREEN);
 
 await client.quit();
 log("Redis connection closed. Exiting.", COLORS.GREEN);
