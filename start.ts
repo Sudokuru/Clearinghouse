@@ -23,3 +23,39 @@ if (answer?.toLowerCase() !== "y") {
 }
 
 startRedis();
+
+// TODO: Create Redis Client
+
+// TODO: Ingest presolved solved puzzles into Redis
+
+// TODO: Get current number of solved puzzles in Redis
+
+// TODO: Delete dead letter queue of failed to solve puzzles if it exists in Redis
+
+// TODO: Read puzzles from file onto Redis Stream
+
+// TODO: Create Redis Consumer Group to read from Stream
+
+// TODO: Get current number of pending messages on Stream
+
+// TODO: Run GENERATE_THREADS number of consumers each reading from Stream:
+//  If solved:
+//    If solved key does not already exist in Redis:
+//      Insert solved key
+//      Insert newSolved key
+//  Else if not solved:
+//    Insert failed key if one does not already exist
+//  Acknoledge message 
+
+// TODO: display progress bar every second by number of remaining pending messages
+
+// TODO: When consumers all finish delete messages from Stream
+
+// TODO: Get final number of solved puzzles in Redis
+
+// TODO: Get number of failed to solve puzzles in Redis
+
+// TODO: Display to user:
+// number of newly solved puzzles
+// total number of solved puzzles
+// total number of puzzles failed to solve
