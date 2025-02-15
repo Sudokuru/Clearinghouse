@@ -1,7 +1,7 @@
 import { createReadStream } from "fs";
 import { PuzzleFeed } from "./PuzzleFeed";
 import { createInterface } from "readline";
-import { Puzzle, PuzzleDataFields, PuzzleFieldCount } from "../types/Puzzle";
+import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleFieldCount } from "../types/Puzzle";
 import { COLORS, log } from "../utils/logs";
 
 export class CSVPuzzleFeed implements PuzzleFeed {
@@ -36,9 +36,14 @@ export class CSVPuzzleFeed implements PuzzleFeed {
       return this.next();
     }
 
-    const puzzle: Puzzle = {} as Puzzle;
+    const puzzle: Puzzle = {
+      key: values[0],
+      data: {} as PuzzleData,
+    };
+
     PuzzleDataFields.forEach((field, index) => {
-      puzzle[field] = values[index];
+      // Use index + 1 because values[0] is already used for the key.
+      puzzle.data[field] = values[index + 1];
     });
     return puzzle;
   }
