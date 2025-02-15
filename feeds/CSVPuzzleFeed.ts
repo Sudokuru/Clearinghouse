@@ -2,6 +2,7 @@ import { createReadStream } from "fs";
 import { PuzzleFeed } from "./PuzzleFeed";
 import { createInterface } from "readline";
 import { Puzzle, PuzzleDataFields, PuzzleFieldCount } from "../types/Puzzle";
+import { COLORS, log } from "../utils/logs";
 
 export class CSVPuzzleFeed implements PuzzleFeed {
   private rl: AsyncIterator<string>;
@@ -31,7 +32,7 @@ export class CSVPuzzleFeed implements PuzzleFeed {
 
     const values = line.split(',').map(val => val.trim());
     if (values.length < PuzzleFieldCount) {
-      console.warn(`Line ${this.lineNum} has fewer fields than expected.`);
+      log(`Line ${this.lineNum} has fewer fields than expected.`, COLORS.RED);
       return this.next();
     }
 
