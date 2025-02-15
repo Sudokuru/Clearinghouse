@@ -1,25 +1,29 @@
-export interface PuzzleData {
-  // 81 character puzzle solution string
-  solution: string;
-  // Integer difficulty metric as determined by Sudokuru npm package
-  difficulty: number;
+export const PuzzleDataFields: string[] = [
+  // solution: 81 character puzzle solution string
+  'solution',
+  // difficulty: Integer difficulty metric as determined by Sudokuru npm package
+  'difficulty',
   // A drill is when you can search and find exactly one occurrence of a strategy at
   // a particular point in a puzzle
   // Last occurrence of each drill when solving puzzle using nextStep function
   // from Sudokuru package repeatedly until their are that many cells filled in
   // i.e. 80 is last move
   // If drill never occurrs in puzzle then value is set to -1
-  naked_single_drill: number;
-  hidden_single_drill: number;
-  naked_pair_drill: number;
-  hidden_pair_drill: number;
-  pointing_pair_drill: number;
-  naked_triplet_drill: number;
-  hidden_triplet_drill: number;
-  pointing_triplet_drill: number;
-  naked_quadruplet_drill: number;
-  hidden_quadruplet_drill: number;
-}
+  'naked_single_drill',
+  'hidden_single_drill',
+  'naked_pair_drill',
+  'hidden_pair_drill',
+  'pointing_pair_drill',
+  'naked_triplet_drill',  
+  'hidden_triplet_drill',
+  'pointing_triplet_drill',  
+  'naked_quadruplet_drill',
+  'hidden_quadruplet_drill'
+];
+
+export type PuzzleData = {
+    [K in typeof PuzzleDataFields[number]]: any;
+};
 
 export interface Puzzle {
   // The Redis key, structured as prefix (e.g. 'solved:') followed by 81 character
@@ -27,3 +31,6 @@ export interface Puzzle {
   key: string;
   data: PuzzleData;
 }
+
+// Added 1 to account for puzzle string (Redis key)
+export const PuzzleFieldCount: number = PuzzleDataFields.length + 1;
