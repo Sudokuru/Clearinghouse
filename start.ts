@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
-import { startRedis } from "./utils/redis";
+import { connectToRedis, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
@@ -38,14 +38,7 @@ if (!started) {
 // Create Redis Client
 const client = createClient();
 
-// If Redis Client encounters an error log it and exit
-client.on('error', err => {
-  console.error('Redis Client Error:', err);
-  process.exit(1);
-});
-
-await client.connect();
-log("Successfully connected to Redis.", COLORS.GREEN);
+connectToRedis(client);
 
 // Ingest presolved solved puzzles into Redis
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/puzzles.csv");

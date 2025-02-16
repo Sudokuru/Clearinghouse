@@ -44,3 +44,25 @@ export async function startRedis(): Promise<boolean> {
     return false;
   }
 }
+
+const RETRY_COUNT: number = 5;
+const RETRY_DELAY: number = 1000; // milliseconds
+
+/**
+ * Attempts to connect to Redis using retries
+ * Throws error if fails to connect
+ * Retries usually only needed if docker is not already running
+ */
+export async function connectToRedis(client: any): Promise<void> {
+  for (let i = 0; i < RETRY_COUNT; i++) {
+    try {
+      await client.connect();
+      log("Successfully connected to Redis.", COLORS.GREEN);
+      return;
+    } catch (err) {
+      log(`Connection attempt ${i + 1} failed. Retrying in ${RETRY_DELAY}ms...`, COLORS.YELLOW);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+    }
+  }
+  throw new Error("Could not connect to Redis after several retries.");
+}
