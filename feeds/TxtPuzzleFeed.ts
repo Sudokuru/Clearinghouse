@@ -1,5 +1,4 @@
 import { Puzzle, PuzzleData } from "../types/Puzzle";
-import { COLORS, log } from "../utils/logs";
 import { getIterator, PuzzleFeed } from "./PuzzleFeed";
 
 export class TxtPuzzleFeed implements PuzzleFeed {
