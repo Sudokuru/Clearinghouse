@@ -1,6 +1,8 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { startRedis } from "./utils/redis";
+import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
+import { Puzzle } from "./types/Puzzle";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -41,26 +43,16 @@ client.on('error', err => {
 await client.connect();
 log("Successfully connected to Redis.", COLORS.GREEN);
 
-// Test hardcoding a single insertion
-await client.hSet('solved:007500023850004060030102590700200010000710835080040076300620751915837042276000000', {
-  solution: '197568423852394167634172598763285914429716835581943276348629751915837642276451389',
-  difficulty: '-15174',
-  naked_single_drill: 80,
-  hidden_single_drill: 74,
-  naked_pair_drill: -1,
-  hidden_pair_drill: -1,
-  pointing_pair_drill: 61,
-  naked_triplet_drill: -1,
-  hidden_triplet_drill: -1,
-  pointing_triplet_drill: -1,
-  naked_quadruplet_drill: -1,
-  hidden_quadruplet_drill: -1
-});
+// Ingest presolved solved puzzles into Redis
+const presolved: CSVPuzzleFeed = new CSVPuzzleFeed("data/puzzles.csv");
+let puzzle: Puzzle | null;
+while ((puzzle = await presolved.next()) !== null) {
+  await client.hSet(puzzle.key, puzzle.data);
+}
 
 await client.quit();
 log("Redis connection closed. Exiting.", COLORS.GREEN);
 
-// TODO: Ingest presolved solved puzzles into Redis
 
 // TODO: Get current number of solved puzzles in Redis
 
