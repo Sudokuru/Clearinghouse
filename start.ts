@@ -93,3 +93,5 @@ log("Redis connection closed. Exiting.", COLORS.GREEN);
 // number of newly solved puzzles
 // total number of solved puzzles
 // total number of puzzles failed to solve
+
+// TODO: change default puzzle file to None in which case just load presolved and skip unsolved logic for quit start
