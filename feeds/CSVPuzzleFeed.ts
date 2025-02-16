@@ -1,6 +1,4 @@
-import { createReadStream } from "fs";
-import { PuzzleFeed } from "./PuzzleFeed";
-import { createInterface } from "readline";
+import { getIterator, PuzzleFeed } from "./PuzzleFeed";
 import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleFieldCount } from "../types/Puzzle";
 import { COLORS, log } from "../utils/logs";
 
@@ -9,12 +7,7 @@ export class CSVPuzzleFeed implements PuzzleFeed {
   private lineNum: number = 0;
   
   constructor(csvFilePath: string) {
-    const stream = createReadStream(csvFilePath);
-    const rlInterface = createInterface({
-      input: stream,
-      crlfDelay: Infinity,
-    });
-    this.rl = rlInterface[Symbol.asyncIterator]();
+    this.rl = getIterator(csvFilePath);
   }
 
   async next(): Promise<Puzzle | null> {
