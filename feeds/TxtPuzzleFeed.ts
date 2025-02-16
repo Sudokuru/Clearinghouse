@@ -21,7 +21,7 @@ export class TxtPuzzleFeed implements PuzzleFeed {
     }
 
     return {
-        key: 'unsolved:' + line,
+        key: line,
         data: {} as PuzzleData
     } as Puzzle;
   }

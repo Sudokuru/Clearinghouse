@@ -3,6 +3,10 @@ import { COLORS, log } from "./utils/logs";
 import { startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
+import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
+
+// Constants
+const UNSOLVED_STREAM: string = "unsolved";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -44,21 +48,30 @@ await client.connect();
 log("Successfully connected to Redis.", COLORS.GREEN);
 
 // Ingest presolved solved puzzles into Redis
-const presolved: CSVPuzzleFeed = new CSVPuzzleFeed("data/puzzles.csv");
+const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/puzzles.csv");
 let puzzle: Puzzle | null;
-while ((puzzle = await presolved.next()) !== null) {
+while ((puzzle = await solved.next()) !== null) {
   await client.hSet(puzzle.key, puzzle.data);
 }
-
-await client.quit();
-log("Redis connection closed. Exiting.", COLORS.GREEN);
-
 
 // TODO: Get current number of solved puzzles in Redis
 
 // TODO: Delete dead letter queue of failed to solve puzzles if it exists in Redis
 
-// TODO: Read puzzles from file onto Redis Stream
+// Delete unsolved puzzles stream
+await client.del(UNSOLVED_STREAM);
+
+// Read puzzles from file onto Redis Stream
+const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + puzzleFile);
+while ((puzzle = await unsolved.next()) !== null) {
+  await client.xAdd(UNSOLVED_STREAM, "*", {
+    puzzleKey: puzzle.key
+  });
+}
+
+await client.quit();
+log("Redis connection closed. Exiting.", COLORS.GREEN);
+
 
 // TODO: Create Redis Consumer Group to read from Stream
 
