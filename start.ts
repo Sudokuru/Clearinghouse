@@ -7,6 +7,7 @@ import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 
 // Constants
 const UNSOLVED_STREAM: string = "unsolved";
+const UNSOLVED_CONSUMER_GROUP: string = "unsolved:group";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -62,13 +63,14 @@ while ((puzzle = await unsolved.next()) !== null) {
   });
 }
 
+// TODO: Get current number of pending messages on Stream
+
+// Create Redis Consumer Group to read from Stream
+await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTREAM: true });
+
 await client.quit();
 log("Redis connection closed. Exiting.", COLORS.GREEN);
 
-
-// TODO: Create Redis Consumer Group to read from Stream
-
-// TODO: Get current number of pending messages on Stream
 
 // TODO: Run GENERATE_THREADS number of consumers each reading from Stream:
 //  If solved:
