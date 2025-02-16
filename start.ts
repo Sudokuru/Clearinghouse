@@ -4,10 +4,8 @@ import { connectToRedis, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
+import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/UnsolvedConsumer";
 
-// Constants
-const UNSOLVED_STREAM: string = "unsolved";
-const UNSOLVED_CONSUMER_GROUP: string = "unsolved:group";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -68,18 +66,10 @@ while ((puzzle = await unsolved.next()) !== null) {
 // Create Redis Consumer Group to read from Stream
 await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTREAM: true });
 
+// TODO: Run GENERATE_THREADS number of consumers each reading from Stream:
+
 await client.quit();
 log("Redis connection closed. Exiting.", COLORS.GREEN);
-
-
-// TODO: Run GENERATE_THREADS number of consumers each reading from Stream:
-//  If solved:
-//    If solved key does not already exist in Redis:
-//      Insert solved key
-//      Insert newSolved key
-//  Else if not solved:
-//    Insert failed key if one does not already exist
-//  Acknoledge message 
 
 // TODO: display progress bar every second by number of remaining pending messages
 
