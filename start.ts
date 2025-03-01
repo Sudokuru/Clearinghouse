@@ -37,7 +37,7 @@ if (!started) {
 // Create Redis Client
 const client = createClient();
 
-connectToRedis(client);
+await connectToRedis(client);
 
 // Ingest presolved solved puzzles into Redis
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/puzzles.csv");

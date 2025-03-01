@@ -81,11 +81,26 @@ const RETRY_DELAY: number = 1000; // milliseconds
 export async function connectToRedis(client: any): Promise<void> {
   for (let i = 0; i < RETRY_COUNT; i++) {
     try {
-      await client.connect();
+      await Promise.race([
+        client.connect(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Connection timed out")), RETRY_DELAY)
+        )
+      ]);
       log("Successfully connected to Redis.", COLORS.GREEN);
       return;
-    } catch (err) {
-      log(`Connection attempt ${i + 1} failed. Retrying in ${RETRY_DELAY}ms...`, COLORS.YELLOW);
+    } catch (err: any) {
+      log(`Connection attempt ${i + 1} failed: ${err.message}. Retrying in ${RETRY_DELAY}ms...`, COLORS.YELLOW);
+
+      // If the error indicates that the socket is already open, disconnect it.
+      if (err.message.includes("Socket already opened")) {
+        try {
+          await client.disconnect();
+          log("Disconnected the lingering socket.", COLORS.YELLOW);
+        } catch (disconnectErr: any) {
+          log(`Error disconnecting socket: ${disconnectErr.message}`, COLORS.RED);
+        }
+      }
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
     }
   }
