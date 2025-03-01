@@ -1,10 +1,9 @@
 import { createClient } from "redis";
 import { connectToRedis } from "../utils/redis";
 import { COLORS, log } from "../utils/logs";
+import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
 
 // Constants
-export const UNSOLVED_CONSUMER_GROUP: string = "unsolved:group";
-export const UNSOLVED_STREAM: string = "unsolved";
 const BATCH_SIZE: number = 10;
 const CONSUMER_THREAD: string = process.env.CONSUMER_THREAD ?? "";
 

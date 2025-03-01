@@ -4,7 +4,7 @@ import { connectToRedis, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
-import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/UnsolvedConsumer";
+import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 
 
 // Assign environment variables to variables with fallback defaults.

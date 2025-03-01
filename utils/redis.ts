@@ -45,6 +45,31 @@ export async function startRedis(): Promise<boolean> {
   }
 }
 
+/**
+ * Stops the Redis Docker container
+ * Returns true if the container stopped successfully, otherwise false.
+ */
+export async function stopRedis(): Promise<boolean> {
+  log("Stopping Redis Docker...", COLORS.YELLOW);
+  const startTime = Date.now();
+
+  // Try to stop Redis Docker container.
+  const dockerStop = Bun.spawn({
+    cmd: ["docker", "stop", CONTAINER_NAME],
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  const exitCode = await dockerStop.exited;
+
+  if (exitCode === SUCCESS_CODE) {
+    const seconds = ((Date.now() - startTime) / 1000).toFixed(1);
+    log(`Redis Docker stopped successfully in ${seconds} seconds.`, COLORS.GREEN);
+    return true;
+  }
+  return false;
+}
+
 const RETRY_COUNT: number = 5;
 const RETRY_DELAY: number = 1000; // milliseconds
 
