@@ -21,9 +21,26 @@ if (!clearOutput.includes(SUCCESS_CONNECT_MSG) ||
   process.exit(1);
 }
 
-// TODO: set generate time limit
+const timeLimit: string = "5"; // TODO: may need to raise this if not enough for consumers to go through > 1 batch
+const threads: string = "2";
+const solvedPuzzleFile: string = "tests.csv";
 
-// TODO: Run start.ts and verify all outputs and Redis contents
+const startRun = Bun.spawn({
+  cmd: ["sh", "-c", "echo 'y' | bun start.ts"],
+  env: {
+    ...process.env, // Preserve existing env vars
+    GENERATE_TIME_LIMIT: timeLimit,
+    GENERATE_THREADS: threads,
+    SOLVED_PUZZLE_FILE: solvedPuzzleFile,
+  },
+  stdout: "pipe",
+});
+await startRun.exited;
+const startOutput: string = await new Response(startRun.stdout as ReadableStream<Uint8Array>).text();
+
+console.log("Temp logging this to make tests: `" + startOutput + "`");
+
+// TODO: Verify all outputs and Redis contents from startRun
 
 // TODO: Run start.ts and verify saying n/N exits early
 
