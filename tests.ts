@@ -1,4 +1,5 @@
-import { startRedis } from "./utils/redis";
+import { COLORS, log } from "./utils/logs";
+import { CLEAR_REDIS_MSG, clearRedis, QUIT_REDIS_MSG, startRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -7,14 +8,18 @@ if (!started) {
 }
 
 // Clear Redis Database
-const clearDbRun = Bun.spawn({
-  cmd: ["bun", "clear.ts"],
-  stdout: "inherit",
-  stderr: "inherit",
-});
+const clearDbRun = await clearRedis();
 
+const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStream<Uint8Array>).text();
 
-// TODO: Capture clearDbRun output and verify it is successful
+if (!clearOutput.includes(SUCCESS_CONNECT_MSG) ||
+    !clearOutput.includes(CLEAR_REDIS_MSG) ||
+    !clearOutput.includes(QUIT_REDIS_MSG)) {
+  log("❌ Clear output test failed: expected log message not found in captured logs.", COLORS.RED);
+  log("Captured logs: `" + clearOutput + "`");
+  await clearRedis();
+  process.exit(1);
+}
 
 // TODO: Add env var to use different solved puzzles csv to start.ts
 // TODO: Create test solved puzzles csv
@@ -29,3 +34,6 @@ const clearDbRun = Bun.spawn({
 // TODO: As add functionality to start.ts, UnsolvedConsumer.ts add to this test
 
 // TODO: As converting export and difficulty report scripts run and test them here too
+
+// Cleanup
+await clearRedis();

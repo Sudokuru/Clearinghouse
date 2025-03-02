@@ -1,7 +1,13 @@
+import { Subprocess } from "bun";
 import { COLORS, log } from "./logs";
 
 const CONTAINER_NAME = "sudoku-redis";
 const SUCCESS_CODE = 0;
+const RETRY_COUNT: number = 5;
+const RETRY_DELAY: number = 1000; // milliseconds
+export const SUCCESS_CONNECT_MSG = "Successfully connected to Redis.";
+export const CLEAR_REDIS_MSG = "🧹 Cleared the Redis Database 🗑️";
+export const QUIT_REDIS_MSG = "Redis connection closed. Exiting.";
 
 /**
  * Starts the Redis Docker container.
@@ -70,9 +76,6 @@ export async function stopRedis(): Promise<boolean> {
   return false;
 }
 
-const RETRY_COUNT: number = 5;
-const RETRY_DELAY: number = 1000; // milliseconds
-
 /**
  * Attempts to connect to Redis using retries
  * Throws error if fails to connect
@@ -87,7 +90,7 @@ export async function connectToRedis(client: any): Promise<void> {
           setTimeout(() => reject(new Error("Connection timed out")), RETRY_DELAY)
         )
       ]);
-      log("Successfully connected to Redis.", COLORS.GREEN);
+      log(SUCCESS_CONNECT_MSG, COLORS.GREEN);
       return;
     } catch (err: any) {
       log(`Connection attempt ${i + 1} failed: ${err.message}. Retrying in ${RETRY_DELAY}ms...`, COLORS.YELLOW);
@@ -105,4 +108,16 @@ export async function connectToRedis(client: any): Promise<void> {
     }
   }
   throw new Error("Could not connect to Redis after several retries.");
+}
+
+/**
+ * Clears the Redis database
+ */
+export async function clearRedis(): Promise<Subprocess> {
+  const clearRun = Bun.spawn({
+    cmd: ["bun", "clear.ts"],
+    stdout: "pipe",
+  });
+  await clearRun.exited;
+  return clearRun;
 }

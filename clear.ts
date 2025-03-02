@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { connectToRedis } from "./utils/redis";
+import { CLEAR_REDIS_MSG, connectToRedis, QUIT_REDIS_MSG } from "./utils/redis";
 import { COLORS, log } from "./utils/logs";
 
 // Create Redis Client
@@ -9,7 +9,7 @@ await connectToRedis(client);
 
 // Clear the currently selected database (which is all Clearinghouse uses)
 await client.flushDb();
-log("🧹 Cleared the Redis Database 🗑️", COLORS.GREEN);
+log(CLEAR_REDIS_MSG, COLORS.GREEN);
 
 await client.quit();
-log("Redis connection closed. Exiting.", COLORS.GREEN);
+log(QUIT_REDIS_MSG, COLORS.GREEN);

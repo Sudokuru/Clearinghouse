@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
-import { connectToRedis, startRedis } from "./utils/redis";
+import { connectToRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
@@ -69,7 +69,7 @@ await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTR
 // TODO: Run GENERATE_THREADS number of consumers each reading from Stream:
 
 await client.quit();
-log("Redis connection closed. Exiting.", COLORS.GREEN);
+log(QUIT_REDIS_MSG, COLORS.GREEN);
 
 // TODO: display progress bar every second by number of remaining pending messages
 
