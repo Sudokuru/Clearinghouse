@@ -44,7 +44,7 @@ console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // TODO: Run start.ts and verify saying n/N exits early
 
-// TODO: Create GitHub Pipeline PR/Merge Job to run this test file
+// TODO: Create GitHub Pipeline PR/Merge Job to run this test file and pass if final log outputted
 
 // TODO: As add functionality to start.ts, UnsolvedConsumer.ts add to this test
 
@@ -52,3 +52,5 @@ console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // Cleanup
 await clearRedis();
+
+log("✅ Tests passed successfully!", COLORS.GREEN);
