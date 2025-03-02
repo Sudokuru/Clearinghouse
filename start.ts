@@ -4,20 +4,22 @@ import { connectToRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
-import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_PUZZLES_FILE, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
 const generateTimeLimit: number = parseInt(process.env.GENERATE_TIME_LIMIT ?? "60", BASE);
 const generateThreads: number = parseInt(process.env.GENERATE_THREADS ?? "1", BASE);
-const puzzleFile: string = process.env.PUZZLE_FILE ?? "puzzles1.txt";
+const unsolvedPuzzleFile: string = process.env.UNSOLVED_PUZZLE_FILE ?? "puzzles1.txt";
+const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
 // Log config values
 log("Configuration Values:");
 log(`Generate Time Limit: ${generateTimeLimit}`);
 log(`Generate Threads: ${generateThreads}`);
-log(`Puzzle File: ${puzzleFile}`);
+log(`Unsolved Puzzle File: ${unsolvedPuzzleFile}`);
+log(`Solved Puzzle File: ${solvedPuzzleFile}`);
 
 // Prompt the user to confirm the configuration.
 const answer = prompt("\nAre these values correct? (y/n): ");
@@ -40,7 +42,7 @@ const client = createClient();
 await connectToRedis(client);
 
 // Ingest presolved solved puzzles into Redis
-const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/puzzles.csv");
+const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 while ((puzzle = await solved.next()) !== null) {
   await client.hSet(puzzle.key, puzzle.data);
@@ -54,7 +56,7 @@ while ((puzzle = await solved.next()) !== null) {
 await client.del(UNSOLVED_STREAM);
 
 // Read puzzles from file onto Redis Stream
-const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + puzzleFile);
+const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 while ((puzzle = await unsolved.next()) !== null) {
   await client.xAdd(UNSOLVED_STREAM, "*", {
     puzzleKey: puzzle.key

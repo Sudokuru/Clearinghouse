@@ -23,7 +23,7 @@ async function processPuzzle(puzzle: string) {
   //  If solved:
   //    If solved key does not already exist in Redis:
   //      Insert solved key
-  //      Insert newSolved key (can read these in start.ts after consumers finish and append to puzzles.csv)
+  //      Insert newSolved key (can read these in start.ts after consumers finish and append to solved puzzles csv)
   //  Else if not solved:
   //    Insert failed key
 }

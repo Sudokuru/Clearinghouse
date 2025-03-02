@@ -21,7 +21,6 @@ if (!clearOutput.includes(SUCCESS_CONNECT_MSG) ||
   process.exit(1);
 }
 
-// TODO: Add env var to use different solved puzzles csv to start.ts
 // TODO: Create test solved puzzles csv
 // TODO: Create unsolved test txt
 
