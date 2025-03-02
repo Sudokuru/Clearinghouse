@@ -29,6 +29,7 @@ async function processPuzzle(puzzle: string) {
 }
 
 let unsolved;
+// TODO: add to while a check if GENERATE_TIME_LIMIT has been exceeded
 while ((unsolved = await client.xReadGroup(
   UNSOLVED_CONSUMER_GROUP,
   CONSUMER_THREAD,
