@@ -21,8 +21,7 @@ if (!clearOutput.includes(SUCCESS_CONNECT_MSG) ||
   process.exit(1);
 }
 
-// TODO: Create test solved puzzles csv
-// TODO: Create unsolved test txt
+// TODO: set generate time limit
 
 // TODO: Run start.ts and verify all outputs and Redis contents
 
