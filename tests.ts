@@ -1,5 +1,6 @@
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, QUIT_REDIS_MSG, startRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
+import { assertOutputContains } from "./utils/testing";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -12,14 +13,7 @@ const clearDbRun = await clearRedis();
 
 const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStream<Uint8Array>).text();
 
-if (!clearOutput.includes(SUCCESS_CONNECT_MSG) ||
-    !clearOutput.includes(CLEAR_REDIS_MSG) ||
-    !clearOutput.includes(QUIT_REDIS_MSG)) {
-  log("❌ Clear output test failed: expected log message not found in captured logs.", COLORS.RED);
-  log("Captured logs: `" + clearOutput + "`");
-  await clearRedis();
-  process.exit(1);
-}
+await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "Clear output");
 
 const timeLimit: string = "5"; // TODO: may need to raise this if not enough for consumers to go through > 1 batch
 const threads: string = "2";
@@ -38,17 +32,16 @@ const startRun = Bun.spawn({
 await startRun.exited;
 const startOutput: string = await new Response(startRun.stdout as ReadableStream<Uint8Array>).text();
 
-if (!startOutput.includes(`Generate Time Limit: ${timeLimit}`) ||
-    !startOutput.includes(`Generate Threads: ${threads}`) ||
-    !startOutput.includes('Unsolved Puzzle File: puzzles1.txt') ||
-    !startOutput.includes(`Solved Puzzle File: ${solvedPuzzleFile}`) ||
-    !startOutput.includes('Are these values correct? (y/n):')) {
-  log("❌ Start output config test failed: expected log message not found in captured logs.", COLORS.RED);
-  log("Captured logs: `" + startOutput + "`");
-  await clearRedis();
-  process.exit(1);
-}
+const expectedConfigOutput: string[] = [
+  `Generate Time Limit: ${timeLimit}`,
+  `Generate Threads: ${threads}`,
+  'Unsolved Puzzle File: puzzles1.txt',
+  `Solved Puzzle File: ${solvedPuzzleFile}`,
+  'Are these values correct? (y/n):'
+]
 
+await assertOutputContains(startOutput, expectedConfigOutput, "Start config");
+    
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // TODO: Verify all outputs and Redis contents from startRun
