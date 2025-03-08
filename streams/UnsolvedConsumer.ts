@@ -6,9 +6,15 @@ import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
 // Constants
 const BATCH_SIZE: number = 10;
 const CONSUMER_THREAD: string = process.env.CONSUMER_THREAD ?? "";
+const CUTOFF_TIME: number = Number(process.env.START_TIME);
 
 if (!CONSUMER_THREAD) {
   log("Failed to access consumer thread name.", COLORS.RED);
+  process.exit(1);
+}
+
+if (Number.isNaN(CUTOFF_TIME)) {
+  log("Failed to access cutoff time.", COLORS.RED);
   process.exit(1);
 }
 
@@ -29,7 +35,6 @@ async function processPuzzle(puzzle: string) {
 }
 
 let unsolved;
-// TODO: add to while a check if GENERATE_TIME_LIMIT has been exceeded
 while ((unsolved = await client.xReadGroup(
   UNSOLVED_CONSUMER_GROUP,
   CONSUMER_THREAD,
@@ -43,7 +48,7 @@ while ((unsolved = await client.xReadGroup(
   for (const [streamKey, messages] of unsolved) {
     for (const [messageId, fieldValues] of messages) {
       // fieldValues is flat array of field/values so should be [puzzleKey, <puzzle.key>, ...]
-      for (let i: number = 0; i < fieldValues.length; i += 2) {
+      for (let i: number = 0; i < fieldValues.length && Date.now() < CUTOFF_TIME; i += 2) {
         await processPuzzle(fieldValues[i + 1]);
       }
       await client.xAck(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, messageId);
