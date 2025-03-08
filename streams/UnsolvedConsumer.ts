@@ -1,20 +1,38 @@
 import { createClient } from "redis";
 import { connectToRedis } from "../utils/redis";
-import { COLORS, log } from "../utils/logs";
+import { log } from "../utils/logs";
 import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
 
 // Constants
 const BATCH_SIZE: number = 10;
 const CONSUMER_THREAD: string = process.env.CONSUMER_THREAD ?? "";
 const CUTOFF_TIME: number = Number(process.env.START_TIME);
+const LOG_FILE_PREFIX: string = "streams/logs/";
+const LOG_FILE_POSTFIX: string = ".log";
+const LOG_FILE: string = LOG_FILE_PREFIX + CONSUMER_THREAD + LOG_FILE_POSTFIX;
+const ERROR_LOG_FILE: string = LOG_FILE_PREFIX + "error" + LOG_FILE_POSTFIX;
+
+/**
+ * Helper function which directs logs to proper consumer log file
+ * @param message - message to lod
+ * @param error - flag which if passed directs logs to error.log files instead of normal
+ * ${consumer number}.log file
+ */
+function logf(message: string, error?: boolean): void {
+  if (!error) {
+    log(message, undefined, LOG_FILE);
+  } else {
+    log(message, undefined, ERROR_LOG_FILE);
+  }
+}
 
 if (!CONSUMER_THREAD) {
-  log("Failed to access consumer thread name.", COLORS.RED);
+  logf("Failed to access consumer thread name.", true);
   process.exit(1);
 }
 
 if (Number.isNaN(CUTOFF_TIME)) {
-  log("Failed to access cutoff time.", COLORS.RED);
+  logf("Failed to access cutoff time.", true);
   process.exit(1);
 }
 
@@ -23,7 +41,7 @@ const client = createClient();
 
 connectToRedis(client);
 
-log("Consumer thread " + CONSUMER_THREAD + " is starting to consume unsolved puzzles...");
+logf("Consumer thread " + CONSUMER_THREAD + " is starting to consume unsolved puzzles...");
 
 async function processPuzzle(puzzle: string) {
   //  If solved:
