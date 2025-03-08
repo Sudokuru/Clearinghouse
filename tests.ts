@@ -13,7 +13,7 @@ const clearDbRun = await clearRedis();
 
 const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStream<Uint8Array>).text();
 
-await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "Clear output");
+await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "clear.ts");
 
 const timeLimit: string = "5"; // TODO: may need to raise this if not enough for consumers to go through > 1 batch
 const threads: string = "2";
@@ -40,8 +40,9 @@ const expectedConfigOutput: string[] = [
   'Are these values correct? (y/n):'
 ]
 
-await assertOutputContains(startOutput, expectedConfigOutput, "Start config");
-    
+await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config");
+await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection");
+
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // TODO: Verify all outputs and Redis contents from startRun
