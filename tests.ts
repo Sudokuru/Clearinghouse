@@ -38,6 +38,17 @@ const startRun = Bun.spawn({
 await startRun.exited;
 const startOutput: string = await new Response(startRun.stdout as ReadableStream<Uint8Array>).text();
 
+if (!startOutput.includes(`Generate Time Limit: ${timeLimit}`) ||
+    !startOutput.includes(`Generate Threads: ${threads}`) ||
+    !startOutput.includes('Unsolved Puzzle File: puzzles1.txt') ||
+    !startOutput.includes(`Solved Puzzle File: ${solvedPuzzleFile}`) ||
+    !startOutput.includes('Are these values correct? (y/n):')) {
+  log("❌ Start output config test failed: expected log message not found in captured logs.", COLORS.RED);
+  log("Captured logs: `" + startOutput + "`");
+  await clearRedis();
+  process.exit(1);
+}
+
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // TODO: Verify all outputs and Redis contents from startRun
