@@ -13,7 +13,7 @@ export enum COLORS {
  * Otherwise, it will log plain text.
  * @param message - The message to log.
  * @param color - Optional color from the COLORS enum.
- * @param file - Optional file to write log to, creates if does not exist else appends.
+ * @param file - Optional file to write log to, creates if does not exist else appends. Ignores color.
  */
 export function log(message: string, color?: COLORS, file?: string): void {
   if (file) {
@@ -23,4 +23,4 @@ export function log(message: string, color?: COLORS, file?: string): void {
   } else {
     console.log(`[Clearinghouse] ${message}`);
   }
-}  
+}
