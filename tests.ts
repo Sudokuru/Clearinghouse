@@ -22,6 +22,7 @@ const solvedPuzzleFile: string = "tests.csv";
 const startRun = Bun.spawn({
   cmd: ["sh", "-c", "echo 'y' | bun start.ts"],
   env: {
+    ...process.env, // preserve env
     GENERATE_TIME_LIMIT: timeLimit,
     GENERATE_THREADS: threads,
     SOLVED_PUZZLE_FILE: solvedPuzzleFile,

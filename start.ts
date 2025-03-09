@@ -55,6 +55,9 @@ while ((puzzle = await solved.next()) !== null) {
 // Delete unsolved puzzles stream
 await client.del(UNSOLVED_STREAM);
 
+// Create Redis Consumer Group to read from Stream
+await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTREAM: true });
+
 // Read puzzles from file onto Redis Stream
 const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 while ((puzzle = await unsolved.next()) !== null) {
@@ -65,10 +68,33 @@ while ((puzzle = await unsolved.next()) !== null) {
 
 // TODO: Get current number of pending messages on Stream
 
-// Create Redis Consumer Group to read from Stream
-await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTREAM: true });
+// Delete old consumer log files before generating new ones
+const clearLogs = Bun.spawn({
+  cmd: ["bash", "-c", "rm -f streams/logs/*.log"],
+  stdout: "pipe",
+});
+await clearLogs.exited;
 
-// TODO: Run GENERATE_THREADS number of consumers each reading from Stream:
+// Run GENERATE_THREADS number of consumers each reading from Stream
+const cutoffTime = Date.now() + (generateTimeLimit * 1000);
+for (let i: number = 0; i < generateThreads; i++) {
+  Bun.spawn({
+    cmd: ["bun", "streams/UnsolvedConsumer.ts"],
+    env: {
+      ...process.env, // preserve env so have bun in $PATH
+      CONSUMER_THREAD: i.toString(),
+      CUTOFF_TIME:  cutoffTime.toString(),
+    },
+    stdout: "pipe",
+  });
+}
+
+// Wait until unsolved puzzle stream is empty or time limit has been exceeded to continue
+let remainingUnsolved: number;
+while ((remainingUnsolved = await client.xLen(UNSOLVED_STREAM)) > 0 && Date.now() < cutoffTime) {
+  log("Solving puzzles...");
+  await Bun.sleep(1000);
+}
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
