@@ -5,6 +5,7 @@ import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 import { DEFAULT_SOLVED_PUZZLES_FILE, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
+import { Subprocess } from "bun";
 
 
 // Assign environment variables to variables with fallback defaults.
@@ -66,7 +67,8 @@ while ((puzzle = await unsolved.next()) !== null) {
   });
 }
 
-// TODO: Get current number of pending messages on Stream
+// Get current number of entries on unsolved stream
+const totalToSolve: number = await client.xLen(UNSOLVED_STREAM);
 
 // Delete old consumer log files before generating new ones
 const clearLogs = Bun.spawn({
@@ -77,8 +79,9 @@ await clearLogs.exited;
 
 // Run GENERATE_THREADS number of consumers each reading from Stream
 const cutoffTime = Date.now() + (generateTimeLimit * 1000);
+const processes: Subprocess<"ignore", "pipe", "inherit">[] = [];
 for (let i: number = 0; i < generateThreads; i++) {
-  Bun.spawn({
+  processes.push(Bun.spawn({
     cmd: ["bun", "streams/UnsolvedConsumer.ts"],
     env: {
       ...process.env, // preserve env so have bun in $PATH
@@ -86,20 +89,17 @@ for (let i: number = 0; i < generateThreads; i++) {
       CUTOFF_TIME:  cutoffTime.toString(),
     },
     stdout: "pipe",
-  });
+  }));
 }
 
-// Wait until unsolved puzzle stream is empty or time limit has been exceeded to continue
-let remainingUnsolved: number;
-while ((remainingUnsolved = await client.xLen(UNSOLVED_STREAM)) > 0 && Date.now() < cutoffTime) {
-  log("Solving puzzles...");
-  await Bun.sleep(1000);
+log("Solving puzzles...");
+for (const proc of processes) {
+  await proc.exited;
 }
+log("Finished solving puzzles.", COLORS.GREEN);
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
-
-// TODO: display progress bar every second by number of remaining pending messages
 
 // TODO: When consumers all finish delete messages from Stream
 
