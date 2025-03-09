@@ -111,5 +111,6 @@ log(QUIT_REDIS_MSG, COLORS.GREEN);
 // number of newly solved puzzles
 // total number of solved puzzles
 // total number of puzzles failed to solve
+// total number of puzzles ran out of time to solve
 
 // TODO: change default puzzle file to None in which case just load presolved and skip unsolved logic for quit start
