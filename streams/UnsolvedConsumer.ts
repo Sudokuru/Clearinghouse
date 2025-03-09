@@ -70,6 +70,7 @@ while ((unsolved = await client.xReadGroup(
   for (const stream of unsolved) {
     //logf(`Starting to process ${stream.name} stream.`);
     for (const messageObj of stream.messages) {
+      if (Date.now() >= CUTOFF_TIME) break;
       await processPuzzle(messageObj.message.puzzleKey);
       //logf(`Processed puzzle ${messageObj.message.puzzleKey}`);
       await client.xAck(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, messageObj.id);
