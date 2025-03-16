@@ -2,6 +2,7 @@ import { createClient } from "redis";
 import { connectToRedis, QUIT_REDIS_MSG } from "../utils/redis";
 import { log } from "../utils/logs";
 import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
+import { PuzzleKey } from "../types/Puzzle";
 
 // Constants
 const BATCH_SIZE: number = 10;
@@ -45,6 +46,11 @@ connectToRedis(client);
 logf("Consumer thread " + CONSUMER_THREAD + " is starting to consume unsolved puzzles...");
 
 async function processPuzzle(puzzle: string) {
+  const alreadySolved = await client.exists(new PuzzleKey(puzzle, true).toString());
+  if (alreadySolved) {
+    //logf(`This puzzle is already solved: ${puzzle}`);
+    return;
+  }
   //  If solved:
   //    If solved key does not already exist in Redis:
   //      Insert solved key
