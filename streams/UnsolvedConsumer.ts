@@ -3,6 +3,8 @@ import { connectToRedis, QUIT_REDIS_MSG } from "../utils/redis";
 import { log } from "../utils/logs";
 import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
 import { PuzzleKey } from "../types/Puzzle";
+import { getPuzzleData } from "sudokuru";
+import { attempt } from "../utils/helpers";
 
 // Constants
 const BATCH_SIZE: number = 10;
@@ -49,6 +51,12 @@ async function processPuzzle(puzzle: string) {
   const alreadySolved = await client.exists(new PuzzleKey(puzzle, true).toString());
   if (alreadySolved) {
     //logf(`This puzzle is already solved: ${puzzle}`);
+    return;
+  }
+
+  const data = attempt(() => getPuzzleData(puzzle));
+  if (!data.ok) {
+    //logf(`Sudokuru package threw an error trying to solve this puzzle: ${puzzle}`);
     return;
   }
   //  If solved:
