@@ -22,7 +22,7 @@ export const PuzzleDataFields: string[] = [
 ];
 
 export type PuzzleData = {
-    [K in typeof PuzzleDataFields[number]]: any;
+  [K in typeof PuzzleDataFields[number]]: any;
 };
 
 export class PuzzleKey {
