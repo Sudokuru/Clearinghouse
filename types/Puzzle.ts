@@ -52,3 +52,11 @@ export interface Puzzle {
 
 // Added 1 to account for puzzle string (Redis key)
 export const PuzzleFieldCount: number = PuzzleDataFields.length + 1;
+
+// For parsing this: https://github.com/Sudokuru/Sudokuru/blob/main/lib/PuzzleData.ts
+export interface SudokuruPuzzleData {
+  solution: string;
+  difficulty: number;
+  givensCount: number;
+  drills: number[];
+}

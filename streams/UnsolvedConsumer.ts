@@ -2,7 +2,7 @@ import { createClient } from "redis";
 import { connectToRedis, QUIT_REDIS_MSG } from "../utils/redis";
 import { log } from "../utils/logs";
 import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
-import { PuzzleKey } from "../types/Puzzle";
+import { PuzzleKey, SudokuruPuzzleData } from "../types/Puzzle";
 import { getPuzzleData } from "sudokuru";
 import { attempt } from "../utils/helpers";
 
@@ -61,8 +61,11 @@ async function processPuzzle(puzzle: string) {
     return;
   }
 
+  const sudokuruData: SudokuruPuzzleData = data.result as unknown as SudokuruPuzzleData;
+  //logf(`puzzle solution is ${sudokuruData.solution}`);
+
   // TODO: insert solved key
-  
+
   // TODO: insert newSolved key (can read these in start.ts after consumers finish and append to solved puzzles csv)
 }
 
