@@ -57,14 +57,13 @@ async function processPuzzle(puzzle: string) {
   const data = attempt(() => getPuzzleData(puzzle));
   if (!data.ok) {
     //logf(`Sudokuru package threw an error trying to solve this puzzle: ${puzzle}`);
+    // TODO: insert puzzle into failed stream (DLQ)
     return;
   }
-  //  If solved:
-  //    If solved key does not already exist in Redis:
-  //      Insert solved key
-  //      Insert newSolved key (can read these in start.ts after consumers finish and append to solved puzzles csv)
-  //  Else if not solved:
-  //    Insert failed key
+
+  // TODO: insert solved key
+  
+  // TODO: insert newSolved key (can read these in start.ts after consumers finish and append to solved puzzles csv)
 }
 
 let unsolved;
