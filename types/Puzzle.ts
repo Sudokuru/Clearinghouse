@@ -25,10 +25,28 @@ export type PuzzleData = {
     [K in typeof PuzzleDataFields[number]]: any;
 };
 
+export class PuzzleKey {
+  private puzzle: string;
+  private solved: boolean;
+
+  constructor(puzzle: string, solved: boolean) {
+    this.puzzle = puzzle;
+    this.solved = solved;
+  }
+
+  public toString = () : string => {
+    if (this.solved) {
+      return `solved:${this.puzzle}`;
+    } else {
+      return `${this.puzzle}`;
+    }
+  }
+}
+
 export interface Puzzle {
   // The Redis key, structured as prefix (e.g. 'solved:') followed by 81 character
   // puzzle string with 0s for empty cells
-  key: string;
+  key: PuzzleKey;
   data: PuzzleData;
 }
 

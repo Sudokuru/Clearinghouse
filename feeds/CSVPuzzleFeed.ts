@@ -1,5 +1,5 @@
 import { getIterator, PuzzleFeed } from "./PuzzleFeed";
-import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleFieldCount } from "../types/Puzzle";
+import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleFieldCount, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "../utils/logs";
 
 export class CSVPuzzleFeed implements PuzzleFeed {
@@ -30,7 +30,7 @@ export class CSVPuzzleFeed implements PuzzleFeed {
     }
 
     const puzzle: Puzzle = {
-      key: values[0],
+      key: new PuzzleKey(values[0], true),
       data: {} as PuzzleData,
     };
 

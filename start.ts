@@ -46,7 +46,7 @@ await connectToRedis(client);
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 while ((puzzle = await solved.next()) !== null) {
-  await client.hSet(puzzle.key, puzzle.data);
+  await client.hSet(puzzle.key.toString(), puzzle.data);
 }
 
 // TODO: Get current number of solved puzzles in Redis
@@ -63,7 +63,7 @@ await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTR
 const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 while ((puzzle = await unsolved.next()) !== null) {
   await client.xAdd(UNSOLVED_STREAM, "*", {
-    puzzleKey: puzzle.key
+    puzzleKey: puzzle.key.toString()
   });
 }
 

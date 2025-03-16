@@ -1,4 +1,4 @@
-import { Puzzle, PuzzleData } from "../types/Puzzle";
+import { Puzzle, PuzzleData, PuzzleKey } from "../types/Puzzle";
 import { getIterator, PuzzleFeed } from "./PuzzleFeed";
 
 export class TxtPuzzleFeed implements PuzzleFeed {
@@ -21,7 +21,7 @@ export class TxtPuzzleFeed implements PuzzleFeed {
     }
 
     return {
-        key: line,
+        key: new PuzzleKey(line, false),
         data: {} as PuzzleData
     } as Puzzle;
   }
