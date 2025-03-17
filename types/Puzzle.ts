@@ -57,6 +57,5 @@ export const PuzzleFieldCount: number = PuzzleDataFields.length + 1;
 export interface SudokuruPuzzleData {
   solution: string;
   difficulty: number;
-  givensCount: number;
   drills: number[];
 }
