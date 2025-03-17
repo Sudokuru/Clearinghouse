@@ -9,15 +9,15 @@ export const PuzzleDataFields: string[] = [
   // from Sudokuru package repeatedly until their are that many cells filled in
   // i.e. 80 is last move
   // If drill never occurrs in puzzle then value is set to -1
-  'naked_single_drill',
+  'obvious_single_drill',
   'hidden_single_drill',
-  'naked_pair_drill',
+  'obvious_pair_drill',
   'hidden_pair_drill',
   'pointing_pair_drill',
-  'naked_triplet_drill',  
+  'obvious_triplet_drill',
   'hidden_triplet_drill',
-  'pointing_triplet_drill',  
-  'naked_quadruplet_drill',
+  'pointing_triplet_drill',
+  'obvious_quadruplet_drill',
   'hidden_quadruplet_drill'
 ];
 
