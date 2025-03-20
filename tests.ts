@@ -1,6 +1,7 @@
+import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
-import { CLEAR_REDIS_MSG, clearRedis, QUIT_REDIS_MSG, startRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
-import { assertOutputContains } from "./utils/testing";
+import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
+import { assertOutputContains, getPuzzleDataFromRedis } from "./utils/testing";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -43,6 +44,50 @@ const expectedConfigOutput: string[] = [
 await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config");
 await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection");
 
+// Create Redis Client
+const client = createClient();
+
+try {
+  connectToRedis(client);
+} catch {
+  await clearRedis();
+  log("❌ Failed to connect to Redis");
+}
+
+// Verify presolved puzzle is in Redis
+const presolvedExpectedString: string = JSON.stringify({
+  solution: "197568423852394167634172598763285914429716835581943276348629751915837642276451389",
+  difficulty: -15174,
+  obvious_single_drill: 80,
+  hidden_single_drill: 74,
+  obvious_pair_drill: -1,
+  hidden_pair_drill: -1,
+  pointing_pair_drill: 61,
+  obvious_triplet_drill: -1,
+  hidden_triplet_drill: -1,
+  pointing_triplet_drill: -1,
+  obvious_quadruplet_drill: -1,
+  hidden_quadruplet_drill: -1
+});
+// TODO: make helper for the following assertion:
+const presolvedActualData = await getPuzzleDataFromRedis(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000");
+if (presolvedActualData === null) {
+  log("❌ Failed to get presolved puzzle out of Redis after running start.ts");
+  await clearRedis();
+  await client.quit();
+  process.exit(1);
+}
+const presolvedActualString: string = JSON.stringify(presolvedActualData);
+if (presolvedExpectedString !== presolvedActualString) {
+  log("❌ Presolved puzzle data from Redis did not match what was expected.");
+  log(`Expected: ${presolvedExpectedString}`);
+  log(`Actual: ${presolvedActualString}`);
+  await clearRedis();
+  await client.quit();
+  process.exit(1);
+}
+
+
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // TODO: Verify all outputs and Redis contents from startRun
@@ -60,5 +105,6 @@ console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // Cleanup
 await clearRedis();
+await client.quit();
 
 log("✅ Tests passed successfully!", COLORS.GREEN);
