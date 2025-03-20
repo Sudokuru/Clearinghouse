@@ -1,5 +1,5 @@
 import { getIterator, PuzzleFeed } from "./PuzzleFeed";
-import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleFieldCount, PuzzleKey } from "../types/Puzzle";
+import { Puzzle, PuzzleData, PuzzleDataSchema, PuzzleFieldCount, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "../utils/logs";
 
 export class CSVPuzzleFeed implements PuzzleFeed {
@@ -34,9 +34,9 @@ export class CSVPuzzleFeed implements PuzzleFeed {
       data: {} as PuzzleData,
     };
 
-    PuzzleDataFields.forEach((field, index) => {
+    Object.entries(PuzzleDataSchema.shape).forEach((field, index) => {
       // Use index + 1 because values[0] is already used for the key.
-      puzzle.data[field] = values[index + 1];
+      puzzle.data[field.toString()] = values[index + 1];
     });
     return puzzle;
   }
