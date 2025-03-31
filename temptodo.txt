@@ -1,5 +1,5 @@
 todo for MVP MR:
-1. add tests to make sure presolved and one solved puzzle are in redis at end
+1. add tests to make sure presolved (done!) and one solved puzzle are in redis at end
 2. setup logic to append newly solved puzzles to specified csv (puzzles.csv by default)
 2. generate puzzles.csv with all solved (should take < 1 hr w/ 8 threads)
 3. change default puzzle file to none (see todo at end of start.ts)
