@@ -64,8 +64,7 @@ async function processPuzzle(puzzle: string) {
   const sudokuruData: SudokuruPuzzleData = data.result as unknown as SudokuruPuzzleData;
   //logf(`puzzle solution is ${sudokuruData.solution}`);
 
-  // Insert solved key
-  await client.hSet(new PuzzleKey(puzzle, true).toString(), {
+  const solvedFields = {
     solution: sudokuruData.solution,
     difficulty: sudokuruData.difficulty,
     obvious_single_drill: sudokuruData.drills[0],
@@ -78,7 +77,10 @@ async function processPuzzle(puzzle: string) {
     pointing_triplet_drill: sudokuruData.drills[7],
     obvious_quadruplet_drill: sudokuruData.drills[8],
     hidden_quadruplet_drill: sudokuruData.drills[9]
-  });
+  };
+
+  // Insert solved key
+  await client.hSet(new PuzzleKey(puzzle, true).toString(), solvedFields);
 
   // TODO: insert newSolved key (can read these in start.ts after consumers finish and append to solved puzzles csv)
 }
