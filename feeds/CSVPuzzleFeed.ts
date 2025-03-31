@@ -34,9 +34,9 @@ export class CSVPuzzleFeed implements PuzzleFeed {
       data: {} as PuzzleData,
     };
 
-    Object.entries(PuzzleDataSchema.shape).forEach((field, index) => {
+    Object.entries(PuzzleDataSchema.shape).forEach(([fieldName], index) => {
       // Use index + 1 because values[0] is already used for the key.
-      puzzle.data[field.toString()] = values[index + 1];
+      puzzle.data[fieldName] = values[index + 1];
     });
     return puzzle;
   }
