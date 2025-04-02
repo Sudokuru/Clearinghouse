@@ -69,3 +69,20 @@ export async function getPuzzleDataFromRedis(redisClient, puzzle: string): Promi
 
   return parsed.data;
 }
+
+/**
+ * Verifies puzzle is contained in Redis with given data else exits
+ */
+export async function assertRedisContainsPuzzleData(redisClient, puzzle: string, puzzleData) {
+  const presolvedActualData = await getPuzzleDataFromRedis(redisClient, puzzle);
+  if (presolvedActualData === null) {
+    cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", redisClient);
+  }
+  const presolvedActualString: string = JSON.stringify(presolvedActualData);
+  const presolvedExpectedString: string = JSON.stringify(puzzleData);
+  if (presolvedExpectedString !== presolvedActualString) {
+    log(`Expected: ${presolvedExpectedString}`);
+    log(`Actual: ${presolvedActualString}`);
+    cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", redisClient);
+  }
+}

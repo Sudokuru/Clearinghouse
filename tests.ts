@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
-import { assertOutputContains, cleanup, cleanupAndExit, getPuzzleDataFromRedis } from "./utils/testing";
+import { assertOutputContains, assertRedisContainsPuzzleData, cleanup, cleanupAndExit, getPuzzleDataFromRedis } from "./utils/testing";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -57,7 +57,7 @@ await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config",
 await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection", client);
 
 // Verify presolved puzzle is in Redis
-const presolvedExpectedString: string = JSON.stringify({
+await assertRedisContainsPuzzleData(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000", {
   solution: "197568423852394167634172598763285914429716835581943276348629751915837642276451389",
   difficulty: -15174,
   obvious_single_drill: 80,
@@ -71,17 +71,6 @@ const presolvedExpectedString: string = JSON.stringify({
   obvious_quadruplet_drill: -1,
   hidden_quadruplet_drill: -1
 });
-// TODO: make helper for the following assertion:
-const presolvedActualData = await getPuzzleDataFromRedis(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000");
-if (presolvedActualData === null) {
-  cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", client);
-}
-const presolvedActualString: string = JSON.stringify(presolvedActualData);
-if (presolvedExpectedString !== presolvedActualString) {
-  log(`Expected: ${presolvedExpectedString}`);
-  log(`Actual: ${presolvedActualString}`);
-  cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", client);
-}
 
 
 console.log("Temp logging this to make tests: `" + startOutput + "`");
