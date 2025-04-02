@@ -1,11 +1,23 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
-import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
-import { assertOutputContains, getPuzzleDataFromRedis } from "./utils/testing";
+import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
+import { assertOutputContains, cleanup, cleanupAndExit, getPuzzleDataFromRedis } from "./utils/testing";
 
 // Start the Redis Docker Container
 const started = await startRedis();
 if (!started) {
+  process.exit(1);
+}
+
+// Create Redis Client
+const client = createClient();
+
+try {
+  connectToRedis(client);
+} catch {
+  await clearRedis();
+  await stopRedis();
+  log("❌ Failed to connect to Redis");
   process.exit(1);
 }
 
@@ -14,7 +26,7 @@ const clearDbRun = await clearRedis();
 
 const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStream<Uint8Array>).text();
 
-await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "clear.ts");
+await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "clear.ts", client);
 
 const timeLimit: string = "5"; // TODO: may need to raise this if not enough for consumers to go through > 1 batch
 const threads: string = "2";
@@ -41,18 +53,8 @@ const expectedConfigOutput: string[] = [
   'Are these values correct? (y/n):'
 ]
 
-await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config");
-await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection");
-
-// Create Redis Client
-const client = createClient();
-
-try {
-  connectToRedis(client);
-} catch {
-  await clearRedis();
-  log("❌ Failed to connect to Redis");
-}
+await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config", client);
+await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection", client);
 
 // Verify presolved puzzle is in Redis
 const presolvedExpectedString: string = JSON.stringify({
@@ -72,19 +74,13 @@ const presolvedExpectedString: string = JSON.stringify({
 // TODO: make helper for the following assertion:
 const presolvedActualData = await getPuzzleDataFromRedis(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000");
 if (presolvedActualData === null) {
-  log("❌ Failed to get presolved puzzle out of Redis after running start.ts");
-  await clearRedis();
-  await client.quit();
-  process.exit(1);
+  cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", client);
 }
 const presolvedActualString: string = JSON.stringify(presolvedActualData);
 if (presolvedExpectedString !== presolvedActualString) {
-  log("❌ Presolved puzzle data from Redis did not match what was expected.");
   log(`Expected: ${presolvedExpectedString}`);
   log(`Actual: ${presolvedActualString}`);
-  await clearRedis();
-  await client.quit();
-  process.exit(1);
+  cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", client);
 }
 
 
@@ -104,7 +100,6 @@ console.log("Temp logging this to make tests: `" + startOutput + "`");
 // TODO: As converting export and difficulty report scripts run and test them here too
 
 // Cleanup
-await clearRedis();
-await client.quit();
+await cleanup(client);
 
 log("✅ Tests passed successfully!", COLORS.GREEN);

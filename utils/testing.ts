@@ -1,20 +1,36 @@
 import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "./logs";
-import { clearRedis } from "./redis";
+import { clearRedis, stopRedis } from "./redis";
 import { z } from "zod";
+
+/**
+ * Does Redis cleanup 
+ */
+export async function cleanup(redisClient): Promise<void> {
+  await clearRedis();
+  await redisClient.quit();
+  await stopRedis();
+}
+
+/**
+ * Does cleanup, logs test failure with given message, and exits early. 
+ */
+export async function cleanupAndExit(message: string, redisClient): Promise<void> {
+  await cleanup(redisClient);
+  log("❌ Test Failed: " + message, COLORS.RED);
+  process.exit(1);
+}
 
 /**
  * Takes in string output, list of substrings that should be contained in output, and test name
  * If a substring is not found in output then test failure is loggged, output is logged,
- * redis is cleared, and test process is exited. Otherwise, returns void.
+ * redis is cleared, and test process is exited. Otherwise, clears Redis and exits the program.
  */
-export async function assertOutputContains(output: string, contained: string[], name: string): Promise<void> {
+export async function assertOutputContains(output: string, contained: string[], name: string, redisClient): Promise<void> {
   for (const substring of contained) {
     if (!output.includes(substring)) {
-      log(`❌ ${name} test failed: expected log message not found in captured logs.`, COLORS.RED);
       log(`Captured logs: ${output}`);
-      await clearRedis();
-      process.exit(1);
+      cleanupAndExit(`${name} expected log message not found in captured logs.`, redisClient);
     }
   }
 }
