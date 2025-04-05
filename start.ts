@@ -98,10 +98,10 @@ for (const proc of processes) {
 }
 log("Finished solving puzzles.", COLORS.GREEN);
 
+await client.del(UNSOLVED_STREAM);
+
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
-
-// TODO: When consumers all finish delete messages from Stream
 
 // TODO: Get final number of solved puzzles in Redis
 
