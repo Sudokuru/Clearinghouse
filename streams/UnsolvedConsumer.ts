@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { connectToRedis, QUIT_REDIS_MSG } from "../utils/redis";
 import { log } from "../utils/logs";
-import { UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
+import { NEW_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
 import { PuzzleKey, SudokuruPuzzleData } from "../types/Puzzle";
 import { getPuzzleData } from "sudokuru";
 import { attempt } from "../utils/helpers";
@@ -82,7 +82,9 @@ async function processPuzzle(puzzle: string) {
   // Insert solved key
   await client.hSet(new PuzzleKey(puzzle, true).toString(), solvedFields);
 
-  // TODO: insert newSolved key (can read these in start.ts after consumers finish and append to solved puzzles csv)
+  // Insert new solved key
+  // These are read these in start.ts after consumers finish and appended to solved puzzles csv
+  await client.sAdd(NEW_SOLVED_SET, puzzle);
 }
 
 let unsolved;
