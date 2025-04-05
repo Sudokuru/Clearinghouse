@@ -1,28 +1,44 @@
 import { z } from "zod";
 
-export const PuzzleDataSchema = z.object({
+// Define field names in fixed order (useful for exporting to csv)
+export const PuzzleDataFields = [
   // solution: 81 character puzzle solution string
-  solution: z.string(),
+  "solution",
   // difficulty: Integer difficulty metric as determined by Sudokuru npm package
-  difficulty: z.coerce.number(),
+  "difficulty",
   // A drill is when you can search and find exactly one occurrence of a strategy at
   // a particular point in a puzzle
   // Last occurrence of each drill when solving puzzle using nextStep function
   // from Sudokuru package repeatedly until their are that many cells filled in
   // i.e. 80 is last move
   // If drill never occurs in puzzle then value is set to -1
-  obvious_single_drill: z.coerce.number(),
-  hidden_single_drill: z.coerce.number(),
-  obvious_pair_drill: z.coerce.number(),
-  hidden_pair_drill: z.coerce.number(),
-  pointing_pair_drill: z.coerce.number(),
-  obvious_triplet_drill: z.coerce.number(),
-  hidden_triplet_drill: z.coerce.number(),
-  pointing_triplet_drill: z.coerce.number(),
-  obvious_quadruplet_drill: z.coerce.number(),
-  hidden_quadruplet_drill: z.coerce.number()
-});
+  "obvious_single_drill",
+  "hidden_single_drill",
+  "obvious_pair_drill",
+  "hidden_pair_drill",
+  "pointing_pair_drill",
+  "obvious_triplet_drill",
+  "hidden_triplet_drill",
+  "pointing_triplet_drill",
+  "obvious_quadruplet_drill",
+  "hidden_quadruplet_drill"
+] as const;
 
+// Create union of all possible values in array i.e. "solution" | "difficulty" | ...
+type PuzzleField = typeof PuzzleDataFields[number];
+
+// Build schema shape
+const puzzleSchemaShape = Object.fromEntries(
+  PuzzleDataFields.map((field) => [
+    field,
+    field === "solution" ? z.string() : z.coerce.number()
+  ])
+) as unknown as Record<PuzzleField, z.ZodTypeAny>;
+
+// Build Zod object schema
+export const PuzzleDataSchema = z.object(puzzleSchemaShape);
+
+// Create TS type from Zod schema
 export type PuzzleData = z.infer<typeof PuzzleDataSchema>;
 
 
