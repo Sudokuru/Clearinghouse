@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
-import { assertOutputContains, assertRedisContainsPuzzleData, cleanup, cleanupAndExit, getPuzzleDataFromRedis } from "./utils/testing";
+import { assertOutputContains, assertRedisContainsPuzzleData, cleanup } from "./utils/testing";
 
 // Start the Redis Docker Container
 const started = await startRedis();
