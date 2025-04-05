@@ -6,6 +6,7 @@ import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleKey } from "./types/Puzzle"
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 import { DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
+import { createWriteStream } from "fs";
 
 
 // Assign environment variables to variables with fallback defaults.
@@ -100,16 +101,21 @@ log("Finished solving puzzles.", COLORS.GREEN);
 
 await client.del(UNSOLVED_STREAM);
 
+// Open solved puzzles csv file in append mode
+const solvedPuzzleFileStream = createWriteStream("data/solved/" + solvedPuzzleFile, { flags: "a" });
+
 // Pop newly solved puzzles off Redis set and append them to solved puzzles csv file
 let puzzleStrArr: string[];
 while ((puzzleStrArr = await client.sPop(NEW_SOLVED_SET)).length !== 0) {
-  const puzzleData = await getPuzzleDataFromRedis(client, puzzleStrArr[0]);
+  const puzzleData = await getPuzzleDataFromRedis(client, puzzleStrArr.toString());
   if (puzzleData === null) {
     continue;
   }
   const puzzleDataCSV = PuzzleDataFields.map((key) => puzzleData[key]).join(",");
-  // TODO: append csv string to csv file
+  solvedPuzzleFileStream.write(puzzleDataCSV + "\n");
 }
+
+solvedPuzzleFileStream.end();
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
