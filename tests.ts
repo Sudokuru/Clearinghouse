@@ -88,18 +88,15 @@ await assertRedisContainsPuzzleData(client, "00703001032900075014805703600042100
   hidden_quadruplet_drill: 42
 });
 
-console.log("Temp logging this to make tests: `" + startOutput + "`");
+// TODO: verify presolved puzzle still in tests.csv
+// TODO: verify presolved puzzle not duplicated in tests.csv
+// TODO: Verify unsolved puzzle is in tests.csv file
 
-// TODO: Verify all outputs and Redis contents from startRun
-// TODO: Once start.ts is ready add test to make sure that tests.csv contains a solved puzzle
-// with correct values as well as not having overwritten existing one and not duplicated
-// then spawn `git checkout data/solved/tests.csv` cmd
+console.log("Temp logging this to make tests: `" + startOutput + "`");
 
 // TODO: Run start.ts and verify saying n/N exits early
 
 // TODO: Create GitHub Pipeline PR/Merge Job to run this test file and pass if final log outputted or just exit code == 0
-
-// TODO: As add functionality to start.ts, UnsolvedConsumer.ts add to this test
 
 // TODO: As converting export and difficulty report scripts run and test them here too
 

@@ -10,6 +10,7 @@ export async function cleanup(redisClient): Promise<void> {
   await clearRedis();
   await redisClient.quit();
   await stopRedis();
+  // TODO: git checkout data/solved/tests.csv
 }
 
 /**
