@@ -106,7 +106,7 @@ const solvedPuzzleFileStream = createWriteStream("data/solved/" + solvedPuzzleFi
 
 // Pop newly solved puzzles off Redis set and append them to solved puzzles csv file
 let puzzleStrArr: string[];
-while ((puzzleStrArr = await client.sPop(NEW_SOLVED_SET)).length !== 0) {
+while ((puzzleStrArr = await client.sPop(NEW_SOLVED_SET)) !== null && puzzleStrArr.length !== 0) {
   const puzzleStr: string = puzzleStrArr.toString();
   const puzzleData = await getPuzzleDataFromRedis(client, puzzleStr);
   if (puzzleData === null) {
