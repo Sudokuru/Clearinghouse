@@ -2,6 +2,8 @@ import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
 import { assertOutputContains, assertRedisContainsPuzzleData, cleanup } from "./utils/testing";
+import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
+import { Puzzle } from "./types/Puzzle";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -87,6 +89,13 @@ await assertRedisContainsPuzzleData(client, "00703001032900075014805703600042100
   obvious_quadruplet_drill: 57,
   hidden_quadruplet_drill: 42
 });
+
+// Read puzzles we wrote to tests.csv
+const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/tests.csv");
+const puzzles: Puzzle[] = [];
+for (let puzzle = await solved.next(); puzzle !== null; puzzle = await solved.next()) {
+  puzzles.push(puzzle);
+}
 
 // TODO: verify presolved puzzle still in tests.csv
 // TODO: verify presolved puzzle not duplicated in tests.csv
