@@ -36,6 +36,9 @@ bun stop.ts
 # Delete data stored in Redis docker
 bun clear.ts
 
+# Run tests
+bun tests.ts
+
 # Example helper script to run start.ts on multiple new unsolved puzzle files at once
 bash runall.sh
 
