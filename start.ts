@@ -13,7 +13,7 @@ import { createWriteStream } from "fs";
 const BASE: number = 10;
 const generateTimeLimit: number = parseInt(process.env.GENERATE_TIME_LIMIT ?? "60", BASE);
 const generateThreads: number = parseInt(process.env.GENERATE_THREADS ?? "1", BASE);
-const unsolvedPuzzleFile: string = process.env.UNSOLVED_PUZZLE_FILE ?? "puzzles1.txt";
+const unsolvedPuzzleFile: string | null = process.env.UNSOLVED_PUZZLE_FILE ?? null;
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
 // Log config values
@@ -54,13 +54,20 @@ while ((puzzle = await solved.next()) !== null) {
 
 // TODO: Delete dead letter queue of failed to solve puzzles if it exists in Redis
 
+// Exit early if user opted not to solve a new puzzle file
+if (unsolvedPuzzleFile === null) {
+  await client.quit();
+  log(QUIT_REDIS_MSG, COLORS.GREEN);
+  process.exit(0);
+}
+
 // Delete unsolved puzzles stream
 await client.del(UNSOLVED_STREAM);
 
 // Create Redis Consumer Group to read from Stream
 await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTREAM: true });
 
-// Read puzzles from file onto Redis Stream
+// Read puzzles from file onto Redis Stream if unsolved puzzle file passed in
 const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 while ((puzzle = await unsolved.next()) !== null) {
   await client.xAdd(UNSOLVED_STREAM, "*", {
@@ -130,5 +137,3 @@ log(QUIT_REDIS_MSG, COLORS.GREEN);
 // total number of solved puzzles
 // total number of puzzles failed to solve
 // total number of puzzles ran out of time to solve
-
-// TODO: change default puzzle file to None in which case just load presolved and skip unsolved logic for quit start
