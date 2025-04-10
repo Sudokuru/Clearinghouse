@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
-import { assertOutputContains, assertRedisContainsPuzzleData, cleanup } from "./utils/testing";
+import { assertOutputContains, assertRedisContainsPuzzleData, assertStringInArrayExactlyOnce, cleanup } from "./utils/testing";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 
@@ -59,7 +59,7 @@ await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config",
 await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection", client);
 
 // Verify presolved puzzle is in Redis
-await assertRedisContainsPuzzleData(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000", {
+const presolvedPuzzleData = {
   solution: "197568423852394167634172598763285914429716835581943276348629751915837642276451389",
   difficulty: -15174,
   obvious_single_drill: 80,
@@ -72,7 +72,9 @@ await assertRedisContainsPuzzleData(client, "00750002385000406003010259070020001
   pointing_triplet_drill: -1,
   obvious_quadruplet_drill: -1,
   hidden_quadruplet_drill: -1
-});
+};
+const presolvedPuzzleDataString = JSON.stringify(presolvedPuzzleData);
+await assertRedisContainsPuzzleData(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000", presolvedPuzzleData);
 
 // Verify unsolved puzzle is in Redis
 await assertRedisContainsPuzzleData(client, "007030010329000750148057036000421009930005000001060470892000143073008500010093867", {
@@ -96,9 +98,11 @@ const puzzles: Puzzle[] = [];
 for (let puzzle = await solved.next(); puzzle !== null; puzzle = await solved.next()) {
   puzzles.push(puzzle);
 }
+const puzzleDataStrings: string[] = puzzles.map((p) => JSON.stringify(p.data));
 
-// TODO: verify presolved puzzle still in tests.csv
-// TODO: verify presolved puzzle not duplicated in tests.csv
+// Verify presolved puzzle still in tests.csv and not duplicated
+assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleDataString);
+
 // TODO: Verify unsolved puzzle is in tests.csv file
 
 console.log("Temp logging this to make tests: `" + startOutput + "`");

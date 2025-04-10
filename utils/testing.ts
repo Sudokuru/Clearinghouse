@@ -56,3 +56,12 @@ export async function assertRedisContainsPuzzleData(redisClient, puzzle: string,
     cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", redisClient);
   }
 }
+
+/**
+ * Verifies string occurs exactly once in provided string array
+ */
+export async function assertStringInArrayExactlyOnce(redisClient, strings: string[], string: string) {
+  if (strings.filter(str => str === string).length !== 1) {
+    cleanupAndExit(`'${string}' did not occur exactly once in '${strings}'.`, redisClient);
+  }
+}
