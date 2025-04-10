@@ -36,6 +36,9 @@ bun stop.ts
 # Delete data stored in Redis docker
 bun clear.ts
 
+# Example helper script to run start.ts on multiple new unsolved puzzle files at once
+bash runall.sh
+
 # Temporarily Deprecated Features Usable Only in git tag 1.0.0
 
 ## Exporting puzzles to ts format expected by Sudokuru Frontend
