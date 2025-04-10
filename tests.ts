@@ -76,8 +76,8 @@ const presolvedPuzzleData = {
 const presolvedPuzzleDataString = JSON.stringify(presolvedPuzzleData);
 await assertRedisContainsPuzzleData(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000", presolvedPuzzleData);
 
-// Verify unsolved puzzle is in Redis
-await assertRedisContainsPuzzleData(client, "007030010329000750148057036000421009930005000001060470892000143073008500010093867", {
+// Verify newly solved puzzle is in Redis
+const newlySolvedPuzzleData = {
   solution: "567832914329614758148957236756421389934785621281369475892576143673148592415293867",
   difficulty: -15174,
   obvious_single_drill: 80,
@@ -90,7 +90,9 @@ await assertRedisContainsPuzzleData(client, "00703001032900075014805703600042100
   pointing_triplet_drill: 42,
   obvious_quadruplet_drill: 57,
   hidden_quadruplet_drill: 42
-});
+};
+const newlySolvedPuzzleDataString = JSON.stringify(newlySolvedPuzzleData);
+await assertRedisContainsPuzzleData(client, "007030010329000750148057036000421009930005000001060470892000143073008500010093867", newlySolvedPuzzleData);
 
 // Read puzzles we wrote to tests.csv
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/tests.csv");
@@ -103,7 +105,8 @@ const puzzleDataStrings: string[] = puzzles.map((p) => JSON.stringify(p.data));
 // Verify presolved puzzle still in tests.csv and not duplicated
 assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleDataString);
 
-// TODO: Verify unsolved puzzle is in tests.csv file
+// Verify unsolved puzzle is in tests.csv file
+assertStringInArrayExactlyOnce(client, puzzleDataStrings, newlySolvedPuzzleDataString);
 
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
