@@ -10,7 +10,11 @@ export async function cleanup(redisClient): Promise<void> {
   await clearRedis();
   await redisClient.quit();
   await stopRedis();
-  // TODO: git checkout data/solved/tests.csv
+  Bun.spawn({
+    cmd: ["git", "checkout", "data/solved/tests.csv"],
+    stdout: "inherit",
+    stderr: "inherit",
+  });
 }
 
 /**
