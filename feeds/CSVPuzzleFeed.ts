@@ -38,6 +38,12 @@ export class CSVPuzzleFeed implements PuzzleFeed {
       // Use index + 1 because values[0] is already used for the key.
       puzzle.data[fieldName] = values[index + 1];
     });
+
+    let parsed = PuzzleDataSchema.safeParse(puzzle.data);
+    if (!parsed.success) {
+      process.exit(1);
+    }
+    puzzle.data = parsed.data;
     return puzzle;
   }
 }
