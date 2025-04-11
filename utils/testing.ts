@@ -35,7 +35,7 @@ export async function assertOutputContains(output: string, contained: string[], 
   for (const substring of contained) {
     if (!output.includes(substring)) {
       log(`Captured logs: ${output}`);
-      cleanupAndExit(`${name} expected log message not found in captured logs.`, redisClient);
+      await cleanupAndExit(`${name} expected log message not found in captured logs.`, redisClient);
     }
   }
 }
