@@ -32,6 +32,7 @@ await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, Q
 
 const timeLimit: string = "5"; // TODO: may need to raise this if not enough for consumers to go through > 1 batch
 const threads: string = "2";
+const unsolvedPuzzleFile: string = "puzzles1.txt";
 const solvedPuzzleFile: string = "tests.csv";
 
 const startRun = Bun.spawn({
@@ -40,6 +41,7 @@ const startRun = Bun.spawn({
     ...process.env, // preserve env
     GENERATE_TIME_LIMIT: timeLimit,
     GENERATE_THREADS: threads,
+    UNSOLVED_PUZZLE_FILE: unsolvedPuzzleFile,
     SOLVED_PUZZLE_FILE: solvedPuzzleFile,
   },
   stdout: "pipe",
