@@ -35,7 +35,7 @@ export async function assertOutputContains(output: string, contained: string[], 
   for (const substring of contained) {
     if (!output.includes(substring)) {
       log(`Captured logs: ${output}`);
-      cleanupAndExit(`${name} expected log message not found in captured logs.`, redisClient);
+      await cleanupAndExit(`${name} expected log message not found in captured logs.`, redisClient);
     }
   }
 }
@@ -46,14 +46,14 @@ export async function assertOutputContains(output: string, contained: string[], 
 export async function assertRedisContainsPuzzleData(redisClient, puzzle: string, puzzleData) {
   const presolvedActualData = await getPuzzleDataFromRedis(redisClient, puzzle);
   if (presolvedActualData === null) {
-    cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", redisClient);
+    await cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", redisClient);
   }
   const presolvedActualString: string = JSON.stringify(presolvedActualData);
   const presolvedExpectedString: string = JSON.stringify(puzzleData);
   if (presolvedExpectedString !== presolvedActualString) {
     log(`Expected: ${presolvedExpectedString}`);
     log(`Actual: ${presolvedActualString}`);
-    cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", redisClient);
+    await cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", redisClient);
   }
 }
 
@@ -62,6 +62,6 @@ export async function assertRedisContainsPuzzleData(redisClient, puzzle: string,
  */
 export async function assertStringInArrayExactlyOnce(redisClient, strings: string[], string: string) {
   if (strings.filter(str => str === string).length !== 1) {
-    cleanupAndExit(`'${string}' did not occur exactly once in '${strings}'.`, redisClient);
+    await cleanupAndExit(`'${string}' did not occur exactly once in '${strings}'.`, redisClient);
   }
 }
