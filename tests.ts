@@ -52,7 +52,7 @@ const startOutput: string = await new Response(startRun.stdout as ReadableStream
 const expectedConfigOutput: string[] = [
   `Generate Time Limit: ${timeLimit}`,
   `Generate Threads: ${threads}`,
-  'Unsolved Puzzle File: puzzles1.txt',
+  `Unsolved Puzzle File: ${unsolvedPuzzleFile}`,
   `Solved Puzzle File: ${solvedPuzzleFile}`,
   'Are these values correct? (y/n):'
 ]
