@@ -105,10 +105,10 @@ for (let puzzle = await solved.next(); puzzle !== null; puzzle = await solved.ne
 const puzzleDataStrings: string[] = puzzles.map((p) => JSON.stringify(p.data));
 
 // Verify presolved puzzle still in tests.csv and not duplicated
-assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleDataString);
+await assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleDataString);
 
 // Verify unsolved puzzle is in tests.csv file
-assertStringInArrayExactlyOnce(client, puzzleDataStrings, newlySolvedPuzzleDataString);
+await assertStringInArrayExactlyOnce(client, puzzleDataStrings, newlySolvedPuzzleDataString);
 
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
