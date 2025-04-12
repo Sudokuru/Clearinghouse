@@ -51,7 +51,7 @@ try {
 
 logf("Consumer thread " + CONSUMER_THREAD + " is starting to consume unsolved puzzles...");
 
-async function processPuzzle(puzzle: string) {
+async function processPuzzle(puzzle: string): Promise<void> {
   const alreadySolved = await client.exists(new PuzzleKey(puzzle, true).toString());
   if (alreadySolved) {
     //logf(`This puzzle is already solved: ${puzzle}`);
