@@ -17,7 +17,7 @@ export enum COLORS {
  */
 export function log(message: string, color?: COLORS, file?: string): void {
   if (file) {
-    appendFileSync(file, `[Clearinghouse] ${message}`);
+    appendFileSync(file, `[Clearinghouse] ${message}\n`);
   } else if (color) {
     console.log(`${color}[Clearinghouse] ${message}${COLORS.RESET}`);
   } else {

@@ -22,7 +22,6 @@ const ERROR_LOG_FILE: string = LOG_FILE_PREFIX + "error" + LOG_FILE_POSTFIX;
  * ${consumer number}.log file
  */
 function logf(message: string, error?: boolean): void {
-  message += '\n';
   if (!error) {
     log(message, undefined, LOG_FILE);
   } else {
