@@ -3,47 +3,58 @@ import { Puzzle, PuzzleData, PuzzleDataSchema, PuzzleFieldCount, PuzzleKey } fro
 import { COLORS, log } from "../utils/logs";
 
 export class CSVPuzzleFeed implements PuzzleFeed {
-  private rl: AsyncIterator<string>;
+  private iterator: AsyncIterator<string>;
+  private closeStream: () => void;
   private lineNum: number = 0;
   
   constructor(csvFilePath: string) {
-    this.rl = getIterator(csvFilePath);
+    const { iterator, close } = getIterator(csvFilePath);
+    this.iterator = iterator;
+    this.closeStream = close;
   }
 
   async next(): Promise<Puzzle | null> {
-    const data = await this.rl.next();
-    if (data.done) {
-      return null;
+    while (true) {
+      const data = await this.iterator.next();
+      if (data.done) {
+        this.close();
+        return null;
+      }
+    
+      this.lineNum++;
+      const line = data.value;
+      if (!line.trim()) {
+        // Skip empty lines
+        continue;
+      }
+    
+      const values = line.split(',').map(val => val.trim());
+      if (values.length < PuzzleFieldCount) {
+        log(`Line ${this.lineNum} has fewer fields than expected.`, COLORS.RED);
+        continue;
+      }
+    
+      const puzzle: Puzzle = {
+        key: new PuzzleKey(values[0], true),
+        data: {} as PuzzleData,
+      };
+    
+      Object.entries(PuzzleDataSchema.shape).forEach(([fieldName], index) => {
+        // Use index + 1 because values[0] is already used for the key.
+        puzzle.data[fieldName] = values[index + 1];
+      });
+      let parsed = PuzzleDataSchema.safeParse(puzzle.data);
+      if (!parsed.success) {
+        log(`Failed to safely parse the following csv puzzle data: ${puzzle.data}.`, COLORS.RED);
+        process.exit(1);
+      }
+      puzzle.data = parsed.data;
+
+      return puzzle;
     }
+  }
 
-    this.lineNum++;
-    const line = data.value;
-    if (!line.trim()) {
-      // Skip empty lines by recursively calling next().
-      return this.next();
-    }
-
-    const values = line.split(',').map(val => val.trim());
-    if (values.length < PuzzleFieldCount) {
-      log(`Line ${this.lineNum} has fewer fields than expected.`, COLORS.RED);
-      return this.next();
-    }
-
-    const puzzle: Puzzle = {
-      key: new PuzzleKey(values[0], true),
-      data: {} as PuzzleData,
-    };
-
-    Object.entries(PuzzleDataSchema.shape).forEach(([fieldName], index) => {
-      // Use index + 1 because values[0] is already used for the key.
-      puzzle.data[fieldName] = values[index + 1];
-    });
-
-    let parsed = PuzzleDataSchema.safeParse(puzzle.data);
-    if (!parsed.success) {
-      process.exit(1);
-    }
-    puzzle.data = parsed.data;
-    return puzzle;
+  async close() {
+    this.closeStream();
   }
 }

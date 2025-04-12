@@ -2,27 +2,38 @@ import { Puzzle, PuzzleData, PuzzleKey } from "../types/Puzzle";
 import { getIterator, PuzzleFeed } from "./PuzzleFeed";
 
 export class TxtPuzzleFeed implements PuzzleFeed {
-  private rl: AsyncIterator<string>;
+  private iterator: AsyncIterator<string>;
+  private closeStream: () => void;
 
   constructor(txtFilePath: string) {
-    this.rl = getIterator(txtFilePath);
+    const { iterator, close } = getIterator(txtFilePath);
+    this.iterator = iterator;
+    this.closeStream = close;
   }
 
   async next(): Promise<Puzzle | null> {
-    const data = await this.rl.next();
-    if (data.done) {
+    while (true) {
+      const data = await this.iterator.next();
+      if (data.done) {
+        this.close();
         return null;
-    }
-
-    const line = data.value.trim();
-    if (!line) {
-      // Skip empty lines by recursively calling next().
-      return this.next();
-    }
-
-    return {
+      }
+    
+      const line = data.value.trim();
+      if (!line) {
+        // Skip empty lines
+        continue;
+      }
+    
+      // Create and return a properly initialized Puzzle object
+      return {
         key: new PuzzleKey(line, false),
         data: {} as PuzzleData
-    } as Puzzle;
+      };
+    }
+  }
+
+  async close() {
+    this.closeStream();
   }
 }
