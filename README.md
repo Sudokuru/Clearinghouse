@@ -43,6 +43,7 @@ bun tests.ts
 bash runall.sh
 
 # Temporarily Deprecated Features Usable Only in git tag 1.0.0
+# To access these deprecated features, run `git checkout 1.0.0` to switch to the legacy version.
 
 ## Exporting puzzles to ts format expected by Sudokuru Frontend
 ### Kept current exports.ts generated file and Puzzle.type.ts
