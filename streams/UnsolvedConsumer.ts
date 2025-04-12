@@ -17,7 +17,7 @@ const ERROR_LOG_FILE: string = LOG_FILE_PREFIX + "error" + LOG_FILE_POSTFIX;
 
 /**
  * Helper function which directs logs to proper consumer log file
- * @param message - message to lod
+ * @param message - message to log
  * @param error - flag which if passed directs logs to error.log files instead of normal
  * ${consumer number}.log file
  */
