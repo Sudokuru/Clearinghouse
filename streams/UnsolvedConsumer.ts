@@ -42,7 +42,12 @@ if (Number.isNaN(CUTOFF_TIME)) {
 // Create Redis Client
 const client: RedisClientType = createClient();
 
-connectToRedis(client);
+try {
+  await connectToRedis(client);
+} catch (error) {
+  logf(`Failed to connect to Redis: ${error.message}`, true);
+  process.exit(1);
+}
 
 logf("Consumer thread " + CONSUMER_THREAD + " is starting to consume unsolved puzzles...");
 
