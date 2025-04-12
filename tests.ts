@@ -15,7 +15,7 @@ if (!started) {
 const client: RedisClientType = createClient();
 
 try {
-  connectToRedis(client);
+  await connectToRedis(client);
 } catch {
   await clearRedis();
   await stopRedis();
