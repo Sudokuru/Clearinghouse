@@ -1,3 +1,9 @@
-echo 'y' | GENERATE_TIME_LIMIT=14400 GENERATE_THREADS=10 UNSOLVED_PUZZLE_FILE=puzzles1.txt bun start.ts
-echo 'y' | GENERATE_TIME_LIMIT=14400 GENERATE_THREADS=10 UNSOLVED_PUZZLE_FILE=puzzles2.txt bun start.ts
-echo 'y' | GENERATE_TIME_LIMIT=14400 GENERATE_THREADS=10 UNSOLVED_PUZZLE_FILE=puzzles3.txt bun start.ts
+#!/bin/bash
+
+GENERATE_TIME_LIMIT=14400
+GENERATE_THREADS=10
+
+for puzzle_file in puzzles1.txt puzzles2.txt puzzles3.txt; do
+  echo "Processing $puzzle_file..."
+  echo 'y' | GENERATE_TIME_LIMIT=$GENERATE_TIME_LIMIT GENERATE_THREADS=$GENERATE_THREADS UNSOLVED_PUZZLE_FILE=$puzzle_file bun start.ts
+done
