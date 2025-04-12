@@ -1,6 +1,7 @@
 import { Subprocess } from "bun";
 import { COLORS, log } from "./logs";
 import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
+import { RedisClientType } from "redis";
 
 const CONTAINER_NAME = "sudoku-redis";
 const SUCCESS_CODE = 0;
@@ -82,7 +83,7 @@ export async function stopRedis(): Promise<boolean> {
  * Throws error if fails to connect
  * Retries usually only needed if docker is not already running
  */
-export async function connectToRedis(client: any): Promise<void> {
+export async function connectToRedis(client: RedisClientType): Promise<void> {
   for (let i = 0; i < RETRY_COUNT; i++) {
     try {
       await Promise.race([
@@ -127,8 +128,8 @@ export async function clearRedis(): Promise<Subprocess> {
  * Returns PuzzleData object with data from solved Redis key if available for given puzzle string
  * Else returns null
  */
-export async function getPuzzleDataFromRedis(redisClient, puzzle: string): Promise<PuzzleData | null> {
-  const data = await redisClient.hGetAll(new PuzzleKey(puzzle, true).toString());
+export async function getPuzzleDataFromRedis(client: RedisClientType, puzzle: string): Promise<PuzzleData | null> {
+  const data = await client.hGetAll(new PuzzleKey(puzzle, true).toString());
 
   if (!data || Object.keys(data).length === 0) {
     return null;
