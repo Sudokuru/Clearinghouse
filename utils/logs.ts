@@ -17,7 +17,12 @@ export enum COLORS {
  */
 export function log(message: string, color?: COLORS, file?: string): void {
   if (file) {
-    appendFileSync(file, `[Clearinghouse] ${message}\n`);
+    try {
+      appendFileSync(file, `[Clearinghouse] ${message}\n`);
+    } catch (error) {
+      console.error(`${COLORS.RED}[Clearinghouse] Failed to write to log file with error: ${error.message}${COLORS.RESET}`);
+      console.log(`[Clearinghouse] Message that failed to write:  ${message}`);
+    }
   } else if (color) {
     console.log(`${color}[Clearinghouse] ${message}${COLORS.RESET}`);
   } else {
