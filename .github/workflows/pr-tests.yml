@@ -34,6 +34,5 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          output=$(bun tests.ts | tee test-output.txt)
-          echo "$output"
-          echo "$output" | grep '\[Clearinghouse\] ✅ Tests passed successfully!'
+          bun tests.ts | tee test-output.txt | grep '\[Clearinghouse\] ✅ Tests passed successfully!'
+
