@@ -44,7 +44,7 @@ export async function assertOutputContains(output: string, contained: string[], 
 /**
  * Verifies puzzle is contained in Redis with given data else exits
  */
-export async function assertRedisContainsPuzzleData(redisClient: RedisClientType, puzzle: string, puzzleData) {
+export async function assertRedisContainsPuzzleData(redisClient: RedisClientType, puzzle: string, puzzleData: PuzzleData) {
   const presolvedActualData = await getPuzzleDataFromRedis(redisClient, puzzle);
   if (presolvedActualData === null) {
     await cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", redisClient);

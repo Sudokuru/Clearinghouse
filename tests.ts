@@ -3,7 +3,7 @@ import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
 import { assertOutputContains, assertRedisContainsPuzzleData, assertStringInArrayExactlyOnce, cleanup } from "./utils/testing";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { Puzzle } from "./types/Puzzle";
+import { Puzzle, PuzzleData } from "./types/Puzzle";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -61,7 +61,7 @@ await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config",
 await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection", client);
 
 // Verify presolved puzzle is in Redis
-const presolvedPuzzleData = {
+const presolvedPuzzleData: PuzzleData = {
   solution: "197568423852394167634172598763285914429716835581943276348629751915837642276451389",
   difficulty: -15174,
   obvious_single_drill: 80,
@@ -79,7 +79,7 @@ const presolvedPuzzleDataString = JSON.stringify(presolvedPuzzleData);
 await assertRedisContainsPuzzleData(client, "007500023850004060030102590700200010000710835080040076300620751915837042276000000", presolvedPuzzleData);
 
 // Verify newly solved puzzle is in Redis
-const newlySolvedPuzzleData = {
+const newlySolvedPuzzleData: PuzzleData = {
   solution: "567832914329614758148957236756421389934785621281369475892576143673148592415293867",
   difficulty: -15174,
   obvious_single_drill: 80,
