@@ -43,7 +43,7 @@ export async function startRedis(): Promise<boolean> {
     stderr: "inherit",
   });
   const startExitCode = await dockerStart.exited;
-  if (startExitCode === 0) {
+  if (startExitCode === SUCCESS_CODE) {
     const seconds = ((Date.now() - startTime) / 1000).toFixed(1);
     log(`Redis Docker restarted successfully in ${seconds} seconds.`, COLORS.GREEN);
     return true;
