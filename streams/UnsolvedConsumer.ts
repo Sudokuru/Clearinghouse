@@ -1,4 +1,4 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 import { connectToRedis, QUIT_REDIS_MSG } from "../utils/redis";
 import { log } from "../utils/logs";
 import { NEW_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
@@ -41,7 +41,7 @@ if (Number.isNaN(CUTOFF_TIME)) {
 }
 
 // Create Redis Client
-const client = createClient();
+const client: RedisClientType = createClient();
 
 connectToRedis(client);
 

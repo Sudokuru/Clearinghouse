@@ -1,4 +1,4 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
@@ -39,7 +39,7 @@ if (!started) {
 }
 
 // Create Redis Client
-const client = createClient();
+const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 

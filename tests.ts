@@ -1,4 +1,4 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
 import { assertOutputContains, assertRedisContainsPuzzleData, assertStringInArrayExactlyOnce, cleanup } from "./utils/testing";
@@ -12,7 +12,7 @@ if (!started) {
 }
 
 // Create Redis Client
-const client = createClient();
+const client: RedisClientType = createClient();
 
 try {
   connectToRedis(client);

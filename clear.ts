@@ -1,9 +1,9 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 import { CLEAR_REDIS_MSG, connectToRedis, QUIT_REDIS_MSG } from "./utils/redis";
 import { COLORS, log } from "./utils/logs";
 
 // Create Redis Client
-const client = createClient();
+const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 
