@@ -143,7 +143,7 @@ export async function getPuzzleDataFromRedis(client: RedisClientType, puzzle: st
   const parsed = PuzzleDataSchema.safeParse(data);
 
   if (!parsed.success) {
-    log(`❌ failed to parse puzzle data from Redis.`, COLORS.RED);
+    log(`❌ failed to parse the following puzzle data from Redis: ${data}`, COLORS.RED);
     return null;
   }
 

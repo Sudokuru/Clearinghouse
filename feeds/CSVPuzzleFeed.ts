@@ -45,7 +45,7 @@ export class CSVPuzzleFeed implements PuzzleFeed {
       });
       let parsed = PuzzleDataSchema.safeParse(puzzle.data);
       if (!parsed.success) {
-        log(`Failed to safely parse the following csv puzzle data: ${puzzle.data}.`, COLORS.RED);
+        log(`Failed to safely parse the following csv puzzle data: ${JSON.stringify(puzzle.data)}.`, COLORS.RED);
         process.exit(1);
       }
       puzzle.data = parsed.data;
