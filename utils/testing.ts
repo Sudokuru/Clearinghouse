@@ -62,7 +62,10 @@ export async function assertRedisContainsPuzzleData(redisClient: RedisClientType
  * Verifies string occurs exactly once in provided string array
  */
 export async function assertStringInArrayExactlyOnce(redisClient: RedisClientType, strings: string[], string: string) {
-  if (strings.filter(str => str === string).length !== 1) {
-    await cleanupAndExit(`'${string}' did not occur exactly once in '${strings}'.`, redisClient);
+  const occurrences = strings.filter(str => str === string).length;
+  if (occurrences === 0) {
+    cleanupAndExit(`'${string}' was not found in the array.`, redisClient);
+  } else if (occurrences > 1) {
+    cleanupAndExit(`'${string}' occurred ${occurrences} times in the array, expected exactly once.`, redisClient);
   }
 }
