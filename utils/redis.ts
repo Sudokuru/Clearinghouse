@@ -18,6 +18,11 @@ export const QUIT_REDIS_MSG = "Redis connection closed. Exiting.";
  * Returns true if the container started or restarted successfully, otherwise false.
  */
 export async function startRedis(): Promise<boolean> {
+  // GitHub Action creates Redis Service
+  if (process.env.CI === "true") {
+    return true;
+  }
+
   log("Starting Redis Docker...", COLORS.YELLOW);
   const startTime = Date.now();
 
@@ -58,6 +63,11 @@ export async function startRedis(): Promise<boolean> {
  * Returns true if the container stopped successfully, otherwise false.
  */
 export async function stopRedis(): Promise<boolean> {
+  // GitHub Action creates Redis Service
+  if (process.env.CI === "true") {
+    return true;
+  }
+
   log("Stopping Redis Docker...", COLORS.YELLOW);
   const startTime = Date.now();
 
