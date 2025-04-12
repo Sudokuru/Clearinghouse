@@ -120,7 +120,11 @@ export async function clearRedis(): Promise<Subprocess> {
     cmd: ["bun", "clear.ts"],
     stdout: "pipe",
   });
-  await clearRun.exited;
+  const exitCode = await clearRun.exited;
+  if (exitCode !== SUCCESS_CODE) {
+    const stderr = await new Response(clearRun.stderr).text();
+    log(`Failed to clear Redis: ${stderr}`, COLORS.RED);
+  }
   return clearRun;
 }
 
