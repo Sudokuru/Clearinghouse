@@ -2,6 +2,7 @@ import { Subprocess } from "bun";
 import { COLORS, log } from "./logs";
 import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { RedisClientType } from "redis";
+import { config } from "../package.json" with { type: "json" };
 
 const CONTAINER_NAME = "sudoku-redis";
 const SUCCESS_CODE = 0;
@@ -28,7 +29,7 @@ export async function startRedis(): Promise<boolean> {
 
   // Try to run a new Redis Docker container.
   const dockerRun = Bun.spawn({
-    cmd: ["docker", "run", "--name", CONTAINER_NAME, "-d", "-p", "6379:6379", "redis:7.4"],
+    cmd: ["docker", "run", "--name", CONTAINER_NAME, "-d", "-p", "6379:6379", config.redisImage],
     stdout: "inherit",
     stderr: "inherit",
   });

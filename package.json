@@ -5,6 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "config": {
+    "redisImage": "redis:7.4"
+  },
   "author": "",
   "license": "",
   "dependencies": {
