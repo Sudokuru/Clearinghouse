@@ -7,31 +7,8 @@ on:
       - main
 
 jobs:
-  config:
-    runs-on: ubuntu-latest
-    outputs:
-      redisImage: ${{ steps.read.outputs.redisImage }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Read redisImage from package.json
-        id: read
-        run: |
-          echo "redisImage=$(jq -r .config.redisImage package.json)" >> "$GITHUB_OUTPUT"
-
   test:
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: ${{ needs.config.outputs.redisImage }}
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
