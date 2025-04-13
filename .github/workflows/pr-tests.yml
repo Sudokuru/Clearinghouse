@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       redis:
-        image: redis:7.4
+        image: ${{ steps.get_redis_version.outputs.redis_image }}
         ports:
           - 6379:6379
         options: >-
@@ -22,6 +22,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get Redis image version from package.json
+        id: get_redis_version
+        run: |
+          REDIS_IMAGE=$(jq -r .config.redisImage package.json)
+          echo "redis_image=$REDIS_IMAGE" >> $GITHUB_ENV
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
