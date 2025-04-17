@@ -18,7 +18,7 @@
 # GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
 # PUZZLE_FILE is the optional file with one sudoku puzzle string per line to solve
 # SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
-GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
+GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
 
 # Exec into the Redis container to run Redis commands (run exit when done)
 docker exec -it sudoku-redis redis-cli
