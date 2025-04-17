@@ -1,0 +1,29 @@
+name: PR Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies with Bun
+        run: bun install
+
+      - name: Run tests
+        id: test
+        shell: bash
+        run: |
+          set -o pipefail
+          bun tests.ts | tee test-output.txt
+          grep -q '\[Clearinghouse\] ✅ Tests passed successfully!' test-output.txt
+

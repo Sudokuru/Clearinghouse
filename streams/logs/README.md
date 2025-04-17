@@ -1,0 +1,1 @@
+This directory stores log files from consumer threads and is automatically cleared before every run of start.ts

@@ -1,15 +1,20 @@
 {
   "name": "clearinghouse",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "config": {
+    "redisImage": "redis:7.4"
+  },
   "author": "",
   "license": "",
   "dependencies": {
-    "papaparse": "^5.4.1",
+    "@types/bun": "^1.2.2",
+    "@types/node": "^20.10.4",
+    "redis": "^4.7.0",
     "sudokuru": "^3.1.1",
-    "@types/node": "^20.10.4"
+    "zod": "^3.24.2"
   }
 }
