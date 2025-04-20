@@ -114,8 +114,6 @@ console.log("Temp logging this to make tests: `" + ingestPuzzlesOutput + "`");
 
 // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
 
-// TODO: Create GitHub Pipeline PR/Merge Job to run this test file and pass if final log outputted or just exit code == 0
-
 // TODO: As converting export and difficulty report scripts run and test them here too
 
 // Cleanup
