@@ -3,6 +3,7 @@ import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
 import { assertOutputContains, cleanup } from "./utils/testing";
 import { testIngestPuzzles } from "./tests/test_ingest_puzzles";
+import { testIngestDrills } from "./tests/test_ingest_drills";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -29,7 +30,9 @@ const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStre
 
 await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "clear.ts", client);
 
+// Run the test files
 await testIngestPuzzles(client);
+await testIngestDrills(client);
 
 // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
 
