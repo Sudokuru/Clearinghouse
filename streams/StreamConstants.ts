@@ -5,3 +5,4 @@ export const NEW_SOLVED_SET: string = "new:solved:puzzles";
 
 // File paths
 export const DEFAULT_SOLVED_PUZZLES_FILE = "puzzles.csv";
+export const DEFAULT_SOLVED_DRILLS_FILE = "drills.csv";

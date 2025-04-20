@@ -24,6 +24,6 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          bun tests.ts | tee test-output.txt
+          bun run_tests.ts | tee test-output.txt
           grep -q '\[Clearinghouse\] ✅ Tests passed successfully!' test-output.txt
 
