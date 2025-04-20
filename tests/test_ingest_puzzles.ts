@@ -5,7 +5,7 @@ import { Puzzle, PuzzleData } from "../types/Puzzle";
 import { CSVPuzzleFeed } from "../feeds/CSVPuzzleFeed";
 
 export async function testIngestPuzzles(redisClient: RedisClientType): Promise<void> {
-  const timeLimit: string = "5"; // TODO: may need to raise this if not enough for consumers to go through > 1 batch
+  const timeLimit: string = "5";
   const threads: string = "2";
   const unsolvedPuzzleFile: string = "puzzles1.txt";
   const solvedPuzzleFile: string = "tests.csv";
