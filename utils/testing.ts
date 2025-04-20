@@ -47,7 +47,7 @@ export async function assertOutputContains(output: string, contained: string[], 
 export async function assertRedisContainsPuzzleData(redisClient: RedisClientType, puzzle: string, puzzleData: PuzzleData) {
   const presolvedActualData = await getPuzzleDataFromRedis(redisClient, puzzle);
   if (presolvedActualData === null) {
-    await cleanupAndExit("Failed to get presolved puzzle out of Redis after running start.ts", redisClient);
+    await cleanupAndExit("Failed to get presolved puzzle out of Redis after running ingest_puzzles.ts", redisClient);
   }
   const presolvedActualString: string = JSON.stringify(presolvedActualData);
   const presolvedExpectedString: string = JSON.stringify(puzzleData);

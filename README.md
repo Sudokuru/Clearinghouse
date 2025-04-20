@@ -13,12 +13,12 @@
 # Usage
 
 ```bash
-# Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
+# Start Redis docker, ingest puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
 # GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
 # GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
 # PUZZLE_FILE is the optional file with one sudoku puzzle string per line to solve
 # SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
-GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
+GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun ingest_puzzles.ts
 
 # Exec into the Redis container to run Redis commands (run exit when done)
 docker exec -it sudoku-redis redis-cli
@@ -38,7 +38,7 @@ bun clear.ts
 # Run tests
 bun tests.ts
 
-# Example helper script to run start.ts on multiple new unsolved puzzle files at once
+# Example helper script to run ingest_puzzles.ts on multiple new unsolved puzzle files at once
 bash runall.sh
 
 # Temporarily Deprecated Features Usable Only in git tag 1.0.0

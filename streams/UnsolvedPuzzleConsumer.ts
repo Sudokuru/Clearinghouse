@@ -87,7 +87,7 @@ async function processPuzzle(puzzle: string): Promise<void> {
   await client.hSet(new PuzzleKey(puzzle, true).toString(), solvedFields);
 
   // Insert new solved key
-  // These are read these in start.ts after consumers finish and appended to solved puzzles csv
+  // These are read these in ingest_puzzles.ts after consumers finish and appended to solved puzzles csv
   await client.sAdd(NEW_SOLVED_SET, puzzle);
 }
 

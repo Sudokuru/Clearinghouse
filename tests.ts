@@ -35,8 +35,8 @@ const threads: string = "2";
 const unsolvedPuzzleFile: string = "puzzles1.txt";
 const solvedPuzzleFile: string = "tests.csv";
 
-const startRun = Bun.spawn({
-  cmd: ["sh", "-c", "echo 'y' | bun start.ts"],
+const ingestPuzzlesRun = Bun.spawn({
+  cmd: ["sh", "-c", "echo 'y' | bun ingest_puzzles.ts"],
   env: {
     ...process.env, // preserve env
     GENERATE_TIME_LIMIT: timeLimit,
@@ -46,8 +46,8 @@ const startRun = Bun.spawn({
   },
   stdout: "pipe",
 });
-await startRun.exited;
-const startOutput: string = await new Response(startRun.stdout as ReadableStream<Uint8Array>).text();
+await ingestPuzzlesRun.exited;
+const ingestPuzzlesOutput: string = await new Response(ingestPuzzlesRun.stdout as ReadableStream<Uint8Array>).text();
 
 const expectedConfigOutput: string[] = [
   `Generate Time Limit: ${timeLimit}`,
@@ -57,8 +57,8 @@ const expectedConfigOutput: string[] = [
   'Are these values correct? (y/n):'
 ]
 
-await assertOutputContains(startOutput, expectedConfigOutput, "start.ts config", client);
-await assertOutputContains(startOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "start.ts redis connection", client);
+await assertOutputContains(ingestPuzzlesOutput, expectedConfigOutput, "ingest_puzzles.ts config", client);
+await assertOutputContains(ingestPuzzlesOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "ingest_puzzles.ts redis connection", client);
 
 // Verify presolved puzzle is in Redis
 const presolvedPuzzleData: PuzzleData = {
@@ -110,9 +110,9 @@ await assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleD
 // Verify unsolved puzzle is in tests.csv file
 await assertStringInArrayExactlyOnce(client, puzzleDataStrings, newlySolvedPuzzleDataString);
 
-console.log("Temp logging this to make tests: `" + startOutput + "`");
+console.log("Temp logging this to make tests: `" + ingestPuzzlesOutput + "`");
 
-// TODO: Run start.ts and verify saying n/N exits early
+// TODO: Run ingest_puzzles.ts and verify saying n/N exits early
 
 // TODO: Create GitHub Pipeline PR/Merge Job to run this test file and pass if final log outputted or just exit code == 0
 

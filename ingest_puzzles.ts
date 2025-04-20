@@ -90,7 +90,7 @@ const cutoffTime = Date.now() + (generateTimeLimit * 1000);
 const processes: Subprocess<"ignore", "pipe", "inherit">[] = [];
 for (let i: number = 0; i < generateThreads; i++) {
   processes.push(Bun.spawn({
-    cmd: ["bun", "streams/UnsolvedConsumer.ts"],
+    cmd: ["bun", "streams/UnsolvedPuzzleConsumer.ts"],
     env: {
       ...process.env, // preserve env so have bun in $PATH
       CONSUMER_THREAD: i.toString(),
