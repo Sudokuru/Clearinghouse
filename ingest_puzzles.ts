@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from "redis";
-import { COLORS, log } from "./utils/logs";
+import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
 import { connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleKey } from "./types/Puzzle";
@@ -16,21 +16,15 @@ const generateThreads: number = parseInt(process.env.GENERATE_THREADS ?? "1", BA
 const unsolvedPuzzleFile: string | null = process.env.UNSOLVED_PUZZLE_FILE ?? null;
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
-// Log config values
-log("Configuration Values:");
-log(`Generate Time Limit: ${generateTimeLimit}`);
-log(`Generate Threads: ${generateThreads}`);
-log(`Unsolved Puzzle File: ${unsolvedPuzzleFile}`);
-log(`Solved Puzzle File: ${solvedPuzzleFile}`);
-
-// Prompt the user to confirm the configuration.
-const answer = prompt("\nAre these values correct? (y/n): ");
-
-// If the answer is not 'y' (ignoring case), exit the process.
-if (answer?.toLowerCase() !== "y") {
-  log("Configuration not confirmed. Exiting...", COLORS.RED);
-  process.exit(1);
+const config = {
+  "Generate Time Limit": generateTimeLimit,
+  "Generate Threads": generateThreads,
+  "Unsolved Puzzle File": unsolvedPuzzleFile,
+  "Solved Puzzle File": solvedPuzzleFile
 }
+
+// Prompt user to confirm configured values else exits early
+promptUserToConfirmValues(config);
 
 // Start the Redis Docker Container
 const started = await startRedis();

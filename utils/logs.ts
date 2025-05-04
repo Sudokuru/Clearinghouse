@@ -29,3 +29,25 @@ export function log(message: string, color?: COLORS, file?: string): void {
     console.log(`[Clearinghouse] ${message}`);
   }
 }
+
+/**
+ * Logs provided values and prompts user to confirm they are correct
+ * If user does not confirm they are correct then exits the program
+ * @param values - Name, value pairs to log for the user to confirm
+ */
+export function promptUserToConfirmValues(values: Record<string, unknown>): void {
+  // Log name, value pairs for the user to confirm
+  log("Configuration Values:");
+  for (const [name, value] of Object.entries(values)) {
+    log(`${name}: ${value}`);
+  }
+
+  // Prompt the user to confirm the configuration.
+  const answer = prompt("\nAre these values correct? (y/n): ");
+
+  // If the answer is not 'y' (ignoring case), exit the process.
+  if (answer?.toLowerCase() !== "y") {
+    log("Configuration not confirmed. Exiting...", COLORS.RED);
+    process.exit(1);
+  }
+}
