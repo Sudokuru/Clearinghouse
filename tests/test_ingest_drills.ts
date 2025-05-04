@@ -29,7 +29,7 @@ export async function testIngestDrills(redisClient: RedisClientType): Promise<vo
     `Max Drills Per Strategy: ${maxDrillsPerStrategy}`,
     `Solved Puzzle File: ${solvedPuzzleFile}`,
     `Solved Drill File: ${solvedDrillFile}`,
-    //'Are these values correct? (y/n):'
+    'Are these values correct? (y/n):'
   ]
   
   await assertOutputContains(ingestDrillsOutput, expectedConfigOutput, "ingest_drills.ts config", redisClient);
