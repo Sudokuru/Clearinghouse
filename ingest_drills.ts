@@ -1,5 +1,7 @@
+import { createClient, RedisClientType } from "redis";
 import { DEFAULT_SOLVED_DRILLS_FILE } from "./streams/StreamConstants";
-import { log, promptUserToConfirmValues } from "./utils/logs";
+import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
+import { connectToRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -19,3 +21,17 @@ const config = {
 
 // Prompt user to confirm configured values else exits early
 promptUserToConfirmValues(config);
+
+// Start the Redis Docker Container
+const started = await startRedis();
+if (!started) {
+  process.exit(1);
+}
+
+// Create Redis Client
+const client: RedisClientType = createClient();
+
+await connectToRedis(client);
+
+await client.quit();
+log(QUIT_REDIS_MSG, COLORS.GREEN);
