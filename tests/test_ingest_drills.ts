@@ -6,7 +6,7 @@ export async function testIngestDrills(redisClient: RedisClientType): Promise<vo
   const timeLimit: string = "5";
   const threads: string = "2";
   const maxDrillsPerStrategy: string = "2";
-  const solvedPuzzleFile: string = "puzzles.csv";
+  const solvedPuzzleFile: string = "tests.csv";
   const solvedDrillFile: string = "drills.csv";
   
   const ingestDrillsRun = Bun.spawn({
