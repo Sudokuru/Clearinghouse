@@ -78,6 +78,9 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
     puzzles.push(puzzle);
   }
   const puzzleDataStrings: string[] = puzzles.map((p) => JSON.stringify(p.data));
+
+  console.log("Puzzle data ingested during test:");
+  console.log(puzzleDataStrings);
   
   // Verify presolved puzzle still in tests.csv and not duplicated
   await assertStringInArrayExactlyOnce(redisClient, puzzleDataStrings, presolvedPuzzleDataString);
