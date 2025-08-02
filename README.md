@@ -35,6 +35,10 @@ bun stop.ts
 # Delete data stored in Redis docker
 bun clear.ts
 
+# Print number of available drills per strategy and the minimum across strategies
+# SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
+SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_drills.ts
+
 # Run tests
 bun run_tests.ts
 
