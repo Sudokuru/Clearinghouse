@@ -22,8 +22,8 @@ export async function cleanup(redisClient: RedisClientType): Promise<void> {
  * Does cleanup, logs test failure with given message, and exits early. 
  */
 export async function cleanupAndExit(message: string, redisClient: RedisClientType): Promise<void> {
-  log("❌ Test Failed: " + message, COLORS.RED);
   await cleanup(redisClient);
+  log("❌ Test Failed: " + message, COLORS.RED);
   process.exit(1);
 }
 
