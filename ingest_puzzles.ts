@@ -1,12 +1,12 @@
 import { createClient, RedisClientType } from "redis";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
-import { connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
+import { connectToRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleKey } from "./types/Puzzle";
+import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
-import { DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_PUZZLES_FILE, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
-import { createWriteStream } from "fs";
+import { consumeSolvedPuzzles } from "./streams/SolvedPuzzleConsumer";
 
 
 // Assign environment variables to variables with fallback defaults.
@@ -102,22 +102,8 @@ log("Finished solving puzzles.", COLORS.GREEN);
 
 await client.del(UNSOLVED_STREAM);
 
-// Open solved puzzles csv file in append mode
-const solvedPuzzleFileStream = createWriteStream("data/solved/" + solvedPuzzleFile, { flags: "a" });
-
-// Pop newly solved puzzles off Redis set and append them to solved puzzles csv file
-let puzzleStrArr: string[];
-while ((puzzleStrArr = await client.sPop(NEW_SOLVED_SET)) !== null && puzzleStrArr.length !== 0) {
-  const puzzleStr: string = puzzleStrArr.toString();
-  const puzzleData = await getPuzzleDataFromRedis(client, puzzleStr);
-  if (puzzleData === null) {
-    continue;
-  }
-  const puzzleDataCSV = PuzzleDataFields.map((key) => puzzleData[key]).join(",");
-  solvedPuzzleFileStream.write(puzzleStr + "," + puzzleDataCSV + "\n");
-}
-
-solvedPuzzleFileStream.end();
+// Read newly solved puzzles from Redis and add them to solved puzzle file
+await consumeSolvedPuzzles(client, solvedPuzzleFile);
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
