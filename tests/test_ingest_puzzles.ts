@@ -8,7 +8,7 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   const timeLimit: string = "5";
   const threads: string = "2";
   const unsolvedPuzzleFile: string = "puzzles1.txt";
-  const solvedPuzzleFile: string = "tests.csv";
+  const solvedPuzzleFile: string = "testPuzzles.csv";
   
   const ingestPuzzlesRun = Bun.spawn({
     cmd: ["sh", "-c", "echo 'y' | bun ingest_puzzles.ts"],
@@ -71,8 +71,8 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   const newlySolvedPuzzleDataString = JSON.stringify(newlySolvedPuzzleData);
   await assertRedisContainsPuzzleData(redisClient, "007030010329000750148057036000421009930005000001060470892000143073008500010093867", newlySolvedPuzzleData);
   
-  // Read puzzles we wrote to tests.csv
-  const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/tests.csv");
+  // Read puzzles we wrote to testPuzzles.csv
+  const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/testPuzzles.csv");
   const puzzles: Puzzle[] = [];
   for (let puzzle = await solved.next(); puzzle !== null; puzzle = await solved.next()) {
     puzzles.push(puzzle);
@@ -82,10 +82,10 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   console.log("Puzzle data ingested during test:");
   console.log(puzzleDataStrings);
   
-  // Verify presolved puzzle still in tests.csv and not duplicated
+  // Verify presolved puzzle still in testPuzzles.csv and not duplicated
   await assertStringInArrayExactlyOnce(redisClient, puzzleDataStrings, presolvedPuzzleDataString);
   
-  // Verify unsolved puzzle is in tests.csv file
+  // Verify unsolved puzzle is in testPuzzles.csv file
   await assertStringInArrayExactlyOnce(redisClient, puzzleDataStrings, newlySolvedPuzzleDataString);
   
   console.log("Test Ingest Puzzle Logs:\n" + ingestPuzzlesOutput + "\n");
