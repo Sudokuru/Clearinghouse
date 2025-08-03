@@ -4,7 +4,6 @@ import { QUIT_REDIS_MSG, SUCCESS_CONNECT_MSG } from "../utils/redis";
 
 export async function testIngestDrills(redisClient: RedisClientType): Promise<void> {
   const timeLimit: string = "5";
-  const threads: string = "2";
   const maxDrillsPerStrategy: string = "2";
   const solvedPuzzleFile: string = "testPuzzles.csv";
   const solvedDrillFile: string = "drills.csv";
@@ -14,7 +13,6 @@ export async function testIngestDrills(redisClient: RedisClientType): Promise<vo
     env: {
       ...process.env, // preserve env
       GENERATE_TIME_LIMIT: timeLimit,
-      GENERATE_THREADS: threads,
       MAX_DRILLS_PER_STRATEGY: maxDrillsPerStrategy,
       SOLVED_PUZZLE_FILE: solvedPuzzleFile,
       SOLVED_DRILL_FILE: solvedDrillFile,
@@ -26,7 +24,6 @@ export async function testIngestDrills(redisClient: RedisClientType): Promise<vo
   
   const expectedConfigOutput: string[] = [
     `Generate Time Limit: ${timeLimit}`,
-    `Generate Threads: ${threads}`,
     `Max Drills Per Strategy: ${maxDrillsPerStrategy}`,
     `Solved Puzzle File: ${solvedPuzzleFile}`,
     `Solved Drill File: ${solvedDrillFile}`,
