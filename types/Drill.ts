@@ -1,4 +1,4 @@
-export interface Drill {
+export type Drill = {
     // Strategy is the drill uses
     // Initial puzzle is the initial state of the puzzle where the drill was found
     // Drill puzzle is the state of the puzzle (excluding notes) right before the drill is used

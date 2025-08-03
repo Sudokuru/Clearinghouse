@@ -60,7 +60,7 @@ export class PuzzleKey {
   }
 }
 
-export interface Puzzle {
+export type Puzzle = {
   // The Redis key, structured as prefix (e.g. 'solved:') followed by 81 character
   // puzzle string with 0s for empty cells
   key: PuzzleKey;
