@@ -1,6 +1,7 @@
-import { getIterator, PuzzleFeed } from "./PuzzleFeed";
+import { PuzzleFeed } from "./PuzzleFeed";
 import { Puzzle, PuzzleData, PuzzleDataSchema, PuzzleFieldCount, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "../utils/logs";
+import { getIterator } from "./Iterator";
 
 export class CSVPuzzleFeed implements PuzzleFeed {
   private iterator: AsyncIterator<string>;
