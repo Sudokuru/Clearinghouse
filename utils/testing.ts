@@ -21,8 +21,10 @@ export async function cleanup(redisClient: RedisClientType): Promise<void> {
 /**
  * Does cleanup, logs test failure with given message, and exits early. 
  */
-export async function cleanupAndExit(message: string, redisClient: RedisClientType): Promise<void> {
-  await cleanup(redisClient);
+export async function cleanupAndExit(message: string, redisClient?: RedisClientType): Promise<void> {
+  if (redisClient) {
+    await cleanup(redisClient);
+  }
   log("❌ Test Failed: " + message, COLORS.RED);
   process.exit(1);
 }
@@ -32,7 +34,7 @@ export async function cleanupAndExit(message: string, redisClient: RedisClientTy
  * If a substring is not found in output then test failure is loggged, output is logged,
  * redis is cleared, and test process is exited. Otherwise, clears Redis and exits the program.
  */
-export async function assertOutputContains(output: string, contained: string[], name: string, redisClient: RedisClientType): Promise<void> {
+export async function assertOutputContains(output: string, contained: string[], name: string, redisClient?: RedisClientType): Promise<void> {
   for (const substring of contained) {
     if (!output.includes(substring)) {
       log(`Captured logs: ${output}`);

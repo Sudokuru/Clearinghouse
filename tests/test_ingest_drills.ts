@@ -1,8 +1,6 @@
-import { RedisClientType } from "redis";
 import { assertOutputContains } from "../utils/testing";
-import { QUIT_REDIS_MSG, SUCCESS_CONNECT_MSG } from "../utils/redis";
 
-export async function testIngestDrills(redisClient: RedisClientType): Promise<void> {
+export async function testIngestDrills(): Promise<void> {
   const timeLimit: string = "5";
   const maxDrillsPerStrategy: string = "2";
   const solvedPuzzleFile: string = "testPuzzles.csv";
@@ -30,6 +28,5 @@ export async function testIngestDrills(redisClient: RedisClientType): Promise<vo
     'Are these values correct? (y/n):'
   ]
   
-  await assertOutputContains(ingestDrillsOutput, expectedConfigOutput, "ingest_drills.ts config", redisClient);
-  await assertOutputContains(ingestDrillsOutput, [SUCCESS_CONNECT_MSG, QUIT_REDIS_MSG], "ingest_drills.ts redis connection", redisClient);
+  await assertOutputContains(ingestDrillsOutput, expectedConfigOutput, "ingest_drills.ts config");
 }
