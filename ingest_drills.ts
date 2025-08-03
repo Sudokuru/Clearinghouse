@@ -1,4 +1,7 @@
+import { CSVDrillFeed } from "./feeds/CSVDrillFeed";
 import { DEFAULT_SOLVED_DRILLS_FILE } from "./streams/StreamConstants";
+import { Drill } from "./types/Drill";
+import { addDrill, DrillSet } from "./types/DrillSet";
 import { promptUserToConfirmValues } from "./utils/logs";
 
 // Assign environment variables to variables with fallback defaults.
@@ -17,3 +20,14 @@ const config = {
 
 // Prompt user to confirm configured values else exits early
 promptUserToConfirmValues(config);
+
+// Ingest presolved drills
+const set: DrillSet = {
+  drills: [],
+  seenDrill: new Set<string>()
+};
+const solved: CSVDrillFeed = new CSVDrillFeed("data/solved/" + solvedDrillFile);
+let drill: Drill | null;
+while ((drill = await solved.next()) !== null) {
+  addDrill(set, drill);
+}

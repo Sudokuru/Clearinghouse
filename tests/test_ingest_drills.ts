@@ -4,7 +4,7 @@ export async function testIngestDrills(): Promise<void> {
   const timeLimit: string = "5";
   const maxDrillsPerStrategy: string = "2";
   const solvedPuzzleFile: string = "testPuzzles.csv";
-  const solvedDrillFile: string = "drills.csv";
+  const solvedDrillFile: string = "testDrills.csv";
   
   const ingestDrillsRun = Bun.spawn({
     cmd: ["sh", "-c", "echo 'y' | bun ingest_drills.ts"],
