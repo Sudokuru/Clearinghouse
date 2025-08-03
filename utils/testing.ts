@@ -11,11 +11,16 @@ export async function cleanup(redisClient: RedisClientType): Promise<void> {
   await clearRedis();
   await redisClient.quit();
   await stopRedis();
-  Bun.spawn({
+  await Bun.spawn({
     cmd: ["git", "checkout", "data/solved/testPuzzles.csv"],
     stdout: "inherit",
     stderr: "inherit",
-  });
+  }).exited;
+  await Bun.spawn({
+    cmd: ["git", "checkout", "data/solved/testDrills.csv"],
+    stdout: "inherit",
+    stderr: "inherit",
+  }).exited;
 }
 
 /**
