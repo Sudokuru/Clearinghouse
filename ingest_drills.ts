@@ -1,7 +1,10 @@
+import { getDrillPuzzleString } from "sudokuru";
 import { CSVDrillFeed } from "./feeds/CSVDrillFeed";
+import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { DEFAULT_SOLVED_DRILLS_FILE } from "./streams/StreamConstants";
 import { Drill } from "./types/Drill";
 import { addDrill, DrillSet } from "./types/DrillSet";
+import { DrillFields, Puzzle } from "./types/Puzzle";
 import { promptUserToConfirmValues } from "./utils/logs";
 
 // Assign environment variables to variables with fallback defaults.
@@ -31,4 +34,21 @@ const solved: CSVDrillFeed = new CSVDrillFeed("data/solved/" + solvedDrillFile);
 let drill: Drill | null;
 while ((drill = await solved.next()) !== null) {
   addDrill(set, drill);
+}
+
+// Ingest drills from solved puzzles until hitting max per strategy
+const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
+let puzzle: Puzzle | null;
+while ((puzzle = await puzzles.next()) !== null) {
+  for (const field of DrillFields) {
+    if (puzzle.data[field] !== -1) {
+      if ((set.drillCounts.get(field) ?? 0) < maxDrillsPerStrategy) {
+        addDrill(set, {
+          strategy: field,
+          initialPuzzle: puzzle.key.getPuzzle(),
+          drillPuzzle: getDrillPuzzleString(puzzle.key.getPuzzle(), puzzle.data[field])
+        });
+      }
+    }
+  }
 }

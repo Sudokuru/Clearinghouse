@@ -60,6 +60,10 @@ export class PuzzleKey {
       return `${this.puzzle}`;
     }
   }
+
+  public getPuzzle(): string {
+    return this.puzzle;
+  }
 }
 
 export type Puzzle = {
