@@ -24,7 +24,8 @@ promptUserToConfirmValues(config);
 // Ingest presolved drills
 const set: DrillSet = {
   drills: [],
-  seenDrill: new Set<string>()
+  seenDrill: new Set<string>(),
+  drillCounts: new Map<string, number>()
 };
 const solved: CSVDrillFeed = new CSVDrillFeed("data/solved/" + solvedDrillFile);
 let drill: Drill | null;
