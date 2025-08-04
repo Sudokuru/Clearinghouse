@@ -6,6 +6,8 @@ import { Drill } from "./types/Drill";
 import { addDrill, DrillSet } from "./types/DrillSet";
 import { DrillFields, Puzzle } from "./types/Puzzle";
 import { promptUserToConfirmValues } from "./utils/logs";
+import { WriteStream } from "fs";
+import { getWriteStream } from "./utils/helpers";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -35,18 +37,25 @@ while ((drill = await solved.next()) !== null) {
 }
 
 // Ingest drills from solved puzzles until hitting max per strategy
+// Write new drills to solved drill file as they are solved
 const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
+const solvedDrillFileStream: WriteStream = await getWriteStream(solvedDrillFile);
 while ((puzzle = await puzzles.next()) !== null) {
   for (const field of DrillFields) {
     if (puzzle.data[field] !== -1) {
       if ((set.drillCounts.get(field) ?? 0) < maxDrillsPerStrategy) {
+        const drillPuzzleString = getDrillPuzzleString(puzzle.key.getPuzzle(), puzzle.data[field]);
         addDrill(set, {
           strategy: field,
           initialPuzzle: puzzle.key.getPuzzle(),
-          drillPuzzle: getDrillPuzzleString(puzzle.key.getPuzzle(), puzzle.data[field])
+          drillPuzzle: drillPuzzleString
         });
+        solvedDrillFileStream.write(
+          field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString
+        );
       }
     }
   }
 }
+solvedDrillFileStream.close();
