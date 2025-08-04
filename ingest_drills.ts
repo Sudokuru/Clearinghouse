@@ -46,14 +46,16 @@ while ((puzzle = await puzzles.next()) !== null) {
     if (puzzle.data[field] !== -1) {
       if ((set.drillCounts.get(field) ?? 0) < maxDrillsPerStrategy) {
         const drillPuzzleString = getDrillPuzzleString(puzzle.key.getPuzzle(), puzzle.data[field]);
-        addDrill(set, {
+        const drillIsNew: boolean = addDrill(set, {
           strategy: field,
           initialPuzzle: puzzle.key.getPuzzle(),
           drillPuzzle: drillPuzzleString
         });
-        solvedDrillFileStream.write(
-          field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString
-        );
+        if (drillIsNew) {
+          solvedDrillFileStream.write(
+            field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString
+          );
+        }
       }
     }
   }

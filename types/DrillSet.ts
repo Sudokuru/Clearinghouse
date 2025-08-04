@@ -8,12 +8,14 @@ export type DrillSet = {
     drillCounts: Map<string, number>;
 };
 
-// If provided drill not already in set then it adds it
-export function addDrill(set: DrillSet, drill: Drill) {
+// If provided drill not already in set then it adds it and returns true, else returns false
+export function addDrill(set: DrillSet, drill: Drill): boolean {
     const key = drill.strategy + ":" + drill.drillPuzzle;
     if (!set.seenDrill.has(key)) {
         set.drills.push(drill);
         set.drillCounts.set(drill.strategy, (set.drillCounts.get(drill.strategy) ?? 0) + 1);
         set.seenDrill.add(key);
+        return true;
     }
+    return false;
 }
