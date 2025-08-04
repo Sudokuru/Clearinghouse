@@ -1,9 +1,10 @@
 import { RedisClientType } from "redis";
 import { log } from "../utils/logs";
-import { createWriteStream, promises as fs } from "fs";
+import { createWriteStream } from "fs";
 import { NEW_SOLVED_SET } from "./StreamConstants";
 import { getPuzzleDataFromRedis } from "../utils/redis";
 import { PuzzleDataFields } from "../types/Puzzle";
+import { checkIfFileEndsWithoutNewline } from "../utils/helpers";
 
 // Constants
 const SOLVED_DIRECTORY: string = "data/solved/";
@@ -19,23 +20,7 @@ export async function consumeSolvedPuzzles(client: RedisClientType, solvedPuzzle
   const filePath = SOLVED_DIRECTORY + solvedPuzzleFile;
 
   // Check if file exists and whether it ends without a newline
-  let needsNewline = false;
-  try {
-    const stats = await fs.stat(filePath);
-    if (stats.size > 0) {
-      const handle = await fs.open(filePath, 'r');
-      const { buffer } = await handle.read({
-        buffer: Buffer.alloc(1),
-        position: stats.size - 1,
-      });
-      await handle.close();
-      // if last byte isn't '\n' (0x0A), we'll inject one
-      needsNewline = buffer[0] !== 0x0A;
-    }
-  } catch (err: any) {
-    // ignore if file doesn't exist yet; it'll be created below
-    if (err.code !== 'ENOENT') throw err;
-  }
+  let needsNewline = await checkIfFileEndsWithoutNewline(filePath);
 
   // Open solved puzzles CSV file in append mode
   const solvedPuzzleFileStream = createWriteStream(filePath, { flags: "a" });
