@@ -1,4 +1,4 @@
-import { promises as fs } from "fs";
+import { createWriteStream, promises as fs, WriteStream } from "fs";
 
 /**
  * Executes a function safely, returning either a success result or an error.
@@ -14,7 +14,7 @@ export function attempt<T>(fn: () => T): { ok: true; result: T } | { ok: false; 
 /**
  * Returns true if file ends with newline or does not exist, false otherwise
  */
-export async function checkIfFileEndsWithoutNewline(filePath: string): Promise<boolean> {
+async function checkIfFileEndsWithoutNewline(filePath: string): Promise<boolean> {
   let needsNewline = false;
   try {
     const stats = await fs.stat(filePath);
@@ -32,4 +32,19 @@ export async function checkIfFileEndsWithoutNewline(filePath: string): Promise<b
     if (err.code !== 'ENOENT') throw err;
   }
   return needsNewline;
+}
+
+export async function getWriteStream(filePath: string): Promise<WriteStream> {
+  // Check if file exists and whether it ends without a newline
+  let needsNewline = await checkIfFileEndsWithoutNewline(filePath);
+
+  // Open file in append mode
+  const stream = createWriteStream(filePath, { flags: "a" });
+
+  // If needed, write a leading newline so our first append starts on a new line
+  if (needsNewline) {
+    stream.write("\n");
+  }
+
+  return stream;
 }
