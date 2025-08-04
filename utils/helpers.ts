@@ -21,7 +21,6 @@ export async function checkIfFileEndsWithoutNewline(filePath: string): Promise<b
     if (stats.size > 0) {
       const handle = await fs.open(filePath, 'r');
       const { buffer } = await handle.read({
-        buffer: Buffer.alloc(1),
         position: stats.size - 1,
       });
       await handle.close();
