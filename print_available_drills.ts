@@ -1,7 +1,7 @@
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
 import { DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
-import { Puzzle, PuzzleDataFields, PuzzleData } from "./types/Puzzle";
+import { Puzzle, PuzzleDataFields, PuzzleData, DrillFields } from "./types/Puzzle";
 
 // Assign environment variables to variables with fallback defaults.
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
@@ -13,19 +13,16 @@ const config = {
 // Prompt user to confirm configured values else exits early
 promptUserToConfirmValues(config);
 
-// Collect drill field names
-const drillFields = PuzzleDataFields.filter((field) => field.endsWith("_drill")) as (keyof PuzzleData)[];
-
 // Initialize counts for each drill
 const drillCounts: Record<string, number> = Object.fromEntries(
-  drillFields.map((field) => [field, 0])
+  DrillFields.map((field) => [field, 0])
 );
 
 // Read solved puzzle file and count drills
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 while ((puzzle = await solved.next()) !== null) {
-  for (const field of drillFields) {
+  for (const field of DrillFields) {
     if (puzzle.data[field] !== -1) {
       drillCounts[field]++;
     }
@@ -33,7 +30,7 @@ while ((puzzle = await solved.next()) !== null) {
 }
 
 // Output counts per strategy
-for (const field of drillFields) {
+for (const field of DrillFields) {
   const strategyName = field.replace("_drill", "");
   log(`${strategyName}: ${drillCounts[field]}`);
 }

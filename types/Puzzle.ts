@@ -41,6 +41,8 @@ export const PuzzleDataSchema = z.object(puzzleSchemaShape);
 // Create TS type from Zod schema
 export type PuzzleData = z.infer<typeof PuzzleDataSchema>;
 
+// Collect drill field names
+export const DrillFields = PuzzleDataFields.filter((field) => field.endsWith("_drill")) as (keyof PuzzleData)[];
 
 export class PuzzleKey {
   private puzzle: string;
