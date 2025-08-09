@@ -60,4 +60,5 @@ while ((puzzle = await puzzles.next()) !== null) {
     }
   }
 }
+puzzles.close();
 solvedDrillFileStream.close();
