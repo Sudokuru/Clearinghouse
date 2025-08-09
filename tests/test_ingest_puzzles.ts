@@ -85,10 +85,10 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   console.log(puzzleDataStrings);
   
   // Verify presolved puzzle still in testPuzzles.csv and not duplicated
-  await assertStringInArrayExactlyOnce(redisClient, puzzleDataStrings, presolvedPuzzleDataString);
+  await assertStringInArrayExactlyOnce(puzzleDataStrings, presolvedPuzzleDataString, redisClient);
   
   // Verify unsolved puzzle is in testPuzzles.csv file
-  await assertStringInArrayExactlyOnce(redisClient, puzzleDataStrings, newlySolvedPuzzleDataString);
+  await assertStringInArrayExactlyOnce(puzzleDataStrings, newlySolvedPuzzleDataString, redisClient);
   
   console.log("Test Ingest Puzzle Logs:\n" + ingestPuzzlesOutput + "\n");
 }
