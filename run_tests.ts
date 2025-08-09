@@ -32,7 +32,7 @@ await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, Q
 
 // Run the test files
 await testIngestPuzzles(client);
-await testIngestDrills(client);
+await testIngestDrills();
 
 // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
 
