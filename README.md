@@ -20,6 +20,12 @@
 # SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun ingest_puzzles.ts
 
+# Reads drills found in solved puzzles, generates data for them, and appends them to a csv
+# MAX_DRILLS_PER_STRATEGY is the maximum number of occurrences of a given strategy will be captured and added to csv, defaults to 5000
+# SOLVED_DRILL_FILE is the csv file used to read existing solved drills from and add new ones to, defaults to drills.csv
+# SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
+MAX_DRILLS_PER_STRATEGY=5000 SOLVED_PUZZLE_FILE=puzzles.csv SOLVED_DRILL_FILE=drills.csv bun ingest_drills.ts
+
 # Exec into the Redis container to run Redis commands (run exit when done)
 docker exec -it sudoku-redis redis-cli
 
