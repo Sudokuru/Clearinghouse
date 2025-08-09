@@ -51,5 +51,23 @@ export async function testIngestDrills(): Promise<void> {
   const presolvedDrillString = JSON.stringify(presolvedDrill);
   await assertStringInArrayExactlyOnce(drillStrings, presolvedDrillString);
 
+  // Verify another drill from same puzzle is solved
+  const pairDrill: Drill = {
+    strategy: "obvious_pair_drill",
+    initialPuzzle: "007500023850004060030102590700200010000710835080040076300620751915837042276000000",
+    drillPuzzle: "197500423852394167634172598763200914429716835080040076300620751915837042276000000"
+  }
+  const pairDrillString = JSON.stringify(pairDrill);
+  await assertStringInArrayExactlyOnce(drillStrings, pairDrillString);
+
+  // Verify a drill from another puzzle is solved
+  const singleDrill: Drill = {
+    strategy: "obvious_single_drill",
+    initialPuzzle: "406007021029000476107600380280706910500091000070000608305210807000300000018569243",
+    drillPuzzle: "436987521829135476157642389283756914564891732971423658395214867642378195018569243"
+  }
+  const singleDrillString = JSON.stringify(singleDrill);
+  await assertStringInArrayExactlyOnce(drillStrings, singleDrillString);
+
   console.log("Test Ingest Drill Logs:\n" + ingestDrillsOutput + "\n");
 }
