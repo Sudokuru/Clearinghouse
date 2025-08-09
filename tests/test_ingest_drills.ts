@@ -77,5 +77,17 @@ export async function testIngestDrills(): Promise<void> {
     cleanupAndExit(`Only ${count} obvious_single_drill occurrences were found vs expected 2.`);
   }
 
+  // Verify found all drills for first puzzle
+  count = getAttributeValueCountInDrills("initialPuzzle", "007500023850004060030102590700200010000710835080040076300620751915837042276000000", drills);
+  if (count !== 5) {
+    cleanupAndExit(`Found ${count} drills for first puzzle vs expected 5.`);
+  }
+
+  // Verify didn't find any pointing_triplet drills
+  count = getAttributeValueCountInDrills("strategy", "pointing_triplet_drill", drills);
+  if (count > 0) {
+    cleanupAndExit(`Found ${count} pointing_triplet_drills vs expected 0.`);
+  }
+
   console.log("Test Ingest Drill Logs:\n" + ingestDrillsOutput + "\n");
 }
