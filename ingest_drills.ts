@@ -1,7 +1,7 @@
 import { getDrillPuzzleString } from "sudokuru";
 import { CSVDrillFeed } from "./feeds/CSVDrillFeed";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { DEFAULT_SOLVED_DRILLS_FILE } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_DRILLS_FILE, DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
 import { Drill } from "./types/Drill";
 import { addDrill, DrillSet } from "./types/DrillSet";
 import { DrillFields, Puzzle } from "./types/Puzzle";
@@ -13,7 +13,7 @@ import { getWriteStream } from "./utils/helpers";
 const BASE: number = 10;
 const maxDrillsPerStrategy: number = parseInt(process.env.MAX_DRILLS_PER_STRATEGY ?? "5000", BASE);
 const solvedDrillFile: string = process.env.SOLVED_DRILL_FILE ?? DEFAULT_SOLVED_DRILLS_FILE;
-const solvedPuzzleFile: string | null = process.env.SOLVED_PUZZLE_FILE ?? null;
+const solvedPuzzleFile: string | null = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
 const config = {
   "Max Drills Per Strategy": maxDrillsPerStrategy,
