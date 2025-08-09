@@ -4,6 +4,7 @@ import { COLORS, log } from "./logs";
 import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
 import { z } from "zod";
 import { Drill } from "../types/Drill";
+import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
 
 /**
  * Does Redis cleanup 
@@ -13,12 +14,12 @@ export async function cleanup(redisClient: RedisClientType): Promise<void> {
   await redisClient.quit();
   await stopRedis();
   await Bun.spawn({
-    cmd: ["git", "checkout", "data/solved/testPuzzles.csv"],
+    cmd: ["git", "checkout", SOLVED_DATA_DIR + "testPuzzles.csv"],
     stdout: "inherit",
     stderr: "inherit",
   }).exited;
   await Bun.spawn({
-    cmd: ["git", "checkout", "data/solved/testDrills.csv"],
+    cmd: ["git", "checkout", SOLVED_DATA_DIR + "testDrills.csv"],
     stdout: "inherit",
     stderr: "inherit",
   }).exited;

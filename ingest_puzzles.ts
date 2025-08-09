@@ -4,7 +4,7 @@ import { connectToRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
-import { DEFAULT_SOLVED_PUZZLES_FILE, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_PUZZLES_FILE, SOLVED_DATA_DIR, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
 import { consumeSolvedPuzzles } from "./streams/SolvedPuzzleConsumer";
 
@@ -38,7 +38,7 @@ const client: RedisClientType = createClient();
 await connectToRedis(client);
 
 // Ingest presolved solved puzzles into Redis
-const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
+const solved: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 while ((puzzle = await solved.next()) !== null) {
   await client.hSet(puzzle.key.toString(), puzzle.data);

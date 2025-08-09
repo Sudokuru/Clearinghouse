@@ -1,13 +1,10 @@
 import { RedisClientType } from "redis";
 import { log } from "../utils/logs";
 import { WriteStream } from "fs";
-import { NEW_SOLVED_SET } from "./StreamConstants";
+import { NEW_SOLVED_SET, SOLVED_DATA_DIR } from "./StreamConstants";
 import { getPuzzleDataFromRedis } from "../utils/redis";
 import { PuzzleDataFields } from "../types/Puzzle";
 import { getWriteStream } from "../utils/helpers";
-
-// Constants
-const SOLVED_DIRECTORY: string = "data/solved/";
 
 /**
  * Reads newly solved puzzles from Redis set and appends them to solved puzzle file
@@ -17,7 +14,7 @@ const SOLVED_DIRECTORY: string = "data/solved/";
 export async function consumeSolvedPuzzles(client: RedisClientType, solvedPuzzleFile: string) {
   log("Starting to consume solved puzzles...");
 
-  const filePath = SOLVED_DIRECTORY + solvedPuzzleFile;
+  const filePath = SOLVED_DATA_DIR + solvedPuzzleFile;
 
   const solvedPuzzleFileStream: WriteStream = await getWriteStream(filePath);
 

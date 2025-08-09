@@ -4,5 +4,6 @@ export const UNSOLVED_STREAM: string = "unsolved";
 export const NEW_SOLVED_SET: string = "new:solved:puzzles";
 
 // File paths
+export const SOLVED_DATA_DIR = "data/solved/";
 export const DEFAULT_SOLVED_PUZZLES_FILE = "puzzles.csv";
 export const DEFAULT_SOLVED_DRILLS_FILE = "drills.csv";

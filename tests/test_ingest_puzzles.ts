@@ -3,6 +3,7 @@ import { assertOutputContains, assertRedisContainsPuzzleData, assertStringInArra
 import { QUIT_REDIS_MSG, SUCCESS_CONNECT_MSG } from "../utils/redis";
 import { Puzzle, PuzzleData } from "../types/Puzzle";
 import { CSVPuzzleFeed } from "../feeds/CSVPuzzleFeed";
+import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
 
 export async function testIngestPuzzles(redisClient: RedisClientType): Promise<void> {
   const timeLimit: string = "5";
@@ -72,7 +73,7 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   await assertRedisContainsPuzzleData(redisClient, "007030010329000750148057036000421009930005000001060470892000143073008500010093867", newlySolvedPuzzleData);
   
   // Read puzzles we wrote to testPuzzles.csv
-  const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/testPuzzles.csv");
+  const solved: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + "testPuzzles.csv");
   const puzzles: Puzzle[] = [];
   let puzzle: Puzzle | null;
   while ((puzzle = await solved.next()) !== null) {

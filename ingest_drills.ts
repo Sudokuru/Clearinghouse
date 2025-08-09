@@ -1,7 +1,7 @@
 import { getDrillPuzzleString } from "sudokuru";
 import { CSVDrillFeed } from "./feeds/CSVDrillFeed";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { DEFAULT_SOLVED_DRILLS_FILE, DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_DRILLS_FILE, DEFAULT_SOLVED_PUZZLES_FILE, SOLVED_DATA_DIR } from "./streams/StreamConstants";
 import { Drill } from "./types/Drill";
 import { addDrill, DrillSet } from "./types/DrillSet";
 import { DrillFields, Puzzle } from "./types/Puzzle";
@@ -30,7 +30,7 @@ const set: DrillSet = {
   seenDrill: new Set<string>(),
   drillCounts: new Map<string, number>()
 };
-const solved: CSVDrillFeed = new CSVDrillFeed("data/solved/" + solvedDrillFile);
+const solved: CSVDrillFeed = new CSVDrillFeed(SOLVED_DATA_DIR + solvedDrillFile);
 let drill: Drill | null;
 while ((drill = await solved.next()) !== null) {
   addDrill(set, drill);
@@ -38,9 +38,9 @@ while ((drill = await solved.next()) !== null) {
 
 // Ingest drills from solved puzzles until hitting max per strategy
 // Write new drills to solved drill file as they are solved
-const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
+const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
 let puzzle: Puzzle | null;
-const solvedDrillFileStream: WriteStream = await getWriteStream("data/solved/" + solvedDrillFile);
+const solvedDrillFileStream: WriteStream = await getWriteStream(SOLVED_DATA_DIR + solvedDrillFile);
 while ((puzzle = await puzzles.next()) !== null) {
   for (const field of DrillFields) {
     if (puzzle.data[field] !== -1) {

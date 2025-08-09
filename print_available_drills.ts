@@ -1,6 +1,6 @@
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
-import { DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_PUZZLES_FILE, SOLVED_DATA_DIR } from "./streams/StreamConstants";
 import { Puzzle, PuzzleDataFields, PuzzleData, DrillFields } from "./types/Puzzle";
 
 // Assign environment variables to variables with fallback defaults.
@@ -19,7 +19,7 @@ const drillCounts: Record<string, number> = Object.fromEntries(
 );
 
 // Read solved puzzle file and count drills
-const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
+const solved: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 while ((puzzle = await solved.next()) !== null) {
   for (const field of DrillFields) {

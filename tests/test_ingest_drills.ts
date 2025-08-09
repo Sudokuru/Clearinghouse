@@ -1,4 +1,5 @@
 import { CSVDrillFeed } from "../feeds/CSVDrillFeed";
+import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
 import { Drill } from "../types/Drill";
 import { assertOutputContains, assertStringInArrayExactlyOnce, cleanupAndExit, getAttributeValueCountInDrills } from "../utils/testing";
 
@@ -30,7 +31,7 @@ export async function testIngestDrills(): Promise<void> {
   await assertOutputContains(ingestDrillsOutput, expectedConfigOutput, "ingest_drills.ts config");
 
   // Read drills we wrote to testDrills.csv
-  const solved: CSVDrillFeed = new CSVDrillFeed("data/solved/testDrills.csv");
+  const solved: CSVDrillFeed = new CSVDrillFeed(SOLVED_DATA_DIR + "testDrills.csv");
   const drills: Drill[] = [];
   let drill: Drill | null;
   while ((drill = await solved.next()) !== null) {
