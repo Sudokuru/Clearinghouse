@@ -1,4 +1,6 @@
-import { assertOutputContains } from "../utils/testing";
+import { CSVDrillFeed } from "../feeds/CSVDrillFeed";
+import { Drill } from "../types/Drill";
+import { assertOutputContains, assertStringInArrayExactlyOnce } from "../utils/testing";
 
 export async function testIngestDrills(): Promise<void> {
   const maxDrillsPerStrategy: string = "2";
@@ -26,6 +28,28 @@ export async function testIngestDrills(): Promise<void> {
   ]
   
   await assertOutputContains(ingestDrillsOutput, expectedConfigOutput, "ingest_drills.ts config");
+
+  // Read drills we wrote to testDrills.csv
+  const solved: CSVDrillFeed = new CSVDrillFeed("data/solved/testDrills.csv");
+  const drills: Drill[] = [];
+  let drill: Drill | null;
+  while ((drill = await solved.next()) !== null) {
+    drills.push(drill);
+  }
+  solved.close();
+  const drillStrings: string[] = drills.map((d) => JSON.stringify(d));
+
+  console.log("Drill data ingested during test:");
+  console.log(drillStrings);
+
+  // Verify presolved drill is in testDrills.csv and not duplicated
+  const presolvedDrill: Drill = {
+    strategy: "obvious_single_drill",
+    initialPuzzle: "007500023850004060030102590700200010000710835080040076300620751915837042276000000",
+    drillPuzzle: "197568423852394167634172598763285914429716835581943276348629751915837642276451380"
+  }
+  const presolvedDrillString = JSON.stringify(presolvedDrill);
+  await assertStringInArrayExactlyOnce(drillStrings, presolvedDrillString);
 
   console.log("Test Ingest Drill Logs:\n" + ingestDrillsOutput + "\n");
 }
