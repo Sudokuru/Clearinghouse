@@ -74,9 +74,11 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   // Read puzzles we wrote to testPuzzles.csv
   const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/testPuzzles.csv");
   const puzzles: Puzzle[] = [];
-  for (let puzzle = await solved.next(); puzzle !== null; puzzle = await solved.next()) {
+  let puzzle: Puzzle | null;
+  while ((puzzle = await solved.next()) !== null) {
     puzzles.push(puzzle);
   }
+  solved.close();
   const puzzleDataStrings: string[] = puzzles.map((p) => JSON.stringify(p.data));
 
   console.log("Puzzle data ingested during test:");
