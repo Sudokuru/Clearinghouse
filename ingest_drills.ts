@@ -40,7 +40,7 @@ while ((drill = await solved.next()) !== null) {
 // Write new drills to solved drill file as they are solved
 const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
-const solvedDrillFileStream: WriteStream = await getWriteStream(solvedDrillFile);
+const solvedDrillFileStream: WriteStream = await getWriteStream("data/solved/" + solvedDrillFile);
 while ((puzzle = await puzzles.next()) !== null) {
   for (const field of DrillFields) {
     if (puzzle.data[field] !== -1) {
@@ -53,7 +53,7 @@ while ((puzzle = await puzzles.next()) !== null) {
         });
         if (drillIsNew) {
           solvedDrillFileStream.write(
-            field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString
+            field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString + "\n"
           );
         }
       }
