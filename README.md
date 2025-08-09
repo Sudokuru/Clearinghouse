@@ -45,6 +45,10 @@ bun clear.ts
 # SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
 SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_drills.ts
 
+# Export solved drills to TypeScript files for each strategy
+# SOLVED_DRILL_FILE is the csv file containing solved drills, defaults to drills.csv
+SOLVED_DRILL_FILE=drills.csv bun export_drills.ts
+
 # Run tests
 bun run_tests.ts
 

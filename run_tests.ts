@@ -4,6 +4,7 @@ import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis
 import { assertOutputContains, cleanup } from "./utils/testing";
 import { testIngestPuzzles } from "./tests/test_ingest_puzzles";
 import { testIngestDrills } from "./tests/test_ingest_drills";
+import { testExportDrills } from "./tests/test_export_drills";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -33,6 +34,7 @@ await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, Q
 // Run the test files
 await testIngestPuzzles(client);
 await testIngestDrills();
+await testExportDrills();
 
 // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
 
