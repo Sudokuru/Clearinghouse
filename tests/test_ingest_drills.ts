@@ -26,4 +26,6 @@ export async function testIngestDrills(): Promise<void> {
   ]
   
   await assertOutputContains(ingestDrillsOutput, expectedConfigOutput, "ingest_drills.ts config");
+
+  console.log("Test Ingest Drill Logs:\n" + ingestDrillsOutput + "\n");
 }
