@@ -1,6 +1,6 @@
 import { CSVDrillFeed } from "../feeds/CSVDrillFeed";
 import { Drill } from "../types/Drill";
-import { assertOutputContains, assertStringInArrayExactlyOnce } from "../utils/testing";
+import { assertOutputContains, assertStringInArrayExactlyOnce, cleanupAndExit, getAttributeValueCountInDrills } from "../utils/testing";
 
 export async function testIngestDrills(): Promise<void> {
   const maxDrillsPerStrategy: string = "2";
@@ -68,6 +68,14 @@ export async function testIngestDrills(): Promise<void> {
   }
   const singleDrillString = JSON.stringify(singleDrill);
   await assertStringInArrayExactlyOnce(drillStrings, singleDrillString);
+
+  // Verify max drill limit is not exceeded even though 3 obvious singles are available
+  let count: number = getAttributeValueCountInDrills("strategy", "obvious_single_drill", drills);
+  if (count > 2) {
+    cleanupAndExit(`obvious_single_drill exceeded max drill limit of 2 with ${count} occurrences.`);
+  } else if (count < 2) {
+    cleanupAndExit(`Only ${count} obvious_single_drill occurrences were found vs expected 2.`);
+  }
 
   console.log("Test Ingest Drill Logs:\n" + ingestDrillsOutput + "\n");
 }

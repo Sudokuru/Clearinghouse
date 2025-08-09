@@ -3,6 +3,7 @@ import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "./logs";
 import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
 import { z } from "zod";
+import { Drill } from "../types/Drill";
 
 /**
  * Does Redis cleanup 
@@ -75,4 +76,14 @@ export async function assertStringInArrayExactlyOnce(strings: string[], string: 
   } else if (occurrences > 1) {
     cleanupAndExit(`'${string}' occurred ${occurrences} times in the array, expected exactly once.`, redisClient);
   }
+}
+
+/**
+ * Get number of occurrences of given attribute value in given Drill array
+ */
+export function getAttributeValueCountInDrills(attribute: string, value: string, drills: Drill[]): number {
+  return drills.reduce(
+    (count, drill) => count + (drill[attribute] == value ? 1 : 0),
+    0
+  );
 }
