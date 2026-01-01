@@ -4,6 +4,7 @@ export enum COLORS {
   GREEN = "\x1b[32m",
   RED = "\x1b[31m",
   YELLOW = "\x1b[33m",
+  CYAN = "\x1b[36m",
   RESET = "\x1b[0m",
 }
   
@@ -14,8 +15,9 @@ export enum COLORS {
  * @param message - The message to log.
  * @param color - Optional color from the COLORS enum.
  * @param file - Optional file to write log to, creates if does not exist else appends. Ignores color.
+ * @param progress - If true, uses carriage return to overwrite the same line instead of creating a new line.
  */
-export function log(message: string, color?: COLORS, file?: string): void {
+export function log(message: string, color?: COLORS, file?: string, progress: boolean = false): void {
   if (file) {
     try {
       appendFileSync(file, `[Clearinghouse] ${message}\n`);
@@ -23,6 +25,8 @@ export function log(message: string, color?: COLORS, file?: string): void {
       console.error(`${COLORS.RED}[Clearinghouse] Failed to write to log file with error: ${error.message}${COLORS.RESET}`);
       console.log(`[Clearinghouse] Message that failed to write:  ${message}`);
     }
+  } else if (progress) {
+    process.stdout.write(`\r${color || ""}[Clearinghouse] ${message}${color ? COLORS.RESET : ""}`);
   } else if (color) {
     console.log(`${color}[Clearinghouse] ${message}${COLORS.RESET}`);
   } else {

@@ -13,6 +13,7 @@ import { createWriteStream } from "fs";
 const BASE: number = 10;
 const generateTimeLimit: number = parseInt(process.env.GENERATE_TIME_LIMIT ?? "60", BASE);
 const generateThreads: number = parseInt(process.env.GENERATE_THREADS ?? "1", BASE);
+const redisStreamBatchSize: number = parseInt(process.env.REDIS_STREAM_BATCH_SIZE ?? "500", BASE);
 const unsolvedPuzzleFile: string | null = process.env.UNSOLVED_PUZZLE_FILE ?? null;
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
@@ -20,6 +21,7 @@ const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVE
 log("Configuration Values:");
 log(`Generate Time Limit: ${generateTimeLimit}`);
 log(`Generate Threads: ${generateThreads}`);
+log(`Redis Stream Batch Size: ${redisStreamBatchSize}`);
 log(`Unsolved Puzzle File: ${unsolvedPuzzleFile}`);
 log(`Solved Puzzle File: ${solvedPuzzleFile}`);
 
@@ -69,11 +71,28 @@ await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTR
 
 // Read puzzles from file onto Redis Stream if unsolved puzzle file passed in
 const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
+let puzzleCount = 0;
+
+const pipeline = client.multi();
+
 while ((puzzle = await unsolved.next()) !== null) {
-  await client.xAdd(UNSOLVED_STREAM, "*", {
+  pipeline.xAdd(UNSOLVED_STREAM, "*", {
     puzzleKey: puzzle.key.toString()
   });
+  puzzleCount++;
+  
+  if (puzzleCount % redisStreamBatchSize === 0) {
+    await pipeline.exec();
+    log(`Loaded ${puzzleCount} puzzles onto Redis Stream...`, COLORS.CYAN, undefined, true);
+  }
 }
+
+// Execute remaining puzzles
+if (puzzleCount % redisStreamBatchSize !== 0) {
+  await pipeline.exec();
+}
+
+log(`Loaded ${puzzleCount} puzzles total.`.padEnd(60, ' '), COLORS.CYAN, undefined, true);
 
 // Get current number of entries on unsolved stream
 const totalToSolve: number = await client.xLen(UNSOLVED_STREAM);
@@ -100,11 +119,71 @@ for (let i: number = 0; i < generateThreads; i++) {
   }));
 }
 
-log("Solving puzzles...");
+// Helper to read pending + lag for the consumer group
+async function getGroupMetrics(): Promise<{ pending: number; lag: number }> {
+  const raw = await client.sendCommand(['XINFO', 'GROUPS', UNSOLVED_STREAM]) as any[];
+  // raw is an array of flat arrays; take the first group
+  const g = Array.isArray(raw) && raw.length > 0 ? raw[0] : [];
+  const getNum = (key: string): number => {
+    const idx = g.indexOf(key);
+    return idx >= 0 ? Number(g[idx + 1]) || 0 : 0;
+  };
+  return {
+    pending: getNum('pending'),
+    lag: getNum('lag'),
+  };
+}
+
+const startTime = Date.now();
+
+// Helper to format seconds -> HH:MM:SS
+const formatEta = (secs: number) => {
+  const s = Math.max(0, Math.floor(secs));
+  const h = Math.floor(s / 3600).toString().padStart(2, "0");
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
+  const ss = (s % 60).toString().padStart(2, "0");
+  return `${h}:${m}:${ss}`;
+};
+
+const progressInterval = setInterval(async () => {
+  try {
+    const { pending, lag } = await getGroupMetrics();
+    const remaining = Math.max(0, pending + lag);
+    const processed = Math.max(0, totalToSolve - remaining);
+    const percentage = totalToSolve === 0
+      ? "100.00"
+      : ((processed / totalToSolve) * 100).toFixed(2);
+
+    const elapsedSecs = (Date.now() - startTime) / 1000;
+    const rate = processed > 0 && elapsedSecs > 0 ? processed / elapsedSecs : 0;
+    const etaSecs = rate > 0 ? remaining / rate : 0;
+    const eta = rate > 0 ? formatEta(etaSecs) : "estimating...";
+
+    log(
+      `Progress: ${processed}/${totalToSolve} (${percentage}%) ETA ${eta}`,
+      COLORS.CYAN,
+      undefined,
+      true
+    );
+  } catch {
+    // ignore transient errors
+  }
+}, 5000);
+
+// Wait for workers to finish
 for (const proc of processes) {
   await proc.exited;
 }
-log("Finished solving puzzles.", COLORS.GREEN);
+
+// Final progress line
+clearInterval(progressInterval);
+const { pending: finalPending, lag: finalLag } = await getGroupMetrics();
+const finalRemaining = Math.max(0, finalPending + finalLag);
+const finalProcessed = Math.max(0, totalToSolve - finalRemaining);
+log(
+  `Progress: ${finalProcessed}/${totalToSolve} (100%) ETA 00:00:00`,
+  COLORS.GREEN
+);
 
 await client.del(UNSOLVED_STREAM);
 
