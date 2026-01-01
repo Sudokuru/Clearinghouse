@@ -12,12 +12,22 @@
 
 # Usage
 
+
+Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
+
+GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
+
+GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
+Use `nproc` command on bash or `wmic cpu get NumberOfLogicalProcessors` on windows to get number of CPU cores. Then use this guideline for setting number of threads.
+- 1-2 cores → Use 1 thread
+- 4 cores → Use 2-4 threads
+- 8 cores → Use 4-6 threads
+- 16+ cores → Use 8-12 threads
+
+PUZZLE_FILE is the optional file with one sudoku puzzle string per line to solve
+
+SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
 ```bash
-# Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
-# GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
-# GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
-# PUZZLE_FILE is the optional file with one sudoku puzzle string per line to solve
-# SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
 
 # Exec into the Redis container to run Redis commands (run exit when done)
