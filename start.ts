@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from "redis";
-import { COLORS, log, logProgressTwoLines } from "./utils/logs";
+import { COLORS, formatEta, log, logProgressTwoLines } from "./utils/logs";
 import { connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle, PuzzleDataFields } from "./types/Puzzle";
@@ -126,15 +126,6 @@ const startTime = Date.now();
 console.log()
 log(`Start Time: ${new Date(startTime).toLocaleString()}`, COLORS.CYAN);
 log(`Timeout Time: ${new Date(cutoffTime).toLocaleString()}`, COLORS.CYAN);
-
-// Helper to format seconds -> HH:MM:SS
-const formatEta = (secs: number) => {
-  const s = Math.max(0, Math.floor(secs));
-  const h = Math.floor(s / 3600).toString().padStart(2, "0");
-  const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
-  const ss = (s % 60).toString().padStart(2, "0");
-  return `${h}:${m}:${ss}`;
-};
 
 
 // Helper to read pending + lag for the consumer group

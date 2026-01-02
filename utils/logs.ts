@@ -52,3 +52,13 @@ export function logProgressTwoLines(
   // Clear line 1, write line 1, newline, clear line 2, write line 2, then move cursor up to line 1
   process.stdout.write(`\r\x1b[K${l1}\n\x1b[K${l2}\x1b[F`);
 }
+
+
+// Helper to format seconds -> HH:MM:SS
+export const formatEta = (secs: number) => {
+  const s = Math.max(0, Math.floor(secs));
+  const h = Math.floor(s / 3600).toString().padStart(2, "0");
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
+  const ss = (s % 60).toString().padStart(2, "0");
+  return `${h}:${m}:${ss}`;
+};

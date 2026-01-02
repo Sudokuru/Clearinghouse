@@ -18,7 +18,7 @@ Start Redis docker, load puzzle data from provided solved puzzle file and option
 GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
 
 GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
-Use `nproc` command on bash or `wmic cpu get NumberOfLogicalProcessors` on windows to get number of CPU cores. Then use this guideline for setting number of threads.
+Use `nproc` command on bash or `wmic cpu get NumberOfLogicalProcessors` on Windows to get number of CPU cores. Then use this guideline for setting number of threads.
 - 1-2 cores → Use 1 thread
 - 4 cores → Use 2-4 threads
 - 8 cores → Use 4-6 threads
