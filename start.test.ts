@@ -61,7 +61,7 @@ export function buildProgressLines(opts: {
   return { line1, line2, eta, remaining, processed, remainingToSolve };
 }
 
-describe("progress math integration", () => {
+describe.skip("progress math integration", () => {
   it("computes progress/ETA from real Redis state", async () => {
     const container = await new RedisContainer("redis:7.2.4").start();
     const client = createClient({

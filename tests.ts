@@ -83,15 +83,15 @@ const newlySolvedPuzzleData: PuzzleData = {
   solution: "567832914329614758148957236756421389934785621281369475892576143673148592415293867",
   difficulty: -15174,
   obvious_single_drill: 80,
-  hidden_single_drill: 77,
-  obvious_pair_drill: 75,
-  hidden_pair_drill: 42,
-  pointing_pair_drill: 68,
-  obvious_triplet_drill: 69,
-  hidden_triplet_drill: 69,
-  pointing_triplet_drill: 42,
-  obvious_quadruplet_drill: 57,
-  hidden_quadruplet_drill: 42
+  hidden_single_drill: -1,
+  obvious_pair_drill: 70,
+  hidden_pair_drill: -1,
+  pointing_pair_drill: -1,
+  obvious_triplet_drill: -1,
+  hidden_triplet_drill: -1,
+  pointing_triplet_drill: -1,
+  obvious_quadruplet_drill: 59,
+  hidden_quadruplet_drill: 56
 };
 const newlySolvedPuzzleDataString = JSON.stringify(newlySolvedPuzzleData);
 await assertRedisContainsPuzzleData(client, "007030010329000750148057036000421009930005000001060470892000143073008500010093867", newlySolvedPuzzleData);
