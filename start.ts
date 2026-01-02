@@ -202,6 +202,7 @@ const finalTotal = puzzleCount;
 const endTime = Date.now();
 const totalElapsed = ((endTime - startTime) / 1000 / 60).toFixed(2); // minutes
 
+console.log()
 log(
   `Final: New: ${finalNewSolved} | Already: ${finalAlreadySolved} | Failed: ${finalFailedSolve} | Timed Out: ${finalTimedOut} | Total: ${finalTotal}`,
   COLORS.GREEN
