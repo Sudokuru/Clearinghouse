@@ -24,7 +24,16 @@ export async function startRedis(): Promise<boolean> {
 
   // Try to run a new Redis Docker container.
   const dockerRun = Bun.spawn({
-    cmd: ["docker", "run", "--name", CONTAINER_NAME, "-d", "-p", "6379:6379", config.redisImage],
+    cmd: [
+      "docker", "run",
+      "--name", CONTAINER_NAME,
+      "-d",
+      "-p", "6379:6379",
+      config.redisImage,
+      "redis-server",
+      "--save", "",           // Disable RDB snapshots
+      "--appendonly", "no"    // Disable AOF
+    ],
     stdout: "inherit",
     stderr: "inherit",
   });

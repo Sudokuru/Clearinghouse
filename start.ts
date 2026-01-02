@@ -124,6 +124,7 @@ const startTime = Date.now();
 
 console.log()
 log(`Start Time: ${new Date(startTime).toLocaleString()}`, COLORS.CYAN);
+log(`Timeout Time: ${new Date(cutoffTime).toLocaleString()}`, COLORS.CYAN);
 
 // Helper to format seconds -> HH:MM:SS
 const formatEta = (secs: number) => {
