@@ -74,7 +74,7 @@ await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTR
 const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 let puzzleCount = 0;
 
-const pipeline = client.multi();
+let pipeline = client.multi();
 
 while ((puzzle = await unsolved.next()) !== null) {
   pipeline.xAdd(UNSOLVED_STREAM, "*", {
@@ -84,6 +84,7 @@ while ((puzzle = await unsolved.next()) !== null) {
   
   if (puzzleCount % redisStreamBatchSize === 0) {
     await pipeline.exec();
+    pipeline = client.multi(); // reset pipeline for the next batch
     log(`Loaded ${puzzleCount} puzzles onto Redis Stream...`, COLORS.CYAN, undefined, true);
   }
 }
