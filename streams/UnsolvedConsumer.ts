@@ -1,7 +1,7 @@
 import { createClient, RedisClientType } from "redis";
 import { connectToRedis, QUIT_REDIS_MSG } from "../utils/redis";
 import { log } from "../utils/logs";
-import { NEW_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./StreamConstants";
+import { NEW_SOLVED_SET, ALREADY_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM, FAILED_SOLVE_SET } from "./StreamConstants";
 import { PuzzleKey, SudokuruPuzzleData } from "../types/Puzzle";
 import { getPuzzleData } from "sudokuru";
 import { attempt } from "../utils/helpers";
@@ -54,14 +54,15 @@ logf("Consumer thread " + CONSUMER_THREAD + " is starting to consume unsolved pu
 async function processPuzzle(puzzle: string): Promise<void> {
   const alreadySolved = await client.exists(new PuzzleKey(puzzle, true).toString());
   if (alreadySolved) {
-    //logf(`This puzzle is already solved: ${puzzle}`);
+    //logf(`Skipping already solved puzzle: ${puzzle}`);
+    await client.sAdd(ALREADY_SOLVED_SET, puzzle);
     return;
   }
 
   const data = attempt(() => getPuzzleData(puzzle));
   if (!data.ok) {
-    //logf(`Sudokuru package threw an error trying to solve this puzzle: ${puzzle}`);
-    // TODO: insert puzzle into failed stream (DLQ)
+    //logf(`Failed to solve puzzle: ${puzzle}`, true);
+    await client.sAdd(FAILED_SOLVE_SET, puzzle);
     return;
   }
 

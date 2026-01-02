@@ -17,19 +17,38 @@ export enum COLORS {
  * @param file - Optional file to write log to, creates if does not exist else appends. Ignores color.
  * @param progress - If true, uses carriage return to overwrite the same line instead of creating a new line.
  */
-export function log(message: string, color?: COLORS, file?: string, progress: boolean = false): void {
+export function log(
+  message: string,
+  color?: COLORS,
+  file?: string,
+  progress: boolean = false
+): void {
+  const pref = "[CH]";
+  const colored = color ? `${color}${pref} ${message}${COLORS.RESET}` : `${pref} ${message}`;
+
   if (file) {
     try {
-      appendFileSync(file, `[Clearinghouse] ${message}\n`);
-    } catch (error) {
-      console.error(`${COLORS.RED}[Clearinghouse] Failed to write to log file with error: ${error.message}${COLORS.RESET}`);
-      console.log(`[Clearinghouse] Message that failed to write:  ${message}`);
+      appendFileSync(file, `${pref} ${message}\n`);
+    } catch (error: any) {
+      console.error(`${COLORS.RED}${pref} Failed to write to log file: ${error.message}${COLORS.RESET}`);
+      console.log(`${pref} Message that failed to write: ${message}`);
     }
   } else if (progress) {
-    process.stdout.write(`\r${color || ""}[Clearinghouse] ${message}${color ? COLORS.RESET : ""}`);
-  } else if (color) {
-    console.log(`${color}[Clearinghouse] ${message}${COLORS.RESET}`);
+    // clear line then write
+    process.stdout.write(`\r\x1b[K${colored}`);
   } else {
-    console.log(`[Clearinghouse] ${message}`);
+    console.log(colored);
   }
+}
+
+export function logProgressTwoLines(
+  line1: string,
+  line2: string,
+  color: COLORS = COLORS.RESET
+): void {
+  const pref = "[CH]";
+  const l1 = `${color}${pref} ${line1}${COLORS.RESET}`;
+  const l2 = `${color}${pref} ${line2}${COLORS.RESET}`;
+  // Clear line 1, write line 1, newline, clear line 2, write line 2, then move cursor up to line 1
+  process.stdout.write(`\r\x1b[K${l1}\n\x1b[K${l2}\x1b[F`);
 }

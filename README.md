@@ -82,29 +82,33 @@ Puzzles are generated using the Sudokuru [sudoku.js fork](https://github.com/Sud
 
 ## Progress reporting
 
-When solving puzzles, a progress line is printed periodically:
+During solving, two lines are updated periodically (default every 5 seconds):
 
 ```
-[Clearinghouse] Progress: {processed}/{total} ({percent}%)
+[CH] Progress: {processed}/{totalToSolve} ({percent}%) | ETA {HH:MM:SS} | Threads: {threads}
+[CH] Stats - New: {new} | Already: {already} | Failed: {failed} | Remaining: {remaining}/{puzzleCount}
 ```
 
-How it is computed:
+Fields:
 
-- `total` (`totalToSolve`): the number of unsolved stream entries right after loading (via `XLEN unsolved`), after the stream is cleared and the consumer group is recreated each run.
-- `remaining`: `pending + lag` from `XINFO GROUPS unsolved` (pending = delivered but not ACKed; lag = not yet delivered).
-- `processed`: `totalToSolve - (pending + lag)`, clamped to zero.
-- `percent`: `processed / totalToSolve * 100`.
+- **processed / totalToSolve / percent**: From stream consumption (`pending + lag` via `XINFO GROUPS`). `processed = totalToSolve - (pending + lag)`.
+- **ETA (HH:MM:SS)**: `elapsedSecs = now - startTime`; `rate = processed / elapsedSecs`; `etaSecs = remaining / rate`; formatted as HH:MM:SS.
+- **Threads**: Worker process count.
+- **New**: Newly solved this run (`new:solved:puzzles` set).
+- **Already**: Already in Redis (`already:solved:puzzles` set).
+- **Failed**: Errored in Redis (`failed:solve:puzzles` set).
+- **Remaining**: `puzzleCount - (new + already + failed)`.
+- **puzzleCount**: Total puzzles loaded from the unsolved file.
 
-ETA:
 
-- We track `startTime` at the beginning of solving.
-- `elapsedSecs = (now - startTime)`.
-- `rate = processed / elapsedSecs` (puzzles per second).
-- `etaSecs = remaining / rate` (if rate > 0; otherwise “estimating...”).
-- `ETA` is shown as `HH:MM:SS` from `etaSecs`.
-- Final line prints `ETA 00:00:00`.
+Final summary:
+
+```
+[CH] Final: New: {new} | Already: {already} | Failed: {failed} | Timed Out: {timedOut} | Total: {puzzleCount}
+```
 
 Notes:
 
-- This progress reflects stream consumption, not Redis DB growth. DB size increases only when a puzzle is newly solved and written; puzzles that were already solved or that fail will not grow the DB.
-- The unsolved stream is deleted and the consumer group is recreated at the start of each run, so progress is per-run, not cumulative across runs.
+- Tracking sets (`new:solved`, `already:solved`, `failed:solve`) are cleared at run start; metrics are per-run.
+- Unsolved stream is deleted/recreated each run; `totalToSolve`/ETA reflect the current run only.
+- DB size grows only for **New** puzzles written to Redis; **Already** and **Failed** do not increase `DBSIZE`.

@@ -1,10 +1,10 @@
 import { createClient, RedisClientType } from "redis";
-import { COLORS, log } from "./utils/logs";
+import { COLORS, log, logProgressTwoLines } from "./utils/logs";
 import { connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { Puzzle, PuzzleData, PuzzleDataFields, PuzzleKey } from "./types/Puzzle";
+import { Puzzle, PuzzleDataFields } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
-import { DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
+import { ALREADY_SOLVED_SET, DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, FAILED_SOLVE_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
 import { createWriteStream } from "fs";
 
@@ -52,16 +52,17 @@ while ((puzzle = await solved.next()) !== null) {
   await client.hSet(puzzle.key.toString(), puzzle.data);
 }
 
-// TODO: Get current number of solved puzzles in Redis
-
-// TODO: Delete dead letter queue of failed to solve puzzles if it exists in Redis
-
 // Exit early if user opted not to solve a new puzzle file
 if (unsolvedPuzzleFile === null) {
   await client.quit();
   log(QUIT_REDIS_MSG, COLORS.GREEN);
   process.exit(0);
 }
+
+// Clear tracking sets from previous run
+await client.del(NEW_SOLVED_SET);
+await client.del(ALREADY_SOLVED_SET);
+await client.del(FAILED_SOLVE_SET);
 
 // Delete unsolved puzzles stream
 await client.del(UNSOLVED_STREAM);
@@ -119,6 +120,21 @@ for (let i: number = 0; i < generateThreads; i++) {
   }));
 }
 
+const startTime = Date.now();
+
+console.log()
+log(`Start Time: ${new Date(startTime).toLocaleString()}`, COLORS.CYAN);
+
+// Helper to format seconds -> HH:MM:SS
+const formatEta = (secs: number) => {
+  const s = Math.max(0, Math.floor(secs));
+  const h = Math.floor(s / 3600).toString().padStart(2, "0");
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
+  const ss = (s % 60).toString().padStart(2, "0");
+  return `${h}:${m}:${ss}`;
+};
+
+
 // Helper to read pending + lag for the consumer group
 async function getGroupMetrics(): Promise<{ pending: number; lag: number }> {
   const raw = await client.sendCommand(['XINFO', 'GROUPS', UNSOLVED_STREAM]) as any[];
@@ -134,19 +150,10 @@ async function getGroupMetrics(): Promise<{ pending: number; lag: number }> {
   };
 }
 
-const startTime = Date.now();
-
-// Helper to format seconds -> HH:MM:SS
-const formatEta = (secs: number) => {
-  const s = Math.max(0, Math.floor(secs));
-  const h = Math.floor(s / 3600).toString().padStart(2, "0");
-  const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
-  const ss = (s % 60).toString().padStart(2, "0");
-  return `${h}:${m}:${ss}`;
-};
-
 const progressInterval = setInterval(async () => {
   try {
+    const aliveThreads = processes.filter((p) => p.exitCode === null).length;
+
     const { pending, lag } = await getGroupMetrics();
     const remaining = Math.max(0, pending + lag);
     const processed = Math.max(0, totalToSolve - remaining);
@@ -154,16 +161,20 @@ const progressInterval = setInterval(async () => {
       ? "100.00"
       : ((processed / totalToSolve) * 100).toFixed(2);
 
+    const newSolved = await client.sCard(NEW_SOLVED_SET);
+    const alreadySolved = await client.sCard(ALREADY_SOLVED_SET);
+    const failedSolve = await client.sCard(FAILED_SOLVE_SET);
+    const remainingToSolve = puzzleCount - (newSolved + alreadySolved + failedSolve);
+
     const elapsedSecs = (Date.now() - startTime) / 1000;
     const rate = processed > 0 && elapsedSecs > 0 ? processed / elapsedSecs : 0;
     const etaSecs = rate > 0 ? remaining / rate : 0;
     const eta = rate > 0 ? formatEta(etaSecs) : "estimating...";
 
-    log(
-      `Progress: ${processed}/${totalToSolve} (${percentage}%) ETA ${eta}`,
-      COLORS.CYAN,
-      undefined,
-      true
+    logProgressTwoLines(
+      `Progress: ${processed}/${totalToSolve} (${percentage}%) | ETA ${eta} | Threads: ${aliveThreads}/${processes.length}`,
+      `Stats - New: ${newSolved} | Already: ${alreadySolved} | Failed: ${failedSolve} | Remaining: ${remainingToSolve}/${puzzleCount}`,
+      COLORS.CYAN
     );
   } catch {
     // ignore transient errors
@@ -177,13 +188,27 @@ for (const proc of processes) {
 
 // Final progress line
 clearInterval(progressInterval);
-const { pending: finalPending, lag: finalLag } = await getGroupMetrics();
-const finalRemaining = Math.max(0, finalPending + finalLag);
-const finalProcessed = Math.max(0, totalToSolve - finalRemaining);
+
+// Get final counts from tracking sets
+const finalNewSolved = await client.sCard(NEW_SOLVED_SET);
+const finalAlreadySolved = await client.sCard(ALREADY_SOLVED_SET);
+const finalFailedSolve = await client.sCard(FAILED_SOLVE_SET);
+
+// Calculate remaining (timed out)
+const finalProcessed = finalNewSolved + finalAlreadySolved + finalFailedSolve;
+const finalTimedOut = puzzleCount - finalProcessed;
+const finalTotal = puzzleCount;
+
+const endTime = Date.now();
+const totalElapsed = ((endTime - startTime) / 1000 / 60).toFixed(2); // minutes
+
 log(
-  `Progress: ${finalProcessed}/${totalToSolve} (100%) ETA 00:00:00`,
+  `Final: New: ${finalNewSolved} | Already: ${finalAlreadySolved} | Failed: ${finalFailedSolve} | Timed Out: ${finalTimedOut} | Total: ${finalTotal}`,
   COLORS.GREEN
 );
+
+log(`End Time: ${new Date(endTime).toLocaleString()}`, COLORS.GREEN);
+log(`Total Time: ${totalElapsed} minutes`, COLORS.GREEN);
 
 await client.del(UNSOLVED_STREAM);
 
@@ -206,13 +231,3 @@ solvedPuzzleFileStream.end();
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
-
-// TODO: Get final number of solved puzzles in Redis
-
-// TODO: Get number of failed to solve puzzles in Redis
-
-// TODO: Display to user:
-// number of newly solved puzzles
-// total number of solved puzzles
-// total number of puzzles failed to solve
-// total number of puzzles ran out of time to solve
