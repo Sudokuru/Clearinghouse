@@ -7,7 +7,7 @@ import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 import { ALREADY_SOLVED_SET, DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, FAILED_SOLVE_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
 import { createWriteStream } from "fs";
-const fs = require("fs");
+import * as fs from "fs";
 
 
 // Assign environment variables to variables with fallback defaults.
