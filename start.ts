@@ -60,9 +60,11 @@ if (unsolvedPuzzleFile === null) {
 }
 
 // Clear tracking sets from previous run
-await client.del(NEW_SOLVED_SET);
-await client.del(ALREADY_SOLVED_SET);
-await client.del(FAILED_SOLVE_SET);
+await client.multi()  
+  .del(NEW_SOLVED_SET)  
+  .del(ALREADY_SOLVED_SET)  
+  .del(FAILED_SOLVE_SET)  
+  .exec();
 
 // Delete unsolved puzzles stream
 await client.del(UNSOLVED_STREAM);
