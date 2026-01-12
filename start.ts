@@ -45,16 +45,31 @@ const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 
-log(`Loading puzzles from ${unsolvedPuzzleFile} onto memory...`, COLORS.YELLOW);
+log(`Starting to load solved puzzles from file: ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
 
-// Ingest presolved solved puzzles into Redis
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
+let solvedPuzzleCount = 0;
+let solvedPipeline = client.multi();
+
 while ((puzzle = await solved.next()) !== null) {
-  await client.hSet(puzzle.key.toString(), puzzle.data);
+  solvedPipeline.hSet(puzzle.key.toString(), puzzle.data);
+  solvedPuzzleCount++;
+
+  if (solvedPuzzleCount % redisStreamBatchSize === 0) {
+    await solvedPipeline.exec();
+    solvedPipeline = client.multi(); // Reset the pipeline for the next batch
+    log(`Loaded ${solvedPuzzleCount} solved puzzles into Redis database`, COLORS.CYAN, undefined, true);
+  }
 }
 
-log(`Puzzles from ${unsolvedPuzzleFile} are loaded onto memory`, COLORS.GREEN);
+// Execute remaining puzzles
+if (solvedPuzzleCount % redisStreamBatchSize !== 0) {
+  await solvedPipeline.exec();
+}
+
+log(`Successfully loaded ${solvedPuzzleCount} solved puzzles from ${solvedPuzzleFile} into Redis database.`.padEnd(60, ' '), COLORS.CYAN, undefined, true);
+console.log();
 
 // Exit early if user opted not to solve a new puzzle file
 if (unsolvedPuzzleFile === null) {
