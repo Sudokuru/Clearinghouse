@@ -76,7 +76,7 @@ await batchLoadPuzzles(
   (pipeline, puzzle) => pipeline.hSet(puzzle.key.toString(), puzzle.data),
   redisStreamBatchSize,
   "Loaded {count} solved puzzles into Redis database...",
-  "Successfully loaded {count} solved puzzles from the file into Redis database.",
+  "Successfully loaded {count} solved puzzles into Redis database.",
   client
 );
 
