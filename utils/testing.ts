@@ -75,16 +75,9 @@ export async function assertStringInArrayExactlyOnce(redisClient: RedisClientTyp
  * Throws an error if the order is incorrect.
  */
 export async function assertPuzzlesInCsvAreSortedBySolution(
-  csvFilePath: string,
+  puzzles: Puzzle[],
   redisClient: RedisClientType
 ): Promise<void> {
-  const solved: CSVPuzzleFeed = new CSVPuzzleFeed(csvFilePath);
-  const puzzles: Puzzle[] = [];
-  
-  // Read all puzzles from the CSV file
-  for (let puzzle = await solved.next(); puzzle !== null; puzzle = await solved.next()) {
-    puzzles.push(puzzle);
-  }
 
   // Verify that puzzles are sorted by their solution
   for (let i = 1; i < puzzles.length; i++) {
@@ -93,11 +86,11 @@ export async function assertPuzzlesInCsvAreSortedBySolution(
 
     if (prevSolution.localeCompare(currentSolution) > 0) {
       await cleanupAndExit(
-        `Puzzles in ${csvFilePath} are not sorted correctly. Puzzle with solution "${prevSolution}" comes before "${currentSolution}".`,
+        `Solution puzzles are not sorted correctly. Puzzle with solution "${prevSolution}" comes before "${currentSolution}".`,
         redisClient
       );
     }
   }
 
-  log(`✅ Puzzles in ${csvFilePath} are sorted correctly by solution.`, COLORS.GREEN);
+  log(`✅ Solution puzzles are sorted correctly by solution.`, COLORS.GREEN);
 }

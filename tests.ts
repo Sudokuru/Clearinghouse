@@ -111,7 +111,7 @@ await assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleD
 await assertStringInArrayExactlyOnce(client, puzzleDataStrings, newlySolvedPuzzleDataString);
 
 // Verify that puzzles in tests.csv are sorted by solution in ascending order
-await assertPuzzlesInCsvAreSortedBySolution("data/solved/tests.csv", client);
+await assertPuzzlesInCsvAreSortedBySolution(puzzles, client);
 
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
