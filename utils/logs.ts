@@ -70,9 +70,12 @@ export function logProgressTwoLines(
  * @returns A string representing the formatted time in HH:MM:SS.
  */
 export const formatEta = (secs: number): string => {
+  const SECONDS_IN_HOUR = 3600;
+  const SECONDS_IN_MINUTE = 60;
+
   const s = Math.max(0, Math.floor(secs));
-  const h = Math.floor(s / 3600).toString().padStart(2, "0");
-  const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
-  const ss = (s % 60).toString().padStart(2, "0");
+  const h = Math.floor(s / SECONDS_IN_HOUR).toString().padStart(2, "0");
+  const m = Math.floor((s % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE).toString().padStart(2, "0");
+  const ss = (s % SECONDS_IN_MINUTE).toString().padStart(2, "0");
   return `${h}:${m}:${ss}`;
 };
