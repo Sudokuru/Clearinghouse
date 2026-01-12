@@ -1,8 +1,8 @@
 import { createClient, RedisClientType } from "redis";
 import { COLORS, formatEta, log, logProgressTwoLines } from "./utils/logs";
-import { connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
+import { batchLoadPuzzles, connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { Puzzle, PuzzleDataFields } from "./types/Puzzle";
+import { PuzzleDataFields } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 import { ALREADY_SOLVED_SET, DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, FAILED_SOLVE_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
@@ -45,31 +45,17 @@ const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 
-log(`Starting to load solved puzzles from file: ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
+log(`Starting to load solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
 
-const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
-let puzzle: Puzzle | null;
-let solvedPuzzleCount = 0;
-let solvedPipeline = client.multi();
-
-while ((puzzle = await solved.next()) !== null) {
-  solvedPipeline.hSet(puzzle.key.toString(), puzzle.data);
-  solvedPuzzleCount++;
-
-  if (solvedPuzzleCount % redisStreamBatchSize === 0) {
-    await solvedPipeline.exec();
-    solvedPipeline = client.multi(); // Reset the pipeline for the next batch
-    log(`Loaded ${solvedPuzzleCount} solved puzzles into Redis database`, COLORS.CYAN, undefined, true);
-  }
-}
-
-// Execute remaining puzzles
-if (solvedPuzzleCount % redisStreamBatchSize !== 0) {
-  await solvedPipeline.exec();
-}
-
-log(`Successfully loaded ${solvedPuzzleCount} solved puzzles from ${solvedPuzzleFile} into Redis database.`.padEnd(60, ' '), COLORS.CYAN, undefined, true);
-console.log();
+const solvedFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
+await batchLoadPuzzles(
+  solvedFeed,
+  (pipeline, puzzle) => pipeline.hSet(puzzle.key.toString(), puzzle.data),
+  redisStreamBatchSize,
+  "Loaded {count} solved puzzles into Redis database...",
+  "Successfully loaded {count} solved puzzles from the file into Redis database.",
+  client
+);
 
 // Exit early if user opted not to solve a new puzzle file
 if (unsolvedPuzzleFile === null) {
@@ -92,32 +78,19 @@ await client.del(UNSOLVED_STREAM);
 await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTREAM: true });
 
 // Read puzzles from file onto Redis Stream if unsolved puzzle file passed in
-const unsolved: TxtPuzzleFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
-let puzzleCount = 0;
+const unsolvedFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 
-let pipeline = client.multi();
-
+// Load unsolved puzzles onto Redis Stream
 log(`Loading puzzles from ${unsolvedPuzzleFile} onto Redis Stream...`, COLORS.YELLOW);
 
-while ((puzzle = await unsolved.next()) !== null) {
-  pipeline.xAdd(UNSOLVED_STREAM, "*", {
-    puzzleKey: puzzle.key.toString()
-  });
-  puzzleCount++;
-  
-  if (puzzleCount % redisStreamBatchSize === 0) {
-    await pipeline.exec();
-    pipeline = client.multi(); // reset pipeline for the next batch
-    log(`Loaded ${puzzleCount} puzzles onto Redis Stream...`, COLORS.CYAN, undefined, true);
-  }
-}
-
-// Execute remaining puzzles
-if (puzzleCount % redisStreamBatchSize !== 0) {
-  await pipeline.exec();
-}
-
-log(`Loaded ${puzzleCount} puzzles total onto Redis Stream.`.padEnd(60, ' '), COLORS.CYAN, undefined, true);
+const puzzleCount = await batchLoadPuzzles(
+  unsolvedFeed,
+  (pipeline, puzzle) => pipeline.xAdd(UNSOLVED_STREAM, "*", { puzzleKey: puzzle.key.toString() }),
+  redisStreamBatchSize,
+  "Loaded {count} puzzles onto Redis Stream...",
+  "Successfully loaded {count} puzzles onto Redis Stream.",
+  client
+);
 
 // Get current number of entries on unsolved stream
 const totalToSolve: number = await client.xLen(UNSOLVED_STREAM);
