@@ -104,14 +104,14 @@ await client.xGroupCreate(UNSOLVED_STREAM, UNSOLVED_CONSUMER_GROUP, "$", { MKSTR
 const unsolvedFeed = new TxtPuzzleFeed("data/unsolved/" + unsolvedPuzzleFile);
 
 // Load unsolved puzzles onto Redis Stream
-log(`Loading puzzles from ${unsolvedPuzzleFile} onto Redis Stream...`, COLORS.YELLOW);
+log(`Loading unsolved puzzles from ${unsolvedPuzzleFile} onto Redis Stream...`, COLORS.YELLOW);
 
 const puzzleCount = await batchLoadPuzzles(
   unsolvedFeed,
   (pipeline, puzzle) => pipeline.xAdd(UNSOLVED_STREAM, "*", { puzzleKey: puzzle.key.toString() }),
   redisStreamBatchSize,
-  "Loaded {count} puzzles onto Redis Stream...",
-  "Successfully loaded {count} puzzles onto Redis Stream.",
+  "Loaded {count} unsolved puzzles onto Redis Stream...",
+  "Successfully loaded {count} unsolved puzzles onto Redis Stream.",
   client
 );
 
