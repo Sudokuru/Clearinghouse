@@ -12,9 +12,6 @@
 
 # Usage
 
-
-Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
-
 GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
 
 GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
@@ -41,6 +38,7 @@ PUZZLE_FILE is the optional file with one sudoku puzzle string per line to solve
 
 SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
 
+Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
 ```bash
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
 
