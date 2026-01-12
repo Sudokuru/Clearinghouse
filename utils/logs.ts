@@ -41,6 +41,15 @@ export function log(
   }
 }
 
+/**
+ * Logs two lines of progress to the console.
+ * The first line is written, followed by the second line, and the cursor is moved back to the first line.
+ * This is useful for displaying progress updates on two lines without creating additional lines in the console.
+ * 
+ * @param line1 - The first line of the progress message.
+ * @param line2 - The second line of the progress message.
+ * @param color - Optional color from the COLORS enum. Defaults to no color.
+ */
 export function logProgressTwoLines(
   line1: string,
   line2: string,
