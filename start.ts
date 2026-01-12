@@ -225,3 +225,32 @@ solvedPuzzleFileStream.end();
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);
+
+// File path for the solved puzzles CSV
+const solvedPuzzleFilePath = "data/solved/" + solvedPuzzleFile;
+
+// Read the entire CSV file
+const fs = require("fs");
+const puzzles = fs.readFileSync(solvedPuzzleFilePath, "utf-8")
+  .trim()
+  .split("\n")
+  .map((line: string) => {
+    const [puzzleStr, solution, ...rest] = line.split(",");
+    return { puzzleStr, solution, rest };
+  });
+
+// Sort the puzzles by the solution string
+puzzles.sort((a: { puzzleStr: string; solution: string; rest: string[] }, b: { puzzleStr: string; solution: string; rest: string[] }) => 
+  a.solution.localeCompare(b.solution)
+);
+
+// Write the sorted puzzles back to the file
+const sortedContent = puzzles
+  .map(({ puzzleStr, solution, rest }: { puzzleStr: string; solution: string; rest: string[] }) => 
+    [puzzleStr, solution, ...rest].join(",")
+  )
+  .join("\n");
+
+fs.writeFileSync(solvedPuzzleFilePath, sortedContent, "utf-8");
+
+log(`Puzzles in ${solvedPuzzleFilePath} have been sorted by solution.`, COLORS.GREEN);

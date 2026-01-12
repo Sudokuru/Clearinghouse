@@ -1,7 +1,7 @@
 import { createClient, RedisClientType } from "redis";
 import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
-import { assertOutputContains, assertRedisContainsPuzzleData, assertStringInArrayExactlyOnce, cleanup } from "./utils/testing";
+import { assertOutputContains, assertPuzzlesInCsvAreSortedBySolution, assertRedisContainsPuzzleData, assertStringInArrayExactlyOnce, cleanup } from "./utils/testing";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
 import { Puzzle, PuzzleData } from "./types/Puzzle";
 
@@ -109,6 +109,9 @@ await assertStringInArrayExactlyOnce(client, puzzleDataStrings, presolvedPuzzleD
 
 // Verify unsolved puzzle is in tests.csv file
 await assertStringInArrayExactlyOnce(client, puzzleDataStrings, newlySolvedPuzzleDataString);
+
+// Verify that puzzles in tests.csv are sorted by solution in ascending order
+await assertPuzzlesInCsvAreSortedBySolution("data/solved/tests.csv", client);
 
 console.log("Temp logging this to make tests: `" + startOutput + "`");
 
