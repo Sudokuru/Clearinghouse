@@ -119,7 +119,6 @@ for (let i: number = 0; i < generateThreads; i++) {
 
 const startTime = Date.now();
 
-console.log()
 log(`Start Time: ${new Date(startTime).toLocaleString()}`, COLORS.CYAN);
 log(`Timeout Time: ${new Date(cutoffTime).toLocaleString()}`, COLORS.CYAN);
 
@@ -194,11 +193,16 @@ const totalElapsed = ((endTime - startTime) / 1000 / 60).toFixed(2); // minutes
 console.log()
 log(
   `Final: New: ${finalNewSolved} | Already: ${finalAlreadySolved} | Failed: ${finalFailedSolve} | Timed Out: ${finalTimedOut} | Total: ${finalTotal}`,
-  COLORS.GREEN
-);
+  finalTimedOut ? COLORS.RED : COLORS.GREEN
+)
 
-log(`End Time: ${new Date(endTime).toLocaleString()}`, COLORS.GREEN);
-log(`Total Time: ${totalElapsed} minutes`, COLORS.GREEN);
+log(
+  finalTimedOut ? `Clearinghouse timed out. Processed ${finalProcessed} puzzles out of ${puzzleCount}.` : `Clearinghouse completed. Processed ${finalProcessed} puzzles out of ${puzzleCount}.`,
+  finalTimedOut ? COLORS.RED : COLORS.GREEN
+)
+
+log(`End Time: ${new Date(endTime).toLocaleString()}`, COLORS.CYAN);
+log(`Total Time: ${totalElapsed} minutes`, COLORS.CYAN);
 
 await client.del(UNSOLVED_STREAM);
 
