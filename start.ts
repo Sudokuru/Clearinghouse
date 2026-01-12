@@ -35,28 +35,6 @@ if (answer?.toLowerCase() !== "y") {
   process.exit(1);
 }
 
-// We add unsolvedPuzzles to a Redis stream - which does not deduplicate entries.
-// Therefore, we need to deduplicate the unsolved puzzles file before adding it to the stream.
-async function deduplicateFile(filePath: string): Promise<number> {
-  // Read the entire file into memory
-  const fileContent = await fs.promises.readFile(filePath, "utf-8");
-
-  // Split lines, deduplicate using a Set, and join them back
-  const lines = fileContent.split("\n").map((line: string) => line.trim());
-  const uniqueLines = Array.from(new Set(lines));
-
-  // Write the deduplicated content back to the file
-  await fs.promises.writeFile(filePath, uniqueLines.join("\n"), "utf-8");
-
-  // Return the number of duplicates removed
-  return lines.length - uniqueLines.length;
-}
-
-const duplicatesRemoved = await deduplicateFile(`data/unsolved/${unsolvedPuzzleFile}`);
-log(duplicatesRemoved > 0 ? `Removed ${duplicatesRemoved} duplicate puzzles from ${unsolvedPuzzleFile} file.` : `No duplicate puzzles found in ${unsolvedPuzzleFile} file.`,
-  duplicatesRemoved > 0 ? COLORS.RED : COLORS.GREEN
-);
-
 // Start the Redis Docker Container
 const started = await startRedis();
 if (!started) {
@@ -86,6 +64,28 @@ if (unsolvedPuzzleFile === null) {
   log(QUIT_REDIS_MSG, COLORS.GREEN);
   process.exit(0);
 }
+
+// We add unsolvedPuzzles to a Redis stream - which does not deduplicate entries.
+// Therefore, we need to deduplicate the unsolved puzzles file before adding it to the stream.
+async function deduplicateFile(filePath: string): Promise<number> {
+  // Read the entire file into memory
+  const fileContent = await fs.promises.readFile(filePath, "utf-8");
+
+  // Split lines, deduplicate using a Set, and join them back
+  const lines = fileContent.split("\n").map((line: string) => line.trim());
+  const uniqueLines = Array.from(new Set(lines));
+
+  // Write the deduplicated content back to the file
+  await fs.promises.writeFile(filePath, uniqueLines.join("\n"), "utf-8");
+
+  // Return the number of duplicates removed
+  return lines.length - uniqueLines.length;
+}
+
+const duplicatesRemoved = await deduplicateFile(`data/unsolved/${unsolvedPuzzleFile}`);
+log(duplicatesRemoved > 0 ? `Removed ${duplicatesRemoved} duplicate puzzles from ${unsolvedPuzzleFile} file.` : `No duplicate puzzles found in ${unsolvedPuzzleFile} file.`,
+  duplicatesRemoved > 0 ? COLORS.RED : COLORS.GREEN
+);
 
 // Clear tracking sets from previous run
 await client.multi()  
