@@ -45,12 +45,16 @@ const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 
+log(`Loading puzzles from ${unsolvedPuzzleFile} onto memory...`, COLORS.YELLOW);
+
 // Ingest presolved solved puzzles into Redis
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 while ((puzzle = await solved.next()) !== null) {
   await client.hSet(puzzle.key.toString(), puzzle.data);
 }
+
+log(`Puzzles from ${unsolvedPuzzleFile} are loaded onto memory`, COLORS.GREEN);
 
 // Exit early if user opted not to solve a new puzzle file
 if (unsolvedPuzzleFile === null) {
