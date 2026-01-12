@@ -107,7 +107,7 @@ Final summary:
 
 Notes:
 
-- Tracking sets (`new:solved:puzzles`, `already::puzzles`, `failed:solve:puzzles`) are cleared at run start; metrics are per-run.
+- Tracking sets (`new:solved:puzzles`, `already:solved:puzzles`, `failed:solve:puzzles`) are cleared at run start; metrics are per-run.
 - Unsolved stream is deleted/recreated each run; `totalToSolve`/ETA reflect the current run only.
 - DB size grows only for **New** puzzles written to Redis; **Already** and **Failed** do not increase `DBSIZE`.
 
