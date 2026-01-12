@@ -7,6 +7,7 @@ import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 import { ALREADY_SOLVED_SET, DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, FAILED_SOLVE_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
 import { createWriteStream } from "fs";
+const fs = require("fs");
 
 
 // Assign environment variables to variables with fallback defaults.
@@ -33,6 +34,28 @@ if (answer?.toLowerCase() !== "y") {
   log("Configuration not confirmed. Exiting...", COLORS.RED);
   process.exit(1);
 }
+
+// We add unsolvedPuzzles to a Redis stream - which does not deduplicate entries.
+// Therefore, we need to deduplicate the unsolved puzzles file before adding it to the stream.
+async function deduplicateFile(filePath: string): Promise<number> {
+  // Read the entire file into memory
+  const fileContent = await fs.promises.readFile(filePath, "utf-8");
+
+  // Split lines, deduplicate using a Set, and join them back
+  const lines = fileContent.split("\n").map((line: string) => line.trim());
+  const uniqueLines = Array.from(new Set(lines));
+
+  // Write the deduplicated content back to the file
+  await fs.promises.writeFile(filePath, uniqueLines.join("\n"), "utf-8");
+
+  // Return the number of duplicates removed
+  return lines.length - uniqueLines.length;
+}
+
+const duplicatesRemoved = await deduplicateFile(`data/unsolved/${unsolvedPuzzleFile}`);
+log(duplicatesRemoved > 0 ? `Removed ${duplicatesRemoved} duplicate puzzles from ${unsolvedPuzzleFile} file.` : `No duplicate puzzles found in ${unsolvedPuzzleFile} file.`,
+  duplicatesRemoved > 0 ? COLORS.RED : COLORS.GREEN
+);
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -230,7 +253,6 @@ log(QUIT_REDIS_MSG, COLORS.GREEN);
 const solvedPuzzleFilePath = "data/solved/" + solvedPuzzleFile;
 
 // Read the entire CSV file
-const fs = require("fs");
 const puzzles = fs.readFileSync(solvedPuzzleFilePath, "utf-8")
   .trim()
   .split("\n")
