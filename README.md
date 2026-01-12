@@ -58,7 +58,7 @@ bun stop.ts
 bun clear.ts
 
 # Run tests
-bun tests.ts
+bun run test
 
 # Example helper script to run start.ts on multiple new unsolved puzzle files at once
 bash runall.sh
