@@ -18,11 +18,22 @@ Start Redis docker, load puzzle data from provided solved puzzle file and option
 GENERATE_TIME_LIMIT is the number of seconds the puzzle generation jobs can run before they wind down, defaults to 60
 
 GENERATE_THREADS is the number of threads used during puzzle generation (in addition to compute used by Redis docker), defaults to 1
-Use `nproc` command on bash or `wmic cpu get NumberOfLogicalProcessors` on Windows to get number of CPU cores. Then use this guideline for setting number of threads.
-- 1-2 cores → Use 1 thread
-- 4 cores → Use 2-4 threads
-- 8 cores → Use 4-6 threads
-- 16+ cores → Use 8-12 threads
+
+Use the following commands to determine the number of logical CPU cores on your system:
+| **Platform** | **Command**                          |
+|--------------|--------------------------------------|
+| Linux        | `nproc`                              |
+| macOS        | `sysctl -n hw.logicalcpu`            |
+| Windows      | `wmic cpu get NumberOfLogicalProcessors` |
+
+Based on the number of CPU cores, use the following guidelines to set the number of threads:
+
+| **CPU Cores** | **Recommended Threads** |
+|---------------|--------------------------|
+| 1-2 cores     | 1 thread                |
+| 4 cores       | 2-4 threads             |
+| 8 cores       | 4-6 threads             |
+| 16+ cores     | 8-12 threads            |
 
 REDIS_STREAM_BATCH_SIZE is the batch size to use for redis to load in the unsolved puzzle csv file (PUZZLE_FILE), defaults to 500
 
