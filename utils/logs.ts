@@ -63,8 +63,13 @@ export function logProgressTwoLines(
 }
 
 
-// Helper to format seconds -> HH:MM:SS
-export const formatEta = (secs: number) => {
+/**
+ * Formats a given number of seconds into a human-readable time string in the format HH:MM:SS.
+ * 
+ * @param secs - The number of seconds to format. If negative, it will be treated as 0.
+ * @returns A string representing the formatted time in HH:MM:SS.
+ */
+export const formatEta = (secs: number): string => {
   const s = Math.max(0, Math.floor(secs));
   const h = Math.floor(s / 3600).toString().padStart(2, "0");
   const m = Math.floor((s % 3600) / 60).toString().padStart(2, "0");
