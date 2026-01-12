@@ -68,7 +68,7 @@ const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 
-log(`Starting to load solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
+log(`Loading solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
 
 const solvedFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
 await batchLoadPuzzles(
