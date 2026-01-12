@@ -124,3 +124,4 @@ Will be very easy to write new ts script that reads solved puzzles csv and colle
 
 # Future
 - [ ] consider using testcontainers to simplify testing setup and to isolate test redis from script redis. Bun / testcontainers compatibility is currently broken here: https://github.com/oven-sh/bun/discussions/21953
+- [ ] install prettier or alternative so we don't battle between windows and linux line endings.
