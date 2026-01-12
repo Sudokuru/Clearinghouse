@@ -78,6 +78,8 @@ let puzzleCount = 0;
 
 let pipeline = client.multi();
 
+log(`Loading puzzles from ${unsolvedPuzzleFile} onto Redis Stream...`, COLORS.YELLOW);
+
 while ((puzzle = await unsolved.next()) !== null) {
   pipeline.xAdd(UNSOLVED_STREAM, "*", {
     puzzleKey: puzzle.key.toString()
@@ -96,7 +98,7 @@ if (puzzleCount % redisStreamBatchSize !== 0) {
   await pipeline.exec();
 }
 
-log(`Loaded ${puzzleCount} puzzles total.`.padEnd(60, ' '), COLORS.CYAN, undefined, true);
+log(`Loaded ${puzzleCount} puzzles total onto Redis Stream.`.padEnd(60, ' '), COLORS.CYAN, undefined, true);
 
 // Get current number of entries on unsolved stream
 const totalToSolve: number = await client.xLen(UNSOLVED_STREAM);
