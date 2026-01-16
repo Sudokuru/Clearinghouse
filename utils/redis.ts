@@ -1,8 +1,10 @@
 import { Subprocess } from "bun";
 import { COLORS, log } from "./logs";
-import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
+import { Puzzle, PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { RedisClientType } from "redis";
 import { config } from "../package.json" with { type: "json" };
+import { CSVPuzzleFeed } from "../feeds/CSVPuzzleFeed";
+import { TxtPuzzleFeed } from "../feeds/TxtPuzzleFeed";
 
 const CONTAINER_NAME = "sudoku-redis";
 const SUCCESS_CODE = 0;
@@ -24,7 +26,16 @@ export async function startRedis(): Promise<boolean> {
 
   // Try to run a new Redis Docker container.
   const dockerRun = Bun.spawn({
-    cmd: ["docker", "run", "--name", CONTAINER_NAME, "-d", "-p", "6379:6379", config.redisImage],
+    cmd: [
+      "docker", "run",
+      "--name", CONTAINER_NAME,
+      "-d",
+      "-p", "6379:6379",
+      config.redisImage,
+      "redis-server",
+      "--save", "",           // Disable RDB snapshots
+      "--appendonly", "no"    // Disable AOF
+    ],
     stdout: "inherit",
     stderr: "inherit",
   });
@@ -149,4 +160,46 @@ export async function getPuzzleDataFromRedis(client: RedisClientType, puzzle: st
   }
 
   return parsed.data;
+}
+
+
+/**
+ * Loads puzzles from a given feed into Redis in batches.
+ * - Reads puzzles from a feed (e.g., `CSVPuzzleFeed` or `TxtPuzzleFeed`).
+ * - Executes a specified Redis command for each puzzle in batches using pipelines.
+ * - Improves performance by reducing the number of round trips to the Redis server.
+ * 
+ * Returns the total number of puzzles processed.
+ */
+export async function batchLoadPuzzles(
+  feed: CSVPuzzleFeed | TxtPuzzleFeed,
+  redisCommand: (pipeline: any, puzzle: Puzzle) => void,
+  batchSize: number,
+  logMessage: string,
+  finalLogMessage: string,
+  client: RedisClientType
+): Promise<number> {
+  let puzzle: Puzzle | null;
+  let puzzleCount = 0;
+  let pipeline = client.multi();
+
+  while ((puzzle = await feed.next()) !== null) {
+    redisCommand(pipeline, puzzle);
+    puzzleCount++;
+
+    if (puzzleCount % batchSize === 0) {
+      await pipeline.exec();
+      pipeline = client.multi(); // Reset the pipeline for the next batch
+      log(logMessage.replace("{count}", puzzleCount.toString()).padEnd(60, ' '), COLORS.CYAN, undefined, true);
+    }
+  }
+
+  // Execute remaining puzzles
+  if (puzzleCount % batchSize !== 0) {
+    await pipeline.exec();
+  }
+
+  log(finalLogMessage.replace("{count}", puzzleCount.toString()).padEnd(60, ' '), COLORS.GREEN, undefined, true);
+  console.log();
+  return puzzleCount;
 }

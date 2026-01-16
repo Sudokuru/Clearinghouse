@@ -1,8 +1,8 @@
 import { RedisClientType } from "redis";
-import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
+import { Puzzle, PuzzleData } from "../types/Puzzle";
 import { COLORS, log } from "./logs";
 import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
-import { z } from "zod";
+import { CSVPuzzleFeed } from "../feeds/CSVPuzzleFeed";
 
 /**
  * Does Redis cleanup 
@@ -68,4 +68,29 @@ export async function assertStringInArrayExactlyOnce(redisClient: RedisClientTyp
   } else if (occurrences > 1) {
     cleanupAndExit(`'${string}' occurred ${occurrences} times in the array, expected exactly once.`, redisClient);
   }
+}
+
+/**
+ * Verifies that puzzles in a CSV file are sorted by their solution in ascending order.
+ * Throws an error if the order is incorrect.
+ */
+export async function assertPuzzlesInCsvAreSortedBySolution(
+  puzzles: Puzzle[],
+  redisClient: RedisClientType
+): Promise<void> {
+
+  // Verify that puzzles are sorted by their solution
+  for (let i = 1; i < puzzles.length; i++) {
+    const prevSolution = puzzles[i - 1].data.solution;
+    const currentSolution = puzzles[i].data.solution;
+
+    if (prevSolution.localeCompare(currentSolution) > 0) {
+      await cleanupAndExit(
+        `Solution puzzles are not sorted correctly. Puzzle with solution "${prevSolution}" comes before "${currentSolution}".`,
+        redisClient
+      );
+    }
+  }
+
+  log(`✅ Solution puzzles are sorted correctly by solution.`, COLORS.GREEN);
 }
