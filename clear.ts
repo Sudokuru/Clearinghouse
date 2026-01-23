@@ -9,7 +9,7 @@ try {
   await connectToRedis(client);
   
   // Clear the currently selected database (which is all Clearinghouse uses)
-  await client.flushAll();
+  await client.flushDb();
   log(CLEAR_REDIS_MSG, COLORS.GREEN);
   
   await client.quit();
