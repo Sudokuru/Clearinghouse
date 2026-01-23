@@ -1,5 +1,5 @@
 import { CSVDrillFeed } from "./feeds/CSVDrillFeed";
-import { DEFAULT_SOLVED_DRILLS_FILE } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_DRILLS_FILE, SOLVED_DATA_DIR } from "./streams/StreamConstants";
 import { Drill } from "./types/Drill";
 import { promptUserToConfirmValues, log } from "./utils/logs";
 import { writeFile } from "fs/promises";
@@ -15,7 +15,7 @@ const config = {
 promptUserToConfirmValues(config);
 
 // Read drills from csv file and group by strategy
-const feed: CSVDrillFeed = new CSVDrillFeed("data/solved/" + solvedDrillFile);
+const feed: CSVDrillFeed = new CSVDrillFeed(SOLVED_DATA_DIR + solvedDrillFile);
 const drillsByStrategy: Map<string, string[]> = new Map();
 let drill: Drill | null;
 while ((drill = await feed.next()) !== null) {

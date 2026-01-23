@@ -1,4 +1,5 @@
 import { CSVDrillFeed } from "../feeds/CSVDrillFeed";
+import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
 import { Drill } from "../types/Drill";
 import { assertOutputContains } from "../utils/testing";
 
@@ -35,7 +36,7 @@ export async function testExportDrills(): Promise<void> {
   );
 
   // Cleanup generated files
-  const feed = new CSVDrillFeed(`data/solved/${solvedDrillFile}`);
+  const feed = new CSVDrillFeed(SOLVED_DATA_DIR + `${solvedDrillFile}`);
   const strategies = new Set<string>();
   let drill: Drill | null;
   while ((drill = await feed.next()) !== null) {
