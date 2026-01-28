@@ -30,7 +30,8 @@ while ((drill = await feed.next()) !== null) {
 for (const [strategy, puzzles] of drillsByStrategy.entries()) {
   const arrayName: string = `${strategy}_drills`;
   const fileName: string = `${arrayName}.ts`;
-  const content: string = `export const ${arrayName}: string[] = [\n  "${puzzles.join("\",\n  \"")}"\n];\n`;
+  const content: string =
+  `export const ${arrayName}: string[] = ${JSON.stringify(puzzles, null, 2)};\n`;
   await writeFile(fileName, content);
   log(`Wrote ${puzzles.length} drills to ${fileName}`);
 }
