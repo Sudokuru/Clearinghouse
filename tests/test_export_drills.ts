@@ -1,7 +1,7 @@
 import { CSVDrillFeed } from "../feeds/CSVDrillFeed";
 import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
 import { Drill } from "../types/Drill";
-import { assertOutputContains } from "../utils/testing";
+import { assertOutputContains, cleanupAndExit } from "../utils/testing";
 
 export async function testExportDrills(): Promise<void> {
   const solvedDrillFile: string = "testDrills.csv";
@@ -14,8 +14,12 @@ export async function testExportDrills(): Promise<void> {
     },
     stdout: "pipe",
   });
-  await exportDrillsRun.exited;
+  const exitCode = await exportDrillsRun.exited;
   const exportDrillsOutput: string = await new Response(exportDrillsRun.stdout as ReadableStream<Uint8Array>).text();
+  if (exitCode !== 0) {
+    const err = exportDrillsRun.stderr ? await new Response(exportDrillsRun.stderr as ReadableStream<Uint8Array>).text() : "";
+    await cleanupAndExit(`export_drills.ts exited with code ${exitCode}\n${err}`);
+  }
 
   const expectedConfigOutput: string[] = [
     `Solved Drill File: ${solvedDrillFile}`,
