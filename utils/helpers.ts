@@ -48,3 +48,24 @@ export async function getWriteStream(filePath: string): Promise<WriteStream> {
 
   return stream;
 }
+
+/**
+ * Best practice for fs.WriteStream: don't assume stream.end() means the file is fully written.
+ *
+ * - stream.end() *signals* no more writes, but the underlying flush/close happens asynchronously.
+ * - Wait for the 'finish' event (emitted after end() and after all data is flushed) to avoid
+ *   truncated/corrupted files on fast program exits.
+ *
+ * Docs:
+ * - Node.js Streams: 'finish' event: https://nodejs.org/api/stream.html#event-finish
+ *
+ * References:
+ * - StackOverflow: listen for 'finish' after end(): https://stackoverflow.com/questions/27284710/how-to-handle-end-signal-in-a-node-js-writable-stream
+ */
+export async function closeWriteStreamSafely(stream: WriteStream): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    stream.once("finish", resolve)
+    stream.once("error", reject)
+    stream.end()
+  })
+}

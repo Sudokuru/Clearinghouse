@@ -4,7 +4,7 @@ import { WriteStream } from "fs";
 import { NEW_SOLVED_SET, SOLVED_DATA_DIR } from "./StreamConstants";
 import { getPuzzleDataFromRedis } from "../utils/redis";
 import { PuzzleDataFields } from "../types/Puzzle";
-import { getWriteStream } from "../utils/helpers";
+import { closeWriteStreamSafely, getWriteStream } from "../utils/helpers";
 
 /**
  * Reads newly solved puzzles from Redis set and appends them to solved puzzle file
@@ -34,5 +34,5 @@ export async function consumeSolvedPuzzles(client: RedisClientType, solvedPuzzle
     solvedPuzzleFileStream.write(puzzleStr + "," + puzzleDataCSV + "\n");
   }
 
-  solvedPuzzleFileStream.end();
+  await closeWriteStreamSafely(solvedPuzzleFileStream);
 }
