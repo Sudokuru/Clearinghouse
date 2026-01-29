@@ -11,7 +11,12 @@ import { getWriteStream } from "./utils/helpers";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
-const maxDrillsPerStrategy: number = parseInt(process.env.MAX_DRILLS_PER_STRATEGY ?? "5000", BASE);
+const maxDrillsPerStrategyEnv = process.env.MAX_DRILLS_PER_STRATEGY ?? "5000";
+const maxDrillsPerStrategy = Number.parseInt(maxDrillsPerStrategyEnv, BASE);
+if (Number.isNaN(maxDrillsPerStrategy) || maxDrillsPerStrategy < 0) {
+  console.error(`Invalid MAX_DRILLS_PER_STRATEGY: '${maxDrillsPerStrategyEnv}'`);
+  process.exit(1);
+}
 const solvedDrillFile: string = process.env.SOLVED_DRILL_FILE ?? DEFAULT_SOLVED_DRILLS_FILE;
 const solvedPuzzleFile: string | null = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
