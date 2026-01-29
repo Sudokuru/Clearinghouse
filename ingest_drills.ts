@@ -40,6 +40,7 @@ let drill: Drill | null;
 while ((drill = await solved.next()) !== null) {
   addDrill(set, drill);
 }
+solved.close();
 
 // Ingest drills from solved puzzles until hitting max per strategy
 // Write new drills to solved drill file as they are solved
