@@ -12,7 +12,7 @@ export function attempt<T>(fn: () => T): { ok: true; result: T } | { ok: false; 
 }
 
 /**
- * Returns true if file ends with newline or does not exist, false otherwise
+ * Returns true if file ends with newline, false otherwise (including if it does not exist)
  */
 async function checkIfFileEndsWithoutNewline(filePath: string): Promise<boolean> {
   let needsNewline = false;
