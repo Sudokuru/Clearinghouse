@@ -20,13 +20,17 @@ const drillCounts: Record<string, number> = Object.fromEntries(
 
 // Read solved puzzle file and count drills
 const solved: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
-let puzzle: Puzzle | null;
-while ((puzzle = await solved.next()) !== null) {
-  for (const field of DrillFields) {
-    if (puzzle.data[field] !== -1) {
-      drillCounts[field]++;
+try {
+  let puzzle: Puzzle | null;
+  while ((puzzle = await solved.next()) !== null) {
+    for (const field of DrillFields) {
+      if (puzzle.data[field] !== -1) {
+        drillCounts[field]++;
+      }
     }
   }
+} finally {
+  solved.close();
 }
 
 // Output counts per strategy
