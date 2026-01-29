@@ -24,23 +24,21 @@ try {
   process.exit(1);
 }
 
-// Clear Redis Database
-const clearDbRun = await clearRedis();
+try {
+  const clearDbRun = await clearRedis();
+  await clearDbRun.exited;
+  const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStream<Uint8Array>).text();
+  await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "clear.ts", client);
 
-const clearOutput: string = await new Response(clearDbRun.stdout as ReadableStream<Uint8Array>).text();
+  // Run the test files
+  await testIngestPuzzles(client);
+  await testIngestDrills();
+  await testExportDrills();
 
-await assertOutputContains(clearOutput, [SUCCESS_CONNECT_MSG, CLEAR_REDIS_MSG, QUIT_REDIS_MSG], "clear.ts", client);
+  // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
+  // TODO: As converting export and difficulty report scripts run and test them here too
 
-// Run the test files
-await testIngestPuzzles(client);
-await testIngestDrills();
-await testExportDrills();
-
-// TODO: Run ingest_puzzles.ts and verify saying n/N exits early
-
-// TODO: As converting export and difficulty report scripts run and test them here too
-
-// Cleanup
-await cleanup(client);
-
-log("✅ Tests passed successfully!", COLORS.GREEN);
+  log("✅ Tests passed successfully!", COLORS.GREEN);
+} finally {
+  await cleanup(client);
+}
