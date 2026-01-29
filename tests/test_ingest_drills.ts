@@ -18,8 +18,14 @@ export async function testIngestDrills(): Promise<void> {
     },
     stdout: "pipe",
   });
-  await ingestDrillsRun.exited;
+  const exitCode = await ingestDrillsRun.exited;
   const ingestDrillsOutput: string = await new Response(ingestDrillsRun.stdout as ReadableStream<Uint8Array>).text();
+  if (exitCode !== 0) {
+    const err = await new Response(ingestDrillsRun.stderr!).text();
+    await cleanupAndExit(
+      `ingest_drills.ts exited with code ${ingestDrillsRun.exitCode}\n${err}`
+    );
+  }
   
   const expectedConfigOutput: string[] = [
     `Max Drills Per Strategy: ${maxDrillsPerStrategy}`,
