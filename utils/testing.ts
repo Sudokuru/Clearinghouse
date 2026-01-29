@@ -58,6 +58,7 @@ export async function assertRedisContainsPuzzleData(redisClient: RedisClientType
   if (presolvedActualData === null) {
     await cleanupAndExit("Failed to get presolved puzzle out of Redis after running ingest_puzzles.ts", redisClient);
   }
+  // TODO: make PuzzleData comparisons use keys like Drill and Puzzle did for assertDrillInSet and so on below (JSON stringify for deep equality discouraged)
   const presolvedActualString: string = JSON.stringify(presolvedActualData);
   const presolvedExpectedString: string = JSON.stringify(puzzleData);
   if (presolvedExpectedString !== presolvedActualString) {
@@ -103,7 +104,7 @@ export async function assertPuzzleInSet(
 /**
  * Get number of occurrences of given attribute value in given Drill array
  */
-export function getAttributeValueCountInDrills(attribute: string, value: string, drills: Drill[]): number {
+export function getAttributeValueCountInDrills(attribute: keyof Drill, value: string, drills: Drill[]): number {
   return drills.reduce(
     (count, drill) => count + (drill[attribute] == value ? 1 : 0),
     0
