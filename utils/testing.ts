@@ -1,5 +1,5 @@
 import { RedisClientType } from "redis";
-import { Puzzle, PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
+import { Puzzle, PuzzleData, puzzleDataKey, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "./logs";
 import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
 import { z } from "zod";
@@ -58,12 +58,9 @@ export async function assertRedisContainsPuzzleData(redisClient: RedisClientType
   if (presolvedActualData === null) {
     await cleanupAndExit("Failed to get presolved puzzle out of Redis after running ingest_puzzles.ts", redisClient);
   }
-  // TODO: make PuzzleData comparisons use keys like Drill and Puzzle did for assertDrillInSet and so on below (JSON stringify for deep equality discouraged)
-  const presolvedActualString: string = JSON.stringify(presolvedActualData);
-  const presolvedExpectedString: string = JSON.stringify(puzzleData);
-  if (presolvedExpectedString !== presolvedActualString) {
-    log(`Expected: ${presolvedExpectedString}`);
-    log(`Actual: ${presolvedActualString}`);
+  if (puzzleDataKey(puzzleData) !== puzzleDataKey(presolvedActualData as PuzzleData)) {
+    log(`Expected: ${JSON.stringify(puzzleData)}`);
+    log(`Actual: ${JSON.stringify(presolvedActualData)}`);
     await cleanupAndExit("Presolved puzzle data from Redis did not match what was expected.", redisClient);
   }
 }
