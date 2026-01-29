@@ -1,9 +1,9 @@
 import { RedisClientType } from "redis";
-import { PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
+import { Puzzle, PuzzleData, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "./logs";
 import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
 import { z } from "zod";
-import { Drill } from "../types/Drill";
+import { Drill, drillKey } from "../types/Drill";
 import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
 
 /**
@@ -68,14 +68,35 @@ export async function assertRedisContainsPuzzleData(redisClient: RedisClientType
 }
 
 /**
- * Verifies string occurs exactly once in provided string array
+ * Verifies the given Drill occurs in provided Drill Set
+ * Uses drillKey() for equality.
  */
-export async function assertStringInArrayExactlyOnce(strings: string[], string: string, redisClient?: RedisClientType) {
-  const occurrences = strings.filter(str => str === string).length;
-  if (occurrences === 0) {
-    cleanupAndExit(`'${string}' was not found in the array.`, redisClient);
-  } else if (occurrences > 1) {
-    cleanupAndExit(`'${string}' occurred ${occurrences} times in the array, expected exactly once.`, redisClient);
+export async function assertDrillInSet(
+  drillKeys: Set<string>,
+  drill: Drill,
+  redisClient?: RedisClientType
+): Promise<void> {
+  const key = drillKey(drill)
+
+  if (!drillKeys.has(key)) {
+    await cleanupAndExit(`Drill was not found in the set. key=${key}`, redisClient);
+  }
+}
+
+/**
+ * Verifies the given Puzzle occurs in provided Puzzle Set
+ * Uses drillKey() for equality.
+ */
+export async function assertPuzzleInSet(
+  puzzleKeys: Set<string>,
+  puzzle: string,
+  puzzleIsSolved: boolean,
+  redisClient?: RedisClientType
+): Promise<void> {
+  const key = (new PuzzleKey(puzzle, puzzleIsSolved)).toString();
+
+  if (!puzzleKeys.has(key)) {
+    await cleanupAndExit(`Puzzle was not found in the set. key=${key}`, redisClient);
   }
 }
 

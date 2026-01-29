@@ -7,4 +7,8 @@ export type Drill = {
     drillPuzzle: string;
 }
 
+export function drillKey(d: Drill): string {
+  return JSON.stringify([d.strategy, d.initialPuzzle, d.drillPuzzle])
+}
+
 export const DrillFieldCount: number = 3; // strategy + initial puzzle + drill puzzle

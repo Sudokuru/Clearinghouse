@@ -1,7 +1,7 @@
 import { CSVDrillFeed } from "../feeds/CSVDrillFeed";
 import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
-import { Drill } from "../types/Drill";
-import { assertOutputContains, assertStringInArrayExactlyOnce, cleanupAndExit, getAttributeValueCountInDrills } from "../utils/testing";
+import { Drill, drillKey } from "../types/Drill";
+import { assertDrillInSet, assertOutputContains, cleanupAndExit, getAttributeValueCountInDrills } from "../utils/testing";
 
 export async function testIngestDrills(): Promise<void> {
   const maxDrillsPerStrategy: string = "2";
@@ -43,20 +43,23 @@ export async function testIngestDrills(): Promise<void> {
   while ((drill = await solved.next()) !== null) {
     drills.push(drill);
   }
+  const drillKeys = new Set<string>();
+  for (const d of drills) {
+    const key = drillKey(d)
+    if (drillKeys.has(key)) {
+      await cleanupAndExit(`Duplicate drill found (same drillKey): ${key}`);
+    }
+    drillKeys.add(key);
+  }
   solved.close();
-  const drillStrings: string[] = drills.map((d) => JSON.stringify(d));
 
-  console.log("Drill data ingested during test:");
-  console.log(drillStrings);
-
-  // Verify presolved drill is in testDrills.csv and not duplicated
+  // Verify presolved drill is in testDrills.csv
   const presolvedDrill: Drill = {
     strategy: "obvious_single_drill",
     initialPuzzle: "007500023850004060030102590700200010000710835080040076300620751915837042276000000",
     drillPuzzle: "197568423852394167634172598763285914429716835581943276348629751915837642276451380"
   }
-  const presolvedDrillString = JSON.stringify(presolvedDrill);
-  await assertStringInArrayExactlyOnce(drillStrings, presolvedDrillString);
+  await assertDrillInSet(drillKeys, presolvedDrill);
 
   // Verify another drill from same puzzle is solved
   const pairDrill: Drill = {
@@ -64,8 +67,7 @@ export async function testIngestDrills(): Promise<void> {
     initialPuzzle: "007500023850004060030102590700200010000710835080040076300620751915837042276000000",
     drillPuzzle: "197500423852394167634172598763200914429716835080040076300620751915837042276000000"
   }
-  const pairDrillString = JSON.stringify(pairDrill);
-  await assertStringInArrayExactlyOnce(drillStrings, pairDrillString);
+  await assertDrillInSet(drillKeys, pairDrill);
 
   // Verify a drill from another puzzle is solved
   const singleDrill: Drill = {
@@ -73,8 +75,7 @@ export async function testIngestDrills(): Promise<void> {
     initialPuzzle: "406007021029000476107600380280706910500091000070000608305210807000300000018569243",
     drillPuzzle: "436987521829135476157642389283756914564891732971423658395214867642378195018569243"
   }
-  const singleDrillString = JSON.stringify(singleDrill);
-  await assertStringInArrayExactlyOnce(drillStrings, singleDrillString);
+  await assertDrillInSet(drillKeys, singleDrill);
 
   // Verify max drill limit is not exceeded even though 3 obvious singles are available
   let count: number = getAttributeValueCountInDrills("strategy", "obvious_single_drill", drills);
