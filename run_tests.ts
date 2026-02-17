@@ -5,6 +5,7 @@ import { assertOutputContains, cleanup } from "./utils/testing";
 import { testIngestPuzzles } from "./tests/test_ingest_puzzles";
 import { testIngestDrills } from "./tests/test_ingest_drills";
 import { testExportDrills } from "./tests/test_export_drills";
+import { SOLVED_DATA_DIR } from "./streams/StreamConstants";
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -32,6 +33,11 @@ try {
 
   // Run the test files
   await testIngestPuzzles(client);
+  await Bun.spawn({
+    cmd: ["git", "checkout", SOLVED_DATA_DIR + "testPuzzles.csv"],
+    stdout: "inherit",
+    stderr: "inherit",
+  }).exited;
   await testIngestDrills();
   await testExportDrills();
 
