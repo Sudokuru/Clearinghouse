@@ -26,23 +26,6 @@ const config = {
   "Solved Puzzle File": solvedPuzzleFile
 }
 
-// Log config values
-log("Configuration Values:");
-log(`Generate Time Limit: ${generateTimeLimit}`);
-log(`Generate Threads: ${generateThreads}`);
-log(`Redis Stream Batch Size: ${redisStreamBatchSize}`);
-log(`Unsolved Puzzle File: ${unsolvedPuzzleFile}`);
-log(`Solved Puzzle File: ${solvedPuzzleFile}`);
-
-// Prompt the user to confirm the configuration.
-const answer = prompt("\nAre these values correct? (y/n): ");
-
-// If the answer is not 'y' (ignoring case), exit the process.
-if (answer?.toLowerCase() !== "y") {
-  log("Configuration not confirmed. Exiting...", COLORS.RED);
-  process.exit(1);
-}
-
 // Prompt user to confirm configured values else exits early
 promptUserToConfirmValues(config);
 
