@@ -5,6 +5,7 @@ import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
 import { z } from "zod";
 import { Drill, drillKey } from "../types/Drill";
 import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
+import { CSVPuzzleFeed } from "../feeds/CSVPuzzleFeed";
 
 /**
  * Does Redis cleanup 
@@ -106,4 +107,29 @@ export function getAttributeValueCountInDrills(attribute: keyof Drill, value: st
     (count, drill) => count + (drill[attribute] == value ? 1 : 0),
     0
   );
+}
+
+/*
+ * Verifies that puzzles in a CSV file are sorted by their solution in ascending order.
+ * Throws an error if the order is incorrect.
+ */
+export async function assertPuzzlesInCsvAreSortedBySolution(
+  puzzles: Puzzle[],
+  redisClient: RedisClientType
+): Promise<void> {
+
+  // Verify that puzzles are sorted by their solution
+  for (let i = 1; i < puzzles.length; i++) {
+    const prevSolution = puzzles[i - 1].data.solution;
+    const currentSolution = puzzles[i].data.solution;
+
+    if (prevSolution.localeCompare(currentSolution) > 0) {
+      await cleanupAndExit(
+        `Solution puzzles are not sorted correctly. Puzzle with solution "${prevSolution}" comes before "${currentSolution}".`,
+        redisClient
+      );
+    }
+  }
+
+  log(`✅ Solution puzzles are sorted correctly by solution.`, COLORS.GREEN);
 }
