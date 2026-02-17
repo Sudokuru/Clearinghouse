@@ -22,6 +22,7 @@ const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVE
 const config = {
   "Generate Time Limit": generateTimeLimit,
   "Generate Threads": generateThreads,
+  "Redis Stream Batch Size": redisStreamBatchSize,
   "Unsolved Puzzle File": unsolvedPuzzleFile,
   "Solved Puzzle File": solvedPuzzleFile
 }
