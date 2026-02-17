@@ -2,12 +2,11 @@ import { createClient, RedisClientType } from "redis";
 import { COLORS, log, promptUserToConfirmValues, formatEta, logProgressTwoLines } from "./utils/logs";
 import { connectToRedis, QUIT_REDIS_MSG, startRedis, batchLoadPuzzles, getPuzzleDataFromRedis } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { Puzzle, PuzzleDataFields } from "./types/Puzzle";
+import { Puzzle } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
 import { DEFAULT_SOLVED_PUZZLES_FILE, SOLVED_DATA_DIR, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM, ALREADY_SOLVED_SET, NEW_SOLVED_SET, FAILED_SOLVE_SET } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
 import { consumeSolvedPuzzles } from "./streams/SolvedPuzzleConsumer";
-import { createWriteStream } from "fs";
 import * as fs from "fs";
 
 
