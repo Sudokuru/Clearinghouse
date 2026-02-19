@@ -7,7 +7,7 @@ import { addDrill, DrillSet } from "./types/DrillSet";
 import { DrillFields, Puzzle } from "./types/Puzzle";
 import { promptUserToConfirmValues } from "./utils/logs";
 import { WriteStream, existsSync } from "fs";
-import { getWriteStream } from "./utils/helpers";
+import { getWriteStream, closeWriteStreamSafely } from "./utils/helpers";
 
 // Assign environment variables to variables with fallback defaults.
 const BASE: number = 10;
@@ -72,5 +72,5 @@ try {
   }
 } finally {
   puzzles.close();
-  solvedDrillFileStream.close();
+  await closeWriteStreamSafely(solvedDrillFileStream);
 }
