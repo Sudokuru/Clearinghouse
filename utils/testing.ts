@@ -104,7 +104,7 @@ export async function assertPuzzleInSet(
  */
 export function getAttributeValueCountInDrills(attribute: keyof Drill, value: string, drills: Drill[]): number {
   return drills.reduce(
-    (count, drill) => count + (drill[attribute] == value ? 1 : 0),
+    (count, drill) => count + (drill[attribute] === value ? 1 : 0),
     0
   );
 }
