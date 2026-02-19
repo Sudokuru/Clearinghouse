@@ -18,7 +18,7 @@ if (Number.isNaN(maxDrillsPerStrategy) || maxDrillsPerStrategy < 0) {
   process.exit(1);
 }
 const solvedDrillFile: string = process.env.SOLVED_DRILL_FILE ?? DEFAULT_SOLVED_DRILLS_FILE;
-const solvedPuzzleFile: string | null = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
+const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
 const config = {
   "Max Drills Per Strategy": maxDrillsPerStrategy,
