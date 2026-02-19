@@ -36,7 +36,7 @@ async function checkIfFileEndsWithoutNewline(filePath: string): Promise<boolean>
 
 export async function getWriteStream(filePath: string): Promise<WriteStream> {
   // Check if file exists and whether it ends without a newline
-  let needsNewline = await checkIfFileEndsWithoutNewline(filePath);
+  const needsNewline = await checkIfFileEndsWithoutNewline(filePath);
 
   // Open file in append mode
   const stream = createWriteStream(filePath, { flags: "a" });
