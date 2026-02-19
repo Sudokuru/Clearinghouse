@@ -26,7 +26,7 @@ export async function testIngestPuzzles(redisClient: RedisClientType): Promise<v
   const ingestPuzzlesOutput: string = await new Response(ingestPuzzlesRun.stdout as ReadableStream<Uint8Array>).text();
   if (exitCode !== 0) {
     const err = ingestPuzzlesRun.stderr ? await new Response(ingestPuzzlesRun.stderr as ReadableStream<Uint8Array>).text() : "";
-    await cleanupAndExit(`ingest_puzzles.ts exited with code ${exitCode}\n${err}`);
+    await cleanupAndExit(`ingest_puzzles.ts exited with code ${exitCode}\n${err}`, redisClient);
   }
   
   const expectedConfigOutput: string[] = [
