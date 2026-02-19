@@ -44,6 +44,8 @@ SOLVED_DRILL_FILE is the csv file used to read existing solved drills from and a
 
 MIN_DIFFICULTY and MAX_DIFFICULTY optionally filter puzzles exported by difficulty in export_puzzles.ts, defaulting to no lower/upper bound.
 
+MAX_EXPORT_PUZZLES optionally limits how many puzzles export_puzzles.ts writes, defaulting to no limit.
+
 ```bash
 # Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
@@ -76,7 +78,7 @@ bun run test
 SOLVED_DRILL_FILE=drills.csv bun export_drills.ts
 
 # Export solved puzzles to a TypeScript file as InputPuzzle[]
-SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 bun export_puzzles.ts
+SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_EXPORT_PUZZLES=1000 bun export_puzzles.ts
 
 # Run tests
 bun run_tests.ts

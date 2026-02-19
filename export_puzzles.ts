@@ -15,18 +15,26 @@ const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVE
 const BASE: number = 10;
 const minDifficultyEnv = process.env.MIN_DIFFICULTY;
 const maxDifficultyEnv = process.env.MAX_DIFFICULTY;
+const maxExportPuzzlesEnv = process.env.MAX_EXPORT_PUZZLES;
 const minDifficulty: number = minDifficultyEnv === undefined
   ? Number.NEGATIVE_INFINITY
   : Number.parseInt(minDifficultyEnv, BASE);
 const maxDifficulty: number = maxDifficultyEnv === undefined
   ? Number.POSITIVE_INFINITY
   : Number.parseInt(maxDifficultyEnv, BASE);
+const maxExportPuzzles: number = maxExportPuzzlesEnv === undefined
+  ? Number.POSITIVE_INFINITY
+  : Number.parseInt(maxExportPuzzlesEnv, BASE);
 if (Number.isNaN(minDifficulty)) {
   console.error(`Invalid MIN_DIFFICULTY: '${minDifficultyEnv}'`);
   process.exit(1);
 }
 if (Number.isNaN(maxDifficulty)) {
   console.error(`Invalid MAX_DIFFICULTY: '${maxDifficultyEnv}'`);
+  process.exit(1);
+}
+if (Number.isNaN(maxExportPuzzles) || maxExportPuzzles < 0) {
+  console.error(`Invalid MAX_EXPORT_PUZZLES: '${maxExportPuzzlesEnv}'`);
   process.exit(1);
 }
 if (minDifficulty > maxDifficulty) {
@@ -38,6 +46,7 @@ const config = {
   "Solved Puzzle File": solvedPuzzleFile,
   "Min Difficulty": minDifficulty,
   "Max Difficulty": maxDifficulty,
+  "Max Export Puzzles": Number.isFinite(maxExportPuzzles) ? maxExportPuzzles : "unbounded",
 };
 
 // Prompt user to confirm configured values else exits early
@@ -55,6 +64,9 @@ try {
         s: puzzle.data.solution,
         d: puzzle.data.difficulty,
       });
+      if (puzzles.length >= maxExportPuzzles) {
+        break;
+      }
     }
   }
 } finally {
@@ -73,3 +85,8 @@ export const puzzles: InputPuzzle[] = ${JSON.stringify(puzzles, null, 2)};
 `;
 await writeFile(fileName, content);
 log(`Wrote ${puzzles.length} puzzles to ${fileName}`);
+if (puzzles.length >= maxExportPuzzles) {
+  log(`Reached MAX_EXPORT_PUZZLES limit of ${maxExportPuzzles}.`);
+} else {
+  log(`Exported ${puzzles.length} puzzles.`)
+}
