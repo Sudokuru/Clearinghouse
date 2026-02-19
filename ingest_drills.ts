@@ -6,7 +6,7 @@ import { Drill } from "./types/Drill";
 import { addDrill, DrillSet } from "./types/DrillSet";
 import { DrillFields, Puzzle } from "./types/Puzzle";
 import { promptUserToConfirmValues } from "./utils/logs";
-import { WriteStream } from "fs";
+import { WriteStream, existsSync } from "fs";
 import { getWriteStream } from "./utils/helpers";
 
 // Assign environment variables to variables with fallback defaults.
@@ -35,18 +35,21 @@ const set: DrillSet = {
   seenDrill: new Set<string>(),
   drillCounts: new Map<string, number>()
 };
-const solved: CSVDrillFeed = new CSVDrillFeed(SOLVED_DATA_DIR + solvedDrillFile);
-let drill: Drill | null;
-while ((drill = await solved.next()) !== null) {
-  addDrill(set, drill);
+const solvedDrillPath = SOLVED_DATA_DIR + solvedDrillFile;
+if (existsSync(solvedDrillPath)) {
+  const solved: CSVDrillFeed = new CSVDrillFeed(solvedDrillPath);
+  let drill: Drill | null;
+  while ((drill = await solved.next()) !== null) {
+    addDrill(set, drill);
+  }
+  solved.close();
 }
-solved.close();
 
 // Ingest drills from solved puzzles until hitting max per strategy
 // Write new drills to solved drill file as they are solved
 const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
 let puzzle: Puzzle | null;
-const solvedDrillFileStream: WriteStream = await getWriteStream(SOLVED_DATA_DIR + solvedDrillFile);
+const solvedDrillFileStream: WriteStream = await getWriteStream(solvedDrillPath);
 while ((puzzle = await puzzles.next()) !== null) {
   for (const field of DrillFields) {
     if (puzzle.data[field] !== -1) {

@@ -4,6 +4,7 @@ import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis
 import { assertOutputContains, cleanup } from "./utils/testing";
 import { testIngestPuzzles } from "./tests/test_ingest_puzzles";
 import { testIngestDrills } from "./tests/test_ingest_drills";
+import { testIngestDrillsMissingCsv } from "./tests/test_ingest_drills_missing_csv";
 import { testExportDrills } from "./tests/test_export_drills";
 import { testExportPuzzles } from "./tests/test_export_puzzles";
 import { SOLVED_DATA_DIR } from "./streams/StreamConstants";
@@ -40,6 +41,7 @@ try {
     stderr: "inherit",
   }).exited;
   await testIngestDrills();
+  await testIngestDrillsMissingCsv();
   await testExportDrills();
   await testExportPuzzles();
 
