@@ -41,22 +41,26 @@ const client: RedisClientType = createClient();
 await connectToRedis(client);
 
 // Ingest presolved solved puzzles into Redis
-const solved: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
-let puzzle: Puzzle | null;
-while ((puzzle = await solved.next()) !== null) {
-  await client.hSet(puzzle.key.toString(), puzzle.data);
-}
-log(`Loading solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
+const solvedPuzzlePath = SOLVED_DATA_DIR + solvedPuzzleFile;
+if (fs.existsSync(solvedPuzzlePath)) {
+  const solved: CSVPuzzleFeed = new CSVPuzzleFeed(solvedPuzzlePath);
+  let puzzle: Puzzle | null;
+  while ((puzzle = await solved.next()) !== null) {
+    await client.hSet(puzzle.key.toString(), puzzle.data);
+  }
+  solved.close();
+  log(`Loading solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
 
-const solvedFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
-await batchLoadPuzzles(
-  solvedFeed,
-  (pipeline, puzzle) => pipeline.hSet(puzzle.key.toString(), puzzle.data),
-  redisStreamBatchSize,
-  "Loaded {count} solved puzzles into Redis database...",
-  "Successfully loaded {count} solved puzzles into Redis database.",
-  client
-);
+  const solvedFeed = new CSVPuzzleFeed(solvedPuzzlePath);
+  await batchLoadPuzzles(
+    solvedFeed,
+    (pipeline, puzzle) => pipeline.hSet(puzzle.key.toString(), puzzle.data),
+    redisStreamBatchSize,
+    "Loaded {count} solved puzzles into Redis database...",
+    "Successfully loaded {count} solved puzzles into Redis database.",
+    client
+  );
+}
 
 // Exit early if user opted not to solve a new puzzle file
 if (unsolvedPuzzleFile === null) {

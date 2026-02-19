@@ -3,6 +3,7 @@ import { COLORS, log } from "./utils/logs";
 import { CLEAR_REDIS_MSG, clearRedis, connectToRedis, QUIT_REDIS_MSG, startRedis, stopRedis, SUCCESS_CONNECT_MSG } from "./utils/redis";
 import { assertOutputContains, cleanup } from "./utils/testing";
 import { testIngestPuzzles } from "./tests/test_ingest_puzzles";
+import { testIngestPuzzlesMissingCsv } from "./tests/test_ingest_puzzles_missing_csv";
 import { testIngestDrills } from "./tests/test_ingest_drills";
 import { testIngestDrillsMissingCsv } from "./tests/test_ingest_drills_missing_csv";
 import { testExportDrills } from "./tests/test_export_drills";
@@ -35,6 +36,7 @@ try {
 
   // Run the test files
   await testIngestPuzzles(client);
+  await testIngestPuzzlesMissingCsv(client);
   await Bun.spawn({
     cmd: ["git", "checkout", SOLVED_DATA_DIR + "testPuzzles.csv"],
     stdout: "inherit",
