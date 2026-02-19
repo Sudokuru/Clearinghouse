@@ -5,6 +5,7 @@ import { assertOutputContains, cleanup } from "./utils/testing";
 import { testIngestPuzzles } from "./tests/test_ingest_puzzles";
 import { testIngestDrills } from "./tests/test_ingest_drills";
 import { testExportDrills } from "./tests/test_export_drills";
+import { testExportPuzzles } from "./tests/test_export_puzzles";
 import { SOLVED_DATA_DIR } from "./streams/StreamConstants";
 
 // Start the Redis Docker Container
@@ -40,6 +41,7 @@ try {
   }).exited;
   await testIngestDrills();
   await testExportDrills();
+  await testExportPuzzles();
 
   // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
   // TODO: As converting export and difficulty report scripts run and test them here too

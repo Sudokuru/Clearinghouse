@@ -73,6 +73,9 @@ bun run test
 # Export solved drills to TypeScript files for each strategy
 SOLVED_DRILL_FILE=drills.csv bun export_drills.ts
 
+# Export solved puzzles to a TypeScript file as InputPuzzle[]
+SOLVED_PUZZLE_FILE=puzzles.csv bun export_puzzles.ts
+
 # Run tests
 bun run_tests.ts
 
