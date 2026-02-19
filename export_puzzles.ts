@@ -24,14 +24,17 @@ promptUserToConfirmValues(config);
 const feed: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
 const puzzles: InputPuzzle[] = [];
 let puzzle: Puzzle | null;
-while ((puzzle = await feed.next()) !== null) {
-  puzzles.push({
-    p: puzzle.key.getPuzzle(),
-    s: puzzle.data.solution,
-    d: puzzle.data.difficulty,
-  });
+try {
+  while ((puzzle = await feed.next()) !== null) {
+    puzzles.push({
+      p: puzzle.key.getPuzzle(),
+      s: puzzle.data.solution,
+      d: puzzle.data.difficulty,
+    });
+  }
+} finally {
+  feed.close();
 }
-feed.close();
 
 // Write puzzles to ts file
 const fileName = "puzzles.ts";
