@@ -50,24 +50,27 @@ if (existsSync(solvedDrillPath)) {
 const puzzles: CSVPuzzleFeed = new CSVPuzzleFeed(SOLVED_DATA_DIR + solvedPuzzleFile);
 let puzzle: Puzzle | null;
 const solvedDrillFileStream: WriteStream = await getWriteStream(solvedDrillPath);
-while ((puzzle = await puzzles.next()) !== null) {
-  for (const field of DrillFields) {
-    if (puzzle.data[field] !== -1) {
-      if ((set.drillCounts.get(field) ?? 0) < maxDrillsPerStrategy) {
-        const drillPuzzleString = getDrillPuzzleString(puzzle.key.getPuzzle(), puzzle.data[field]);
-        const drillIsNew: boolean = addDrill(set, {
-          strategy: field,
-          initialPuzzle: puzzle.key.getPuzzle(),
-          drillPuzzle: drillPuzzleString
-        });
-        if (drillIsNew) {
-          solvedDrillFileStream.write(
-            field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString + "\n"
-          );
+try {
+  while ((puzzle = await puzzles.next()) !== null) {
+    for (const field of DrillFields) {
+      if (puzzle.data[field] !== -1) {
+        if ((set.drillCounts.get(field) ?? 0) < maxDrillsPerStrategy) {
+          const drillPuzzleString = getDrillPuzzleString(puzzle.key.getPuzzle(), puzzle.data[field]);
+          const drillIsNew: boolean = addDrill(set, {
+            strategy: field,
+            initialPuzzle: puzzle.key.getPuzzle(),
+            drillPuzzle: drillPuzzleString
+          });
+          if (drillIsNew) {
+            solvedDrillFileStream.write(
+              field + "," + puzzle.key.getPuzzle() + "," + drillPuzzleString + "\n"
+            );
+          }
         }
       }
     }
   }
+} finally {
+  puzzles.close();
+  solvedDrillFileStream.close();
 }
-puzzles.close();
-solvedDrillFileStream.close();
