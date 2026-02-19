@@ -84,7 +84,7 @@ export async function assertDrillInSet(
 
 /**
  * Verifies the given Puzzle occurs in provided Puzzle Set
- * Uses drillKey() for equality.
+ * Uses puzzleKey() for equality.
  */
 export async function assertPuzzleInSet(
   puzzleKeys: Set<string>,
