@@ -2,12 +2,16 @@ import { assertOutputContains, cleanupAndExit } from "../utils/testing";
 
 export async function testExportPuzzles(): Promise<void> {
   const solvedPuzzleFile: string = "testPuzzles.csv";
+  const minDifficulty: string = "-16000";
+  const maxDifficulty: string = "-15000";
 
   const exportPuzzlesRun = Bun.spawn({
     cmd: ["sh", "-c", "echo 'y' | bun export_puzzles.ts"],
     env: {
       ...process.env,
       SOLVED_PUZZLE_FILE: solvedPuzzleFile,
+      MIN_DIFFICULTY: minDifficulty,
+      MAX_DIFFICULTY: maxDifficulty,
     },
     stdout: "pipe",
   });
@@ -20,6 +24,8 @@ export async function testExportPuzzles(): Promise<void> {
 
   const expectedConfigOutput: string[] = [
     `Solved Puzzle File: ${solvedPuzzleFile}`,
+    `Min Difficulty: ${minDifficulty}`,
+    `Max Difficulty: ${maxDifficulty}`,
     "Are these values correct? (y/n):",
   ];
 
@@ -38,6 +44,9 @@ export async function testExportPuzzles(): Promise<void> {
     ],
     "puzzles.ts"
   );
+  if (fileContent.includes("\"d\": -19916")) {
+    await cleanupAndExit("puzzles.ts contained difficulty -19916 which should have been filtered out.");
+  }
 
   // Cleanup generated file
   await Bun.spawn({ cmd: ["rm", "-f", "puzzles.ts"] }).exited;
