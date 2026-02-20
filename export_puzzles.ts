@@ -37,10 +37,6 @@ if (minDifficulty > maxDifficulty) {
   console.error(`MIN_DIFFICULTY (${minDifficulty}) cannot be greater than MAX_DIFFICULTY (${maxDifficulty}).`);
   process.exit(1);
 }
-if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(puzzlesArrayName)) {
-  console.error(`Invalid PUZZLES_ARRAY_NAME: '${puzzlesArrayName}'`);
-  process.exit(1);
-}
 
 const config = {
   "Solved Puzzle File": solvedPuzzleFile,

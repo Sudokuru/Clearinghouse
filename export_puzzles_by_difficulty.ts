@@ -45,7 +45,7 @@ for (const range of DIFFICULTY_RANGES) {
     env: {
       ...process.env,
       SOLVED_PUZZLE_FILE: solvedPuzzleFile,
-      PUZZLES_ARRAY_NAME: `${range.name.toUpperCase().replace(/[^A-Z0-9]+/g, "_")}_PUZZLES`,
+      PUZZLES_ARRAY_NAME: `${range.name.toUpperCase()}_PUZZLES`,
       MIN_DIFFICULTY: range.minDifficulty.toString(),
       MAX_DIFFICULTY: range.maxDifficulty.toString(),
       MAX_EXPORT_PUZZLES: maxExportPuzzles.toString(),
