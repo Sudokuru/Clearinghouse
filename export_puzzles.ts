@@ -8,6 +8,7 @@ import type { InputPuzzle } from "./puzzle.types";
 // Assign environment variables to variables with fallback defaults.
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 const BASE: number = 10;
+const puzzlesArrayName = process.env.PUZZLES_ARRAY_NAME ?? "puzzles";
 const minDifficultyEnv = process.env.MIN_DIFFICULTY;
 const maxDifficultyEnv = process.env.MAX_DIFFICULTY;
 const maxExportPuzzlesEnv = process.env.MAX_EXPORT_PUZZLES;
@@ -36,9 +37,14 @@ if (minDifficulty > maxDifficulty) {
   console.error(`MIN_DIFFICULTY (${minDifficulty}) cannot be greater than MAX_DIFFICULTY (${maxDifficulty}).`);
   process.exit(1);
 }
+if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(puzzlesArrayName)) {
+  console.error(`Invalid PUZZLES_ARRAY_NAME: '${puzzlesArrayName}'`);
+  process.exit(1);
+}
 
 const config = {
   "Solved Puzzle File": solvedPuzzleFile,
+  "Puzzles Array Name": puzzlesArrayName,
   "Min Difficulty": minDifficulty,
   "Max Difficulty": maxDifficulty,
   "Max Export Puzzles": Number.isFinite(maxExportPuzzles) ? maxExportPuzzles : "unbounded",
@@ -72,7 +78,7 @@ try {
 const fileName = "puzzles.ts";
 const content: string = `import type { InputPuzzle } from "./puzzle.types";
 
-export const puzzles: InputPuzzle[] = ${JSON.stringify(puzzles, null, 2)};
+export const ${puzzlesArrayName}: InputPuzzle[] = ${JSON.stringify(puzzles, null, 2)};
 `;
 await writeFile(fileName, content);
 log(`Wrote ${puzzles.length} puzzles to ${fileName}`);

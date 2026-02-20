@@ -5,6 +5,7 @@ export async function testExportPuzzles(): Promise<void> {
   const minDifficulty: string = "-16000";
   const maxDifficulty: string = "-15000";
   const maxExportPuzzles: string = "1";
+  const puzzlesArrayName: string = "testPuzzles";
 
   const exportPuzzlesRun = Bun.spawn({
     cmd: ["sh", "-c", "echo 'y' | bun export_puzzles.ts"],
@@ -14,6 +15,7 @@ export async function testExportPuzzles(): Promise<void> {
       MIN_DIFFICULTY: minDifficulty,
       MAX_DIFFICULTY: maxDifficulty,
       MAX_EXPORT_PUZZLES: maxExportPuzzles,
+      PUZZLES_ARRAY_NAME: puzzlesArrayName,
     },
     stdout: "pipe",
   });
@@ -26,6 +28,7 @@ export async function testExportPuzzles(): Promise<void> {
 
   const expectedConfigOutput: string[] = [
     `Solved Puzzle File: ${solvedPuzzleFile}`,
+    `Puzzles Array Name: ${puzzlesArrayName}`,
     `Min Difficulty: ${minDifficulty}`,
     `Max Difficulty: ${maxDifficulty}`,
     `Max Export Puzzles: ${maxExportPuzzles}`,
@@ -42,7 +45,7 @@ export async function testExportPuzzles(): Promise<void> {
     fileContent,
     [
       "import type { InputPuzzle } from \"./puzzle.types\";",
-      "export const puzzles: InputPuzzle[]",
+      `export const ${puzzlesArrayName}: InputPuzzle[]`,
       "\"p\": \"007500023850004060030102590700200010000710835080040076300620751915837042276000000\"",
       "\"s\": \"197568423852394167634172598763285914429716835581943276348629751915837642276451389\"",
       "\"d\": -15174",
