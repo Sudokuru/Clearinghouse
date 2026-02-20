@@ -25,9 +25,7 @@ const config = {
 };
 promptUserToConfirmValues(config);
 
-const difficultyRanges = DIFFICULTY_RANGES;
-
-for (const range of difficultyRanges) {
+for (const range of DIFFICULTY_RANGES) {
   const outputFile = `${difficultyNameToSnakeCase(range.name)}_puzzles.ts`;
   log(
     `Exporting '${range.name}' puzzles (${range.minDifficulty} to ${range.maxDifficulty}) to ${outputFile}...`,
@@ -60,4 +58,4 @@ for (const range of difficultyRanges) {
   await rename("puzzles.ts", outputFile);
 }
 
-log(`Exported ${difficultyRanges.length} difficulty files.`, COLORS.GREEN);
+log(`Exported ${DIFFICULTY_RANGES.length} difficulty files.`, COLORS.GREEN);

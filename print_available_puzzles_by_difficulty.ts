@@ -11,10 +11,8 @@ const config = {
 };
 promptUserToConfirmValues(config);
 
-const difficultyRanges = DIFFICULTY_RANGES;
-
 const counts = new Map<string, number>();
-for (const range of difficultyRanges) {
+for (const range of DIFFICULTY_RANGES) {
   counts.set(range.name, 0);
 }
 
@@ -23,7 +21,7 @@ try {
   let puzzle: Puzzle | null;
   while ((puzzle = await feed.next()) !== null) {
     const difficulty = puzzle.data.difficulty;
-    for (const range of difficultyRanges) {
+    for (const range of DIFFICULTY_RANGES) {
       if (difficulty >= range.minDifficulty && difficulty <= range.maxDifficulty) {
         counts.set(range.name, (counts.get(range.name) ?? 0) + 1);
       }
@@ -33,7 +31,7 @@ try {
   feed.close();
 }
 
-for (const range of difficultyRanges) {
+for (const range of DIFFICULTY_RANGES) {
   log(`${range.name}: ${counts.get(range.name) ?? 0}`);
 }
 
