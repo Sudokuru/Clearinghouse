@@ -80,10 +80,10 @@ SOLVED_DRILL_FILE=drills.csv bun export_drills.ts
 # Export solved puzzles to a TypeScript file as InputPuzzle[]
 SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_EXPORT_PUZZLES=1000 bun export_puzzles.ts
 
-# Export one TypeScript file per difficulty range from DifficultyRanges.md
+# Export one TypeScript file per difficulty range from DifficultyRanges.ts
 SOLVED_PUZZLE_FILE=puzzles.csv MAX_EXPORT_PUZZLES=500 bun export_puzzles_by_difficulty.ts
 
-# Print available solved puzzle counts per difficulty range from DifficultyRanges.md
+# Print available solved puzzle counts per difficulty range from DifficultyRanges.ts
 SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_puzzles_by_difficulty.ts
 
 # Run tests
@@ -148,7 +148,7 @@ Kept current exports.ts generated file and Puzzle.type.ts
 Will be very easy to write new ts script that reads solved puzzles csv and prints new exports.ts
 
 ## Generation of Difficulty Report for Solved Puzzles
-Kept current DifficultyReport.txt and explanatory DifficultyRanges.md
+Kept current DifficultyReport.txt and explanatory DifficultyRanges.ts
 Will be very easy to write new ts script that reads solved puzzles csv and collects difficulties then outputs report
 
 # Future

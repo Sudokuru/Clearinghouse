@@ -1,11 +1,18 @@
 import { rename, rm } from "fs/promises";
 import { DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
-import { difficultyNameToSnakeCase, readDifficultyRanges } from "./utils/difficulty_ranges";
+import { DIFFICULTY_RANGES } from "./DifficultyRanges";
+
+function difficultyNameToSnakeCase(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
 
 const maxExportPuzzlesEnv = process.env.MAX_EXPORT_PUZZLES;
 const solvedPuzzleFile = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
-const rangesFile = process.env.DIFFICULTY_RANGES_FILE ?? "DifficultyRanges.md";
 const maxExportPuzzles = Number.parseInt(maxExportPuzzlesEnv ?? "", 10);
 if (Number.isNaN(maxExportPuzzles) || maxExportPuzzles < 0) {
   console.error(`Invalid MAX_EXPORT_PUZZLES: '${maxExportPuzzlesEnv}'.`);
@@ -14,16 +21,11 @@ if (Number.isNaN(maxExportPuzzles) || maxExportPuzzles < 0) {
 
 const config = {
   "Solved Puzzle File": solvedPuzzleFile,
-  "Difficulty Ranges File": rangesFile,
   "Max Export Puzzles": maxExportPuzzles,
 };
 promptUserToConfirmValues(config);
 
-const difficultyRanges = await readDifficultyRanges(rangesFile);
-if (difficultyRanges.length === 0) {
-  console.error(`No difficulty ranges found in ${rangesFile}.`);
-  process.exit(1);
-}
+const difficultyRanges = DIFFICULTY_RANGES;
 
 for (const range of difficultyRanges) {
   const outputFile = `${difficultyNameToSnakeCase(range.name)}_puzzles.ts`;

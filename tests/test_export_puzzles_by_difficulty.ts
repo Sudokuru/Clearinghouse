@@ -37,7 +37,6 @@ export async function testExportPuzzlesByDifficulty(): Promise<void> {
 
   const expectedConfigOutput: string[] = [
     `Solved Puzzle File: ${solvedPuzzleFile}`,
-    "Difficulty Ranges File: DifficultyRanges.md",
     `Max Export Puzzles: ${maxExportPuzzles}`,
     "Are these values correct? (y/n):",
     "[CH] Exported 9 difficulty files.",
