@@ -80,7 +80,7 @@ bun run test
 SOLVED_DRILL_FILE=drills.csv OUTPUT_DIR=exported_drills bun export_drills.ts
 
 # Export solved puzzles to a TypeScript file as InputPuzzle[]
-SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_EXPORT_PUZZLES=1000 bun export_puzzles.ts
+SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_EXPORT_PUZZLES=1000 PUZZLES_ARRAY_NAME=puzzles bun export_puzzles.ts
 
 # Export one TypeScript file per difficulty range from DifficultyRanges.ts
 SOLVED_PUZZLE_FILE=puzzles.csv MAX_EXPORT_PUZZLES=500 OUTPUT_DIR=exported_puzzles_by_difficulty bun export_puzzles_by_difficulty.ts
