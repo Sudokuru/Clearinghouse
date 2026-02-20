@@ -1,64 +1,7 @@
-import { readFile, rename, rm } from "fs/promises";
+import { rename, rm } from "fs/promises";
 import { DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
-
-type DifficultyRange = {
-  name: string;
-  minDifficulty: number;
-  maxDifficulty: number;
-};
-
-function parseDifficulty(value: string): number {
-  const parsed = Number.parseInt(value.replaceAll(",", "").trim(), 10);
-  if (Number.isNaN(parsed)) {
-    throw new Error(`Invalid difficulty value: '${value}'`);
-  }
-  return parsed;
-}
-
-function parseDifficultyRanges(markdown: string): DifficultyRange[] {
-  const ranges: DifficultyRange[] = [];
-  const lines = markdown.split("\n");
-
-  for (const line of lines) {
-    const match = line.match(/^\s*-\s*([^:]+):\s*(.+)\s*$/);
-    if (!match) {
-      continue;
-    }
-
-    const name = match[1].trim();
-    const rawRange = match[2].trim();
-
-    if (rawRange.toLowerCase().includes("through")) {
-      const [from, to] = rawRange.split(/through/i).map((part) => part.trim());
-      const left = parseDifficulty(from);
-      const right = parseDifficulty(to);
-      ranges.push({
-        name,
-        minDifficulty: Math.min(left, right),
-        maxDifficulty: Math.max(left, right),
-      });
-      continue;
-    }
-
-    const value = parseDifficulty(rawRange);
-    ranges.push({
-      name,
-      minDifficulty: value,
-      maxDifficulty: value,
-    });
-  }
-
-  return ranges;
-}
-
-function toSnakeCase(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
+import { difficultyNameToSnakeCase, readDifficultyRanges } from "./utils/difficulty_ranges";
 
 const maxExportPuzzlesEnv = process.env.MAX_EXPORT_PUZZLES;
 const solvedPuzzleFile = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
@@ -76,15 +19,14 @@ const config = {
 };
 promptUserToConfirmValues(config);
 
-const rangesMarkdown = await readFile(rangesFile, "utf-8");
-const difficultyRanges = parseDifficultyRanges(rangesMarkdown);
+const difficultyRanges = await readDifficultyRanges(rangesFile);
 if (difficultyRanges.length === 0) {
   console.error(`No difficulty ranges found in ${rangesFile}.`);
   process.exit(1);
 }
 
 for (const range of difficultyRanges) {
-  const outputFile = `${toSnakeCase(range.name)}_puzzles.ts`;
+  const outputFile = `${difficultyNameToSnakeCase(range.name)}_puzzles.ts`;
   log(
     `Exporting '${range.name}' puzzles (${range.minDifficulty} to ${range.maxDifficulty}) to ${outputFile}...`,
     COLORS.CYAN

@@ -83,6 +83,9 @@ SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_E
 # Export one TypeScript file per difficulty range from DifficultyRanges.md
 SOLVED_PUZZLE_FILE=puzzles.csv MAX_EXPORT_PUZZLES=500 bun export_puzzles_by_difficulty.ts
 
+# Print available solved puzzle counts per difficulty range from DifficultyRanges.md
+SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_puzzles_by_difficulty.ts
+
 # Run tests
 bun run_tests.ts
 

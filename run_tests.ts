@@ -9,6 +9,7 @@ import { testIngestDrillsMissingCsv } from "./tests/test_ingest_drills_missing_c
 import { testExportDrills } from "./tests/test_export_drills";
 import { testExportPuzzles } from "./tests/test_export_puzzles";
 import { testExportPuzzlesByDifficulty } from "./tests/test_export_puzzles_by_difficulty";
+import { testPrintAvailablePuzzlesByDifficulty } from "./tests/test_print_available_puzzles_by_difficulty";
 import { SOLVED_DATA_DIR } from "./streams/StreamConstants";
 
 // Start the Redis Docker Container
@@ -48,6 +49,7 @@ try {
   await testExportDrills();
   await testExportPuzzles();
   await testExportPuzzlesByDifficulty();
+  await testPrintAvailablePuzzlesByDifficulty();
 
   // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
   // TODO: As converting export and difficulty report scripts run and test them here too
