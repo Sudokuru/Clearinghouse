@@ -2,10 +2,8 @@ import { RedisClientType } from "redis";
 import { Puzzle, PuzzleData, puzzleDataKey, PuzzleDataSchema, PuzzleKey } from "../types/Puzzle";
 import { COLORS, log } from "./logs";
 import { clearRedis, getPuzzleDataFromRedis, stopRedis } from "./redis";
-import { z } from "zod";
 import { Drill, drillKey } from "../types/Drill";
 import { SOLVED_DATA_DIR } from "../streams/StreamConstants";
-import { CSVPuzzleFeed } from "../feeds/CSVPuzzleFeed";
 
 /**
  * Does Redis cleanup 
