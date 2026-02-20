@@ -50,12 +50,16 @@ export async function testExportPuzzlesByDifficulty(): Promise<void> {
       await cleanupAndExit(`Expected exported file was not created: ${file}`);
     }
   }
+  const typeFileExists = await Bun.file(`${outputDir}/puzzle.types.ts`).exists();
+  if (!typeFileExists) {
+    await cleanupAndExit(`Expected copied type file was not created: ${outputDir}/puzzle.types.ts`);
+  }
 
   const noviceContent: string = await Bun.file(`${outputDir}/novice_puzzles.ts`).text();
   await assertOutputContains(
     noviceContent,
     [
-      "export interface InputPuzzle",
+      "import type { InputPuzzle } from \"./puzzle.types\";",
       "export const puzzles: InputPuzzle[] =",
     ],
     `${outputDir}/novice_puzzles.ts`

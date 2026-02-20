@@ -3,12 +3,7 @@ import { DEFAULT_SOLVED_PUZZLES_FILE, SOLVED_DATA_DIR } from "./streams/StreamCo
 import { Puzzle } from "./types/Puzzle";
 import { promptUserToConfirmValues, log } from "./utils/logs";
 import { writeFile } from "fs/promises";
-
-export interface InputPuzzle {
-  p: string; // initial puzzle string
-  s: string; // solution string
-  d: number; // difficulty
-}
+import type { InputPuzzle } from "./puzzle.types";
 
 // Assign environment variables to variables with fallback defaults.
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
@@ -75,11 +70,7 @@ try {
 
 // Write puzzles to ts file
 const fileName = "puzzles.ts";
-const content: string = `export interface InputPuzzle {
-  p: string; // initial puzzle string
-  s: string; // solution string
-  d: number; // difficulty
-}
+const content: string = `import type { InputPuzzle } from "./puzzle.types";
 
 export const puzzles: InputPuzzle[] = ${JSON.stringify(puzzles, null, 2)};
 `;

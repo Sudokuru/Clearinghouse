@@ -41,7 +41,7 @@ export async function testExportPuzzles(): Promise<void> {
   await assertOutputContains(
     fileContent,
     [
-      "export interface InputPuzzle",
+      "import type { InputPuzzle } from \"./puzzle.types\";",
       "export const puzzles: InputPuzzle[]",
       "\"p\": \"007500023850004060030102590700200010000710835080040076300620751915837042276000000\"",
       "\"s\": \"197568423852394167634172598763285914429716835581943276348629751915837642276451389\"",

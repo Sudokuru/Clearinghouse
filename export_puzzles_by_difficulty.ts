@@ -1,4 +1,4 @@
-import { rename, rm } from "fs/promises";
+import { copyFile, rename, rm } from "fs/promises";
 import { DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
 import { DIFFICULTY_RANGES } from "./DifficultyRanges";
@@ -31,6 +31,7 @@ if (!(await createNewOutputDirectory(outputDir))) {
   log(`Output directory already exists: ${outputDir}. Exiting.`, COLORS.RED);
   process.exit(1);
 }
+await copyFile("puzzle.types.ts", `${outputDir}/puzzle.types.ts`);
 
 for (const range of DIFFICULTY_RANGES) {
   const outputFile = `${outputDir}/${difficultyNameToSnakeCase(range.name)}_puzzles.ts`;
