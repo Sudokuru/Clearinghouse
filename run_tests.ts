@@ -51,9 +51,6 @@ try {
   await testExportPuzzlesByDifficulty();
   await testPrintAvailablePuzzlesByDifficulty();
 
-  // TODO: Run ingest_puzzles.ts and verify saying n/N exits early
-  // TODO: As converting export and difficulty report scripts run and test them here too
-
   log("✅ Tests passed successfully!", COLORS.GREEN);
 } finally {
   await cleanup(client);
