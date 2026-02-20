@@ -30,14 +30,14 @@ export async function testExportDrills(): Promise<void> {
   await assertOutputContains(exportDrillsOutput, expectedConfigOutput, "export_drills.ts");
 
   // Verify an exported file contains expected drill puzzle string
-  const fileContent: string = await Bun.file(`${outputDir}/obvious_single_drills.ts`).text();
+  const fileContent: string = await Bun.file(`${outputDir}/OBVIOUS_SINGLE_DRILLS.ts`).text();
   await assertOutputContains(
     fileContent,
     [
-      "export const obvious_single_drills",
+      "export const OBVIOUS_SINGLE_DRILLS",
       "\"197568423852394167634172598763285914429716835581943276348629751915837642276451380\"",
     ],
-    `${outputDir}/obvious_single_drills.ts`
+    `${outputDir}/OBVIOUS_SINGLE_DRILLS.ts`
   );
 
   // Verify existing output directory causes early exit
