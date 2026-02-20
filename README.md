@@ -46,6 +46,8 @@ MIN_DIFFICULTY and MAX_DIFFICULTY optionally filter puzzles exported by difficul
 
 MAX_EXPORT_PUZZLES optionally limits how many puzzles export_puzzles.ts writes, defaulting to no limit.
 
+OUTPUT_DIR is used by export_drills.ts and export_puzzles_by_difficulty.ts. These scripts exit early if the directory already exists.
+
 ```bash
 # Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
 GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun ingest_puzzles.ts
@@ -75,13 +77,13 @@ SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_drills.ts
 bun run test
 
 # Export solved drills to TypeScript files for each strategy
-SOLVED_DRILL_FILE=drills.csv bun export_drills.ts
+SOLVED_DRILL_FILE=drills.csv OUTPUT_DIR=exported_drills bun export_drills.ts
 
 # Export solved puzzles to a TypeScript file as InputPuzzle[]
 SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_EXPORT_PUZZLES=1000 bun export_puzzles.ts
 
 # Export one TypeScript file per difficulty range from DifficultyRanges.ts
-SOLVED_PUZZLE_FILE=puzzles.csv MAX_EXPORT_PUZZLES=500 bun export_puzzles_by_difficulty.ts
+SOLVED_PUZZLE_FILE=puzzles.csv MAX_EXPORT_PUZZLES=500 OUTPUT_DIR=exported_puzzles_by_difficulty bun export_puzzles_by_difficulty.ts
 
 # Print available solved puzzle counts per difficulty range from DifficultyRanges.ts
 SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_puzzles_by_difficulty.ts

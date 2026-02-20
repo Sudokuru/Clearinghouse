@@ -2,6 +2,7 @@ import { rename, rm } from "fs/promises";
 import { DEFAULT_SOLVED_PUZZLES_FILE } from "./streams/StreamConstants";
 import { COLORS, log, promptUserToConfirmValues } from "./utils/logs";
 import { DIFFICULTY_RANGES } from "./DifficultyRanges";
+import { createNewOutputDirectory } from "./utils/export_output_dir";
 
 function difficultyNameToSnakeCase(value: string): string {
   return value
@@ -13,6 +14,7 @@ function difficultyNameToSnakeCase(value: string): string {
 
 const maxExportPuzzlesEnv = process.env.MAX_EXPORT_PUZZLES;
 const solvedPuzzleFile = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
+const outputDir = process.env.OUTPUT_DIR ?? "exported_puzzles_by_difficulty";
 const maxExportPuzzles = Number.parseInt(maxExportPuzzlesEnv ?? "", 10);
 if (Number.isNaN(maxExportPuzzles) || maxExportPuzzles < 0) {
   console.error(`Invalid MAX_EXPORT_PUZZLES: '${maxExportPuzzlesEnv}'.`);
@@ -22,11 +24,16 @@ if (Number.isNaN(maxExportPuzzles) || maxExportPuzzles < 0) {
 const config = {
   "Solved Puzzle File": solvedPuzzleFile,
   "Max Export Puzzles": maxExportPuzzles,
+  "Output Directory": outputDir,
 };
 promptUserToConfirmValues(config);
+if (!(await createNewOutputDirectory(outputDir))) {
+  log(`Output directory already exists: ${outputDir}. Exiting.`, COLORS.RED);
+  process.exit(1);
+}
 
 for (const range of DIFFICULTY_RANGES) {
-  const outputFile = `${difficultyNameToSnakeCase(range.name)}_puzzles.ts`;
+  const outputFile = `${outputDir}/${difficultyNameToSnakeCase(range.name)}_puzzles.ts`;
   log(
     `Exporting '${range.name}' puzzles (${range.minDifficulty} to ${range.maxDifficulty}) to ${outputFile}...`,
     COLORS.CYAN
