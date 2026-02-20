@@ -1,12 +1,11 @@
 import { createClient, RedisClientType } from "redis";
-import { COLORS, formatEta, log, logProgressTwoLines } from "./utils/logs";
-import { batchLoadPuzzles, connectToRedis, getPuzzleDataFromRedis, QUIT_REDIS_MSG, startRedis } from "./utils/redis";
+import { COLORS, log, promptUserToConfirmValues, formatEta, logProgressTwoLines } from "./utils/logs";
+import { connectToRedis, QUIT_REDIS_MSG, startRedis, batchLoadPuzzles } from "./utils/redis";
 import { CSVPuzzleFeed } from "./feeds/CSVPuzzleFeed";
-import { PuzzleDataFields } from "./types/Puzzle";
 import { TxtPuzzleFeed } from "./feeds/TxtPuzzleFeed";
-import { ALREADY_SOLVED_SET, DEFAULT_SOLVED_PUZZLES_FILE, NEW_SOLVED_SET, FAILED_SOLVE_SET, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM } from "./streams/StreamConstants";
+import { DEFAULT_SOLVED_PUZZLES_FILE, SOLVED_DATA_DIR, UNSOLVED_CONSUMER_GROUP, UNSOLVED_STREAM, ALREADY_SOLVED_SET, NEW_SOLVED_SET, FAILED_SOLVE_SET } from "./streams/StreamConstants";
 import { Subprocess } from "bun";
-import { createWriteStream } from "fs";
+import { consumeSolvedPuzzles } from "./streams/SolvedPuzzleConsumer";
 import * as fs from "fs";
 
 
@@ -18,22 +17,16 @@ const redisStreamBatchSize: number = parseInt(process.env.REDIS_STREAM_BATCH_SIZ
 const unsolvedPuzzleFile: string | null = process.env.UNSOLVED_PUZZLE_FILE ?? null;
 const solvedPuzzleFile: string = process.env.SOLVED_PUZZLE_FILE ?? DEFAULT_SOLVED_PUZZLES_FILE;
 
-// Log config values
-log("Configuration Values:");
-log(`Generate Time Limit: ${generateTimeLimit}`);
-log(`Generate Threads: ${generateThreads}`);
-log(`Redis Stream Batch Size: ${redisStreamBatchSize}`);
-log(`Unsolved Puzzle File: ${unsolvedPuzzleFile}`);
-log(`Solved Puzzle File: ${solvedPuzzleFile}`);
-
-// Prompt the user to confirm the configuration.
-const answer = prompt("\nAre these values correct? (y/n): ");
-
-// If the answer is not 'y' (ignoring case), exit the process.
-if (answer?.toLowerCase() !== "y") {
-  log("Configuration not confirmed. Exiting...", COLORS.RED);
-  process.exit(1);
+const config = {
+  "Generate Time Limit": generateTimeLimit,
+  "Generate Threads": generateThreads,
+  "Redis Stream Batch Size": redisStreamBatchSize,
+  "Unsolved Puzzle File": unsolvedPuzzleFile,
+  "Solved Puzzle File": solvedPuzzleFile
 }
+
+// Prompt user to confirm configured values else exits early
+promptUserToConfirmValues(config);
 
 // Start the Redis Docker Container
 const started = await startRedis();
@@ -46,17 +39,21 @@ const client: RedisClientType = createClient();
 
 await connectToRedis(client);
 
-log(`Loading solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
+// Ingest presolved solved puzzles into Redis
+const solvedPuzzlePath = SOLVED_DATA_DIR + solvedPuzzleFile;
+if (fs.existsSync(solvedPuzzlePath)) {
+  log(`Loading solved puzzles from ${solvedPuzzleFile} into Redis database...`, COLORS.YELLOW);
 
-const solvedFeed = new CSVPuzzleFeed("data/solved/" + solvedPuzzleFile);
-await batchLoadPuzzles(
-  solvedFeed,
-  (pipeline, puzzle) => pipeline.hSet(puzzle.key.toString(), puzzle.data),
-  redisStreamBatchSize,
-  "Loaded {count} solved puzzles into Redis database...",
-  "Successfully loaded {count} solved puzzles into Redis database.",
-  client
-);
+  const solvedFeed = new CSVPuzzleFeed(solvedPuzzlePath);
+  await batchLoadPuzzles(
+    solvedFeed,
+    (pipeline, puzzle) => pipeline.hSet(puzzle.key.toString(), puzzle.data),
+    redisStreamBatchSize,
+    "Loaded {count} solved puzzles into Redis database...",
+    "Successfully loaded {count} solved puzzles into Redis database.",
+    client
+  );
+}
 
 // Exit early if user opted not to solve a new puzzle file
 if (unsolvedPuzzleFile === null) {
@@ -130,7 +127,7 @@ const cutoffTime = Date.now() + (generateTimeLimit * 1000);
 const processes: Subprocess<"ignore", "pipe", "inherit">[] = [];
 for (let i: number = 0; i < generateThreads; i++) {
   processes.push(Bun.spawn({
-    cmd: ["bun", "streams/UnsolvedConsumer.ts"],
+    cmd: ["bun", "streams/UnsolvedPuzzleConsumer.ts"],
     env: {
       ...process.env, // preserve env so have bun in $PATH
       CONSUMER_THREAD: i.toString(),
@@ -229,22 +226,8 @@ log(`Total Time: ${totalElapsed} minutes`, COLORS.CYAN);
 
 await client.del(UNSOLVED_STREAM);
 
-// Open solved puzzles csv file in append mode
-const solvedPuzzleFileStream = createWriteStream("data/solved/" + solvedPuzzleFile, { flags: "a" });
-
-// Pop newly solved puzzles off Redis set and append them to solved puzzles csv file
-let puzzleStrArr: string[];
-while ((puzzleStrArr = await client.sPop(NEW_SOLVED_SET)) !== null && puzzleStrArr.length !== 0) {
-  const puzzleStr: string = puzzleStrArr.toString();
-  const puzzleData = await getPuzzleDataFromRedis(client, puzzleStr);
-  if (puzzleData === null) {
-    continue;
-  }
-  const puzzleDataCSV = PuzzleDataFields.map((key) => puzzleData[key]).join(",");
-  solvedPuzzleFileStream.write(puzzleStr + "," + puzzleDataCSV + "\n");
-}
-
-solvedPuzzleFileStream.end();
+// Read newly solved puzzles from Redis and add them to solved puzzle file
+await consumeSolvedPuzzles(client, solvedPuzzleFile);
 
 await client.quit();
 log(QUIT_REDIS_MSG, COLORS.GREEN);

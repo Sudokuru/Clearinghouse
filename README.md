@@ -38,9 +38,22 @@ PUZZLE_FILE is the optional file with one sudoku puzzle string per line to solve
 
 SOLVED_PUZZLE_FILE is the file containing presolved sudoku puzzles, defaults to puzzles.csv
 
-Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
+MAX_DRILLS_PER_STRATEGY is the maximum number of occurrences of a given strategy will be captured and added to csv, defaults to 5000
+
+SOLVED_DRILL_FILE is the csv file used to read existing solved drills from and add new ones to, defaults to drills.csv
+
+MIN_DIFFICULTY and MAX_DIFFICULTY optionally filter puzzles exported by difficulty in export_puzzles.ts, defaulting to no lower/upper bound.
+
+MAX_EXPORT_PUZZLES optionally limits how many puzzles export_puzzles.ts writes, defaulting to no limit.
+
+OUTPUT_DIR is used by export_drills.ts and export_puzzles_by_difficulty.ts. These scripts exit early if the directory already exists.
+
 ```bash
-GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
+# Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
+GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun ingest_puzzles.ts
+
+# Reads drills found in solved puzzles, generates data for them, and appends them to a csv
+MAX_DRILLS_PER_STRATEGY=5000 SOLVED_PUZZLE_FILE=puzzles.csv SOLVED_DRILL_FILE=drills.csv bun ingest_drills.ts
 
 # Exec into the Redis container to run Redis commands (run exit when done)
 docker exec -it sudoku-redis redis-cli
@@ -57,10 +70,28 @@ bun stop.ts
 # Delete data stored in Redis docker
 bun clear.ts
 
+# Print number of available drills per strategy and the minimum across strategies
+SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_drills.ts
+
 # Run tests
 bun run test
 
-# Example helper script to run start.ts on multiple new unsolved puzzle files at once
+# Export solved drills to TypeScript files for each strategy
+SOLVED_DRILL_FILE=drills.csv OUTPUT_DIR=exported_drills bun export_drills.ts
+
+# Export solved puzzles to a TypeScript file as InputPuzzle[]
+SOLVED_PUZZLE_FILE=puzzles.csv MIN_DIFFICULTY=-20000 MAX_DIFFICULTY=-10000 MAX_EXPORT_PUZZLES=1000 bun export_puzzles.ts
+
+# Export one TypeScript file per difficulty range from DifficultyRanges.ts
+SOLVED_PUZZLE_FILE=puzzles.csv MAX_EXPORT_PUZZLES=500 OUTPUT_DIR=exported_puzzles_by_difficulty bun export_puzzles_by_difficulty.ts
+
+# Print available solved puzzle counts per difficulty range from DifficultyRanges.ts
+SOLVED_PUZZLE_FILE=puzzles.csv bun print_available_puzzles_by_difficulty.ts
+
+# Run tests
+bun run_tests.ts
+
+# Example helper script to run ingest_puzzles.ts on multiple new unsolved puzzle files at once
 bash runall.sh
 ```
 
@@ -110,17 +141,6 @@ Notes:
 - Tracking sets (`new:solved:puzzles`, `already:solved:puzzles`, `failed:solve:puzzles`) are cleared at run start; metrics are per-run.
 - Unsolved stream is deleted/recreated each run; `totalToSolve`/ETA reflect the current run only.
 - DB size grows only for **New** puzzles written to Redis; **Already** and **Failed** do not increase `DBSIZE`.
-
-# Temporarily Deprecated Features Usable Only in git tag 1.0.0
-To access these deprecated features, run `git checkout 1.0.0` to switch to the legacy version.
-
-## Exporting puzzles to ts format expected by Sudokuru Frontend
-Kept current exports.ts generated file and Puzzle.type.ts
-Will be very easy to write new ts script that reads solved puzzles csv and prints new exports.ts
-
-## Generation of Difficulty Report for Solved Puzzles
-Kept current DifficultyReport.txt and explanatory DifficultyRanges.md
-Will be very easy to write new ts script that reads solved puzzles csv and collects difficulties then outputs report
 
 # Future
 - [ ] consider using testcontainers to simplify testing setup and to isolate test redis from script redis. Bun / testcontainers compatibility is currently broken here: https://github.com/oven-sh/bun/discussions/21953

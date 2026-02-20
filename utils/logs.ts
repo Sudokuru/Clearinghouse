@@ -42,6 +42,28 @@ export function log(
 }
 
 /**
+ * Logs provided values and prompts user to confirm they are correct
+ * If user does not confirm they are correct then exits the program
+ * @param values - Name, value pairs to log for the user to confirm
+ */
+export function promptUserToConfirmValues(values: Record<string, unknown>): void {
+  // Log name, value pairs for the user to confirm
+  log("Configuration Values:");
+  for (const [name, value] of Object.entries(values)) {
+    log(`${name}: ${value}`);
+  }
+
+  // Prompt the user to confirm the configuration.
+  const answer = prompt("\nAre these values correct? (y/n): ");
+
+  // If the answer is not 'y' (ignoring case), exit the process.
+  if (answer?.toLowerCase() !== "y") {
+    log("Configuration not confirmed. Exiting...", COLORS.RED);
+    process.exit(1);
+  }
+}
+
+/*
  * Logs two lines of progress to the console.
  * The first line is written, followed by the second line, and the cursor is moved back to the first line.
  * This is useful for displaying progress updates on two lines without creating additional lines in the console.

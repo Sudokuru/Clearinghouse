@@ -1,5 +1,6 @@
 import { Puzzle, PuzzleData, PuzzleKey } from "../types/Puzzle";
-import { getIterator, PuzzleFeed } from "./PuzzleFeed";
+import { getIterator } from "./Iterator";
+import { PuzzleFeed } from "./PuzzleFeed";
 
 export class TxtPuzzleFeed implements PuzzleFeed {
   private iterator: AsyncIterator<string>;

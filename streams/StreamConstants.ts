@@ -6,4 +6,6 @@ export const ALREADY_SOLVED_SET: string = "already:solved:puzzles";
 export const FAILED_SOLVE_SET: string = "failed:solve:puzzles";
 
 // File paths
+export const SOLVED_DATA_DIR = "data/solved/";
 export const DEFAULT_SOLVED_PUZZLES_FILE = "puzzles.csv";
+export const DEFAULT_SOLVED_DRILLS_FILE = "drills.csv";
