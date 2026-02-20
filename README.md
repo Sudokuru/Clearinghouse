@@ -48,7 +48,7 @@ MAX_EXPORT_PUZZLES optionally limits how many puzzles export_puzzles.ts writes, 
 
 ```bash
 # Start Redis docker, load puzzle data from provided solved puzzle file and optional unsolved puzzle file to generate data for
-GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun start.ts
+GENERATE_TIME_LIMIT=60 GENERATE_THREADS=1 REDIS_STREAM_BATCH_SIZE=500 UNSOLVED_PUZZLE_FILE=puzzles1.txt SOLVED_PUZZLE_FILE=puzzles.csv bun ingest_puzzles.ts
 
 # Reads drills found in solved puzzles, generates data for them, and appends them to a csv
 MAX_DRILLS_PER_STRATEGY=5000 SOLVED_PUZZLE_FILE=puzzles.csv SOLVED_DRILL_FILE=drills.csv bun ingest_drills.ts
