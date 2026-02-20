@@ -35,8 +35,9 @@ while ((drill = await feed.next()) !== null) {
 
 // Write drills to separate ts files per strategy
 for (const [strategy, puzzles] of drillsByStrategy.entries()) {
-  const arrayName: string = `${strategy}_drills`;
-  const fileName: string = `${outputDir}/${arrayName}.ts`;
+  const fileBaseName: string = `${strategy}_drills`.toLowerCase();
+  const arrayName: string = fileBaseName.toUpperCase();
+  const fileName: string = `${outputDir}/${fileBaseName}.ts`;
   const content: string =
   `export const ${arrayName}: string[] = ${JSON.stringify(puzzles, null, 2)};\n`;
   await writeFile(fileName, content);

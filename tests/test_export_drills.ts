@@ -34,7 +34,7 @@ export async function testExportDrills(): Promise<void> {
   await assertOutputContains(
     fileContent,
     [
-      "export const obvious_single_drills",
+      "export const OBVIOUS_SINGLE_DRILLS",
       "\"197568423852394167634172598763285914429716835581943276348629751915837642276451380\"",
     ],
     `${outputDir}/obvious_single_drills.ts`

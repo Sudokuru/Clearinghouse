@@ -60,7 +60,7 @@ export async function testExportPuzzlesByDifficulty(): Promise<void> {
     noviceContent,
     [
       "import type { InputPuzzle } from \"./puzzle.types\";",
-      "export const puzzles: InputPuzzle[] =",
+      "export const NOVICE_PUZZLES: InputPuzzle[] =",
     ],
     `${outputDir}/novice_puzzles.ts`
   );
