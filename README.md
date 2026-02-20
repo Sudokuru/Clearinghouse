@@ -142,17 +142,6 @@ Notes:
 - Unsolved stream is deleted/recreated each run; `totalToSolve`/ETA reflect the current run only.
 - DB size grows only for **New** puzzles written to Redis; **Already** and **Failed** do not increase `DBSIZE`.
 
-# Temporarily Deprecated Features Usable Only in git tag 1.0.0
-To access these deprecated features, run `git checkout 1.0.0` to switch to the legacy version.
-
-## Exporting puzzles to ts format expected by Sudokuru Frontend
-Kept current exports.ts generated file and Puzzle.type.ts
-Will be very easy to write new ts script that reads solved puzzles csv and prints new exports.ts
-
-## Generation of Difficulty Report for Solved Puzzles
-Kept current DifficultyReport.txt and explanatory DifficultyRanges.ts
-Will be very easy to write new ts script that reads solved puzzles csv and collects difficulties then outputs report
-
 # Future
 - [ ] consider using testcontainers to simplify testing setup and to isolate test redis from script redis. Bun / testcontainers compatibility is currently broken here: https://github.com/oven-sh/bun/discussions/21953
 - [ ] install prettier or alternative so we don't battle between windows and linux line endings.
